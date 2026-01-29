@@ -10,12 +10,13 @@ import {
   ArrowDownRight,
   Star,
   CheckCircle2,
-  X,
+  ArrowLeft,
   Copy,
   ExternalLink,
   Globe,
   MessageCircle,
   ShieldCheck,
+  RefreshCw,
 } from 'lucide-react';
 
 // Mock data with trading metrics
@@ -27,19 +28,31 @@ const MOCK_AGENTS = [
     builder: 'rxbt',
     builderVerified: true,
     price: 0.847,
-    priceChange24h: 24.5,
+    priceChange5m: 0.73,
     priceChange1h: 3.2,
+    priceChange6h: 12.4,
+    priceChange24h: 24.5,
     marketCap: 89400000,
+    fdv: 94000000,
     volume24h: 12500000,
     liquidity: 4200000,
     holders: 18420,
+    txns24h: 24521,
+    buys24h: 13201,
+    sells24h: 11320,
+    buyVolume: 7200000,
+    sellVolume: 5300000,
+    makers: 892,
+    buyers: 521,
+    sellers: 371,
     age: '67d',
     chain: 'Base',
+    dex: 'Uniswap',
     validation: 'TEE',
     reputation: 98.4,
     trending: true,
     avatar: '🤖',
-    description: 'AI-powered crypto market intelligence agent. Analyzes 400+ KOLs and provides real-time trading signals.',
+    description: 'AI-powered crypto market intelligence agent.',
     website: 'https://aixbt.io',
     twitter: 'aixbt_agent',
     telegram: 'aixbt_community',
@@ -52,19 +65,31 @@ const MOCK_AGENTS = [
     builder: 'virtuals',
     builderVerified: true,
     price: 0.0234,
-    priceChange24h: -8.3,
+    priceChange5m: -0.32,
     priceChange1h: -1.2,
+    priceChange6h: -4.5,
+    priceChange24h: -8.3,
     marketCap: 23400000,
+    fdv: 25000000,
     volume24h: 3200000,
     liquidity: 1800000,
     holders: 9823,
+    txns24h: 8924,
+    buys24h: 4102,
+    sells24h: 4822,
+    buyVolume: 1400000,
+    sellVolume: 1800000,
+    makers: 423,
+    buyers: 198,
+    sellers: 225,
     age: '89d',
     chain: 'Base',
+    dex: 'Uniswap',
     validation: 'Crypto',
     reputation: 96.2,
     trending: true,
     avatar: '🌙',
-    description: '24/7 AI livestreamer and virtual idol. First autonomous AI entertainer on Virtuals Protocol.',
+    description: '24/7 AI livestreamer and virtual idol.',
     website: 'https://luna.virtuals.io',
     twitter: 'luna_virtuals',
     telegram: 'luna_fans',
@@ -77,19 +102,31 @@ const MOCK_AGENTS = [
     builder: 'vader_ai',
     builderVerified: true,
     price: 0.00567,
-    priceChange24h: 156.7,
+    priceChange5m: 4.2,
     priceChange1h: 42.3,
+    priceChange6h: 89.2,
+    priceChange24h: 156.7,
     marketCap: 5670000,
+    fdv: 5670000,
     volume24h: 8900000,
     liquidity: 890000,
     holders: 4521,
+    txns24h: 18234,
+    buys24h: 11234,
+    sells24h: 7000,
+    buyVolume: 5800000,
+    sellVolume: 3100000,
+    makers: 1823,
+    buyers: 1102,
+    sellers: 721,
     age: '12d',
     chain: 'Base',
+    dex: 'Uniswap',
     validation: 'TEE',
     reputation: 91.8,
     trending: true,
     avatar: '😈',
-    description: 'AI-managed trading DAO. Community-governed investment strategies powered by autonomous agents.',
+    description: 'AI-managed trading DAO.',
     website: 'https://vader.ai',
     twitter: 'vader_ai',
     telegram: 'vader_dao',
@@ -102,19 +139,31 @@ const MOCK_AGENTS = [
     builder: 'virtuals',
     builderVerified: true,
     price: 0.0089,
-    priceChange24h: -3.2,
+    priceChange5m: 0.1,
     priceChange1h: 0.8,
+    priceChange6h: -1.2,
+    priceChange24h: -3.2,
     marketCap: 8900000,
+    fdv: 8900000,
     volume24h: 1200000,
     liquidity: 670000,
     holders: 6234,
+    txns24h: 3421,
+    buys24h: 1654,
+    sells24h: 1767,
+    buyVolume: 580000,
+    sellVolume: 620000,
+    makers: 312,
+    buyers: 145,
+    sellers: 167,
     age: '95d',
     chain: 'Base',
+    dex: 'Uniswap',
     validation: 'Crypto',
     reputation: 94.7,
     trending: false,
     avatar: '🎮',
-    description: 'Gaming AI framework token. Powers autonomous game NPCs and interactive experiences.',
+    description: 'Gaming AI framework token.',
     website: 'https://game.virtuals.io',
     twitter: 'game_virtuals',
     telegram: 'game_community',
@@ -127,19 +176,31 @@ const MOCK_AGENTS = [
     builder: 'sekoia_labs',
     builderVerified: false,
     price: 0.00123,
-    priceChange24h: 89.2,
+    priceChange5m: 2.1,
     priceChange1h: 12.4,
+    priceChange6h: 45.2,
+    priceChange24h: 89.2,
     marketCap: 1230000,
+    fdv: 1230000,
     volume24h: 2100000,
     liquidity: 340000,
     holders: 2891,
+    txns24h: 12453,
+    buys24h: 7823,
+    sells24h: 4630,
+    buyVolume: 1400000,
+    sellVolume: 700000,
+    makers: 2341,
+    buyers: 1521,
+    sellers: 820,
     age: '3d',
     chain: 'Ethereum',
+    dex: 'Uniswap',
     validation: 'None',
     reputation: 72.3,
     trending: true,
     avatar: '🔮',
-    description: 'Autonomous research agent. Synthesizes academic papers and provides actionable insights.',
+    description: 'Autonomous research agent.',
     website: 'https://sekoia.ai',
     twitter: 'sekoia_ai',
     telegram: '',
@@ -152,19 +213,31 @@ const MOCK_AGENTS = [
     builder: 'griff_team',
     builderVerified: true,
     price: 0.456,
-    priceChange24h: 12.8,
+    priceChange5m: -0.5,
     priceChange1h: -2.1,
+    priceChange6h: 5.4,
+    priceChange24h: 12.8,
     marketCap: 45600000,
+    fdv: 50000000,
     volume24h: 5600000,
     liquidity: 2300000,
     holders: 11234,
+    txns24h: 9823,
+    buys24h: 5234,
+    sells24h: 4589,
+    buyVolume: 3100000,
+    sellVolume: 2500000,
+    makers: 654,
+    buyers: 354,
+    sellers: 300,
     age: '34d',
     chain: 'Solana',
+    dex: 'Raydium',
     validation: 'TEE',
     reputation: 95.1,
     trending: false,
     avatar: '🦅',
-    description: 'Multi-chain DeFi agent. Automates yield farming, bridging, and portfolio rebalancing.',
+    description: 'Multi-chain DeFi agent.',
     website: 'https://griffain.io',
     twitter: 'griffain_ai',
     telegram: 'griffain_defi',
@@ -177,19 +250,31 @@ const MOCK_AGENTS = [
     builder: 'dolos_ai',
     builderVerified: false,
     price: 0.000234,
-    priceChange24h: 342.5,
+    priceChange5m: 12.3,
     priceChange1h: 67.8,
+    priceChange6h: 156.2,
+    priceChange24h: 342.5,
     marketCap: 234000,
+    fdv: 234000,
     volume24h: 890000,
     liquidity: 120000,
     holders: 1823,
+    txns24h: 8923,
+    buys24h: 6234,
+    sells24h: 2689,
+    buyVolume: 670000,
+    sellVolume: 220000,
+    makers: 1523,
+    buyers: 1102,
+    sellers: 421,
     age: '1d',
     chain: 'Base',
+    dex: 'Uniswap',
     validation: 'None',
     reputation: 45.2,
     trending: true,
     avatar: '🎭',
-    description: 'Narrative trading AI. Identifies emerging narratives and memes before they trend.',
+    description: 'Narrative trading AI.',
     website: '',
     twitter: 'dolos_ai',
     telegram: 'dolos_alpha',
@@ -202,25 +287,57 @@ const MOCK_AGENTS = [
     builder: 'neur_protocol',
     builderVerified: true,
     price: 0.0678,
-    priceChange24h: -15.4,
+    priceChange5m: -1.2,
     priceChange1h: -4.2,
+    priceChange6h: -8.9,
+    priceChange24h: -15.4,
     marketCap: 6780000,
+    fdv: 6780000,
     volume24h: 980000,
     liquidity: 450000,
     holders: 5123,
+    txns24h: 2341,
+    buys24h: 987,
+    sells24h: 1354,
+    buyVolume: 380000,
+    sellVolume: 600000,
+    makers: 234,
+    buyers: 98,
+    sellers: 136,
     age: '45d',
     chain: 'Solana',
+    dex: 'Raydium',
     validation: 'Crypto',
     reputation: 88.9,
     trending: false,
     avatar: '🧠',
-    description: 'Neural network agent framework. Build and deploy custom AI agents on Solana.',
+    description: 'Neural network agent framework.',
     website: 'https://neur.sh',
     twitter: 'neur_protocol',
     telegram: 'neur_devs',
     priceHistory: [0.085, 0.082, 0.08, 0.078, 0.075, 0.072, 0.07, 0.068, 0.067, 0.0678],
   },
 ];
+
+// Mock transactions
+const generateMockTransactions = (agent: typeof MOCK_AGENTS[0]) => {
+  const types = ['Buy', 'Sell'];
+  const transactions = [];
+  for (let i = 0; i < 20; i++) {
+    const isBuy = Math.random() > 0.45;
+    const usdAmount = Math.random() * 5000 + 100;
+    transactions.push({
+      id: i,
+      type: isBuy ? 'Buy' : 'Sell',
+      usd: usdAmount,
+      tokens: usdAmount / agent.price,
+      price: agent.price * (1 + (Math.random() - 0.5) * 0.01),
+      maker: `${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+      time: `${Math.floor(Math.random() * 59) + 1}s ago`,
+    });
+  }
+  return transactions;
+};
 
 const FEEDS = [
   { id: 'trending', label: '🔥 Trending', icon: Flame },
@@ -236,6 +353,12 @@ const formatNumber = (num: number): string => {
   if (num >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
   if (num >= 1000) return `$${(num / 1000).toFixed(1)}K`;
   return `$${num.toFixed(2)}`;
+};
+
+const formatCompact = (num: number): string => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(2)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toFixed(0);
 };
 
 const formatPrice = (price: number): string => {
@@ -277,11 +400,11 @@ function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
   );
 }
 
-// Agent Detail Drawer
-function AgentDrawer({ agent, onClose }: { agent: typeof MOCK_AGENTS[0] | null; onClose: () => void }) {
+// ========== AGENT DETAIL PAGE ==========
+function AgentPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: () => void }) {
   const [copied, setCopied] = useState(false);
-
-  if (!agent) return null;
+  const [activeTab, setActiveTab] = useState('transactions');
+  const transactions = generateMockTransactions(agent);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(agent.id);
@@ -289,372 +412,461 @@ function AgentDrawer({ agent, onClose }: { agent: typeof MOCK_AGENTS[0] | null; 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isPositive = agent.priceChange24h >= 0;
-
-  // Chart dimensions
-  const chartWidth = 320;
-  const chartHeight = 120;
-  const min = Math.min(...agent.priceHistory);
-  const max = Math.max(...agent.priceHistory);
-  const range = max - min || 1;
-  
-  const chartPoints = agent.priceHistory.map((val, i) => {
-    const x = (i / (agent.priceHistory.length - 1)) * chartWidth;
-    const y = chartHeight - ((val - min) / range) * (chartHeight - 20) - 10;
-    return `${x},${y}`;
-  }).join(' ');
-
-  const areaPoints = `0,${chartHeight} ${chartPoints} ${chartWidth},${chartHeight}`;
+  const PriceChange = ({ value, label }: { value: number; label: string }) => {
+    const isPositive = value >= 0;
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>{label}</div>
+        <div style={{ 
+          color: isPositive ? '#22c55e' : '#ef4444', 
+          fontWeight: 600, 
+          fontSize: '14px' 
+        }}>
+          {isPositive ? '+' : ''}{value.toFixed(2)}%
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.6)',
-          zIndex: 100,
-        }}
-      />
-      <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '400px',
-          maxWidth: '100vw',
-          backgroundColor: '#0f0f0f',
-          borderLeft: '1px solid rgba(255,255,255,0.1)',
-          zIndex: 101,
-          overflow: 'auto',
-        }}
-      >
-        {/* Header */}
-        <div style={{
-          padding: '20px',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '40px' }}>{agent.avatar}</span>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontWeight: 700, fontSize: '20px', color: 'white' }}>{agent.name}</span>
-                <span style={{ color: '#6b7280', fontSize: '14px' }}>{agent.ticker}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#9ca3af' }}>
-                <span>@{agent.builder}</span>
-                {agent.builderVerified && <CheckCircle2 size={12} color="#FF4500" />}
-                <span style={{ 
-                  padding: '2px 6px', 
-                  backgroundColor: agent.chain === 'Base' ? 'rgba(0,82,255,0.2)' : agent.chain === 'Solana' ? 'rgba(153,69,255,0.2)' : 'rgba(98,126,234,0.2)',
-                  color: agent.chain === 'Base' ? '#0052FF' : agent.chain === 'Solana' ? '#9945FF' : '#627EEA',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  marginLeft: '4px',
-                }}>
-                  {agent.chain}
-                </span>
-              </div>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#0a0a0a',
+      color: 'white',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    }}>
+      {/* Top Bar */}
+      <header style={{
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        backgroundColor: '#0a0a0a',
+        padding: '8px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+      }}>
+        <button 
+          onClick={onBack}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: 'none',
+            border: 'none',
+            color: '#9ca3af',
+            cursor: 'pointer',
+            fontSize: '14px',
+            padding: '8px 12px',
+            borderRadius: '6px',
+          }}
+        >
+          <ArrowLeft size={18} />
+          Back
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '28px' }}>{agent.avatar}</span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontWeight: 700, fontSize: '18px' }}>{agent.ticker}</span>
+              <span style={{ color: '#6b7280' }}>/</span>
+              <span style={{ color: '#6b7280' }}>{agent.chain === 'Solana' ? 'SOL' : 'ETH'}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280' }}>
+              <span style={{ 
+                padding: '2px 6px', 
+                backgroundColor: agent.chain === 'Base' ? 'rgba(0,82,255,0.2)' : agent.chain === 'Solana' ? 'rgba(153,69,255,0.2)' : 'rgba(98,126,234,0.2)',
+                color: agent.chain === 'Base' ? '#0052FF' : agent.chain === 'Solana' ? '#9945FF' : '#627EEA',
+                borderRadius: '4px',
+              }}>
+                {agent.chain}
+              </span>
+              <span>·</span>
+              <span>{agent.dex}</span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px',
-              cursor: 'pointer',
-              color: '#9ca3af',
-            }}
-          >
-            <X size={20} />
-          </button>
         </div>
 
-        {/* Price + Chart */}
-        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '32px', fontWeight: 700, color: 'white', fontFamily: 'monospace' }}>
-              {formatPrice(agent.price)}
-            </span>
-            <span style={{
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {agent.website && (
+            <a href={agent.website} target="_blank" rel="noopener noreferrer" style={{
+              padding: '6px 10px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              borderRadius: '6px',
+              color: '#9ca3af',
+              textDecoration: 'none',
+              fontSize: '12px',
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              color: isPositive ? '#22c55e' : '#ef4444',
-              fontSize: '16px',
-              fontWeight: 600,
             }}>
-              {isPositive ? <ArrowUpRight size={18} /> : <ArrowDownRight size={18} />}
-              {Math.abs(agent.priceChange24h).toFixed(1)}%
-            </span>
-          </div>
-
-          {/* Chart */}
-          <div style={{
-            backgroundColor: 'rgba(255,255,255,0.02)',
-            borderRadius: '12px',
-            padding: '16px',
-          }}>
-            <svg width={chartWidth} height={chartHeight} style={{ display: 'block', width: '100%' }}>
-              <defs>
-                <linearGradient id={`gradient-${agent.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0.3" />
-                  <stop offset="100%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <polygon
-                points={areaPoints}
-                fill={`url(#gradient-${agent.id})`}
-              />
-              <polyline
-                points={chartPoints}
-                fill="none"
-                stroke={isPositive ? '#22c55e' : '#ef4444'}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-              <span style={{ fontSize: '11px', color: '#6b7280' }}>7d ago</span>
-              <span style={{ fontSize: '11px', color: '#6b7280' }}>Now</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '12px',
-          }}>
-            {[
-              { label: 'Market Cap', value: formatNumber(agent.marketCap) },
-              { label: 'Volume 24h', value: formatNumber(agent.volume24h) },
-              { label: 'Liquidity', value: formatNumber(agent.liquidity) },
-              { label: 'Holders', value: agent.holders.toLocaleString() },
-            ].map((stat) => (
-              <div key={stat.label} style={{
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                borderRadius: '10px',
-                padding: '12px',
-              }}>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{stat.label}</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: 'white', fontFamily: 'monospace' }}>{stat.value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Trust Score */}
-        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '12px', textTransform: 'uppercase', fontWeight: 500 }}>Trust Score</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              backgroundColor: agent.reputation >= 90 ? 'rgba(34,197,94,0.15)' : agent.reputation >= 70 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
+              <Globe size={14} /> Website
+            </a>
+          )}
+          {agent.twitter && (
+            <a href={`https://twitter.com/${agent.twitter}`} target="_blank" rel="noopener noreferrer" style={{
+              padding: '6px 10px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              borderRadius: '6px',
+              color: '#9ca3af',
+              textDecoration: 'none',
+              fontSize: '12px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              border: `2px solid ${agent.reputation >= 90 ? '#22c55e' : agent.reputation >= 70 ? '#eab308' : '#ef4444'}`,
+              gap: '4px',
             }}>
-              <span style={{
-                fontSize: '20px',
-                fontWeight: 700,
-                color: agent.reputation >= 90 ? '#22c55e' : agent.reputation >= 70 ? '#eab308' : '#ef4444',
-              }}>
-                {agent.reputation.toFixed(0)}
-              </span>
-            </div>
-            <div style={{ flex: 1 }}>
-              {agent.validation !== 'None' && (
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 10px',
-                  backgroundColor: 'rgba(34,197,94,0.1)',
-                  borderRadius: '6px',
-                  marginBottom: '8px',
-                }}>
-                  <ShieldCheck size={14} color="#4ade80" />
-                  <span style={{ color: '#4ade80', fontSize: '13px', fontWeight: 500 }}>
-                    {agent.validation === 'TEE' ? 'TEE Verified' : 'Cryptographic Proof'}
-                  </span>
-                </div>
-              )}
-              <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                {agent.reputation >= 90 ? 'High trust - verified and reliable' : 
-                 agent.reputation >= 70 ? 'Moderate trust - proceed with caution' : 
-                 'Low trust - high risk'}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Description */}
-        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 500 }}>About</div>
-          <p style={{ fontSize: '14px', color: '#d1d5db', lineHeight: 1.6, margin: 0 }}>
-            {agent.description}
-          </p>
-        </div>
-
-        {/* Contract */}
-        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 500 }}>Contract</div>
-          <button
-            onClick={copyAddress}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 14px',
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              width: '100%',
-            }}
-          >
-            <span style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: '13px', flex: 1, textAlign: 'left' }}>
-              {truncateAddress(agent.id)}
-            </span>
-            {copied ? (
-              <CheckCircle2 size={16} color="#22c55e" />
-            ) : (
-              <Copy size={16} color="#6b7280" />
-            )}
-          </button>
-        </div>
-
-        {/* Links */}
-        <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '12px', textTransform: 'uppercase', fontWeight: 500 }}>Links</div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {agent.website && (
-              <a href={agent.website} target="_blank" rel="noopener noreferrer" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 12px',
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                color: '#9ca3af',
-                textDecoration: 'none',
-                fontSize: '13px',
-              }}>
-                <Globe size={14} />
-                Website
-              </a>
-            )}
-            {agent.twitter && (
-              <a href={`https://twitter.com/${agent.twitter}`} target="_blank" rel="noopener noreferrer" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 12px',
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                color: '#9ca3af',
-                textDecoration: 'none',
-                fontSize: '13px',
-              }}>
-                <span style={{ fontWeight: 700 }}>𝕏</span>
-                Twitter
-              </a>
-            )}
-            {agent.telegram && (
-              <a href={`https://t.me/${agent.telegram}`} target="_blank" rel="noopener noreferrer" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 12px',
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                color: '#9ca3af',
-                textDecoration: 'none',
-                fontSize: '13px',
-              }}>
-                <MessageCircle size={14} />
-                Telegram
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* Trade Button */}
-        <div style={{ padding: '20px' }}>
+              𝕏 Twitter
+            </a>
+          )}
           <button style={{
-            width: '100%',
-            padding: '14px',
+            padding: '8px 16px',
             backgroundColor: '#FF4500',
             border: 'none',
-            borderRadius: '10px',
+            borderRadius: '6px',
             color: 'white',
-            fontSize: '16px',
             fontWeight: 600,
             cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
+            fontSize: '13px',
           }}>
-            Trade on {agent.chain === 'Solana' ? 'Raydium' : 'Uniswap'}
-            <ExternalLink size={16} />
+            Trade
           </button>
-          <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-            <button style={{
-              flex: 1,
-              padding: '10px',
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '8px',
-              color: '#9ca3af',
-              fontSize: '13px',
-              cursor: 'pointer',
+        </div>
+      </header>
+
+      <div style={{ display: 'flex', height: 'calc(100vh - 56px)' }}>
+        {/* Left: Chart Area */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+          {/* Chart */}
+          <div style={{ flex: 1, backgroundColor: '#0d0d0d', position: 'relative' }}>
+            {/* Time intervals */}
+            <div style={{ 
+              position: 'absolute', 
+              top: '12px', 
+              left: '12px', 
+              display: 'flex', 
+              gap: '4px',
+              zIndex: 10,
             }}>
-              DexScreener
-            </button>
-            <button style={{
-              flex: 1,
-              padding: '10px',
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '8px',
-              color: '#9ca3af',
-              fontSize: '13px',
-              cursor: 'pointer',
+              {['1m', '5m', '15m', '1h', '4h', '1D'].map((interval) => (
+                <button key={interval} style={{
+                  padding: '4px 8px',
+                  backgroundColor: interval === '5m' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '4px',
+                  color: interval === '5m' ? 'white' : '#6b7280',
+                  fontSize: '11px',
+                  cursor: 'pointer',
+                }}>
+                  {interval}
+                </button>
+              ))}
+            </div>
+
+            {/* Mock Chart */}
+            <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="none" style={{ padding: '50px 20px 40px' }}>
+              {/* Grid lines */}
+              {[0, 1, 2, 3, 4].map((i) => (
+                <line key={i} x1="0" y1={i * 80} x2="800" y2={i * 80} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+              ))}
+              
+              {/* Candlesticks */}
+              {agent.priceHistory.map((price, i) => {
+                const x = (i / (agent.priceHistory.length - 1)) * 760 + 20;
+                const prevPrice = agent.priceHistory[i - 1] || price;
+                const isGreen = price >= prevPrice;
+                const high = Math.max(price, prevPrice) * 1.02;
+                const low = Math.min(price, prevPrice) * 0.98;
+                const open = prevPrice;
+                const close = price;
+                
+                const scaleY = (p: number) => 320 - ((p - Math.min(...agent.priceHistory) * 0.95) / (Math.max(...agent.priceHistory) * 1.05 - Math.min(...agent.priceHistory) * 0.95)) * 280;
+                
+                return (
+                  <g key={i}>
+                    <line 
+                      x1={x} y1={scaleY(high)} 
+                      x2={x} y2={scaleY(low)} 
+                      stroke={isGreen ? '#22c55e' : '#ef4444'} 
+                      strokeWidth="1" 
+                    />
+                    <rect 
+                      x={x - 15} 
+                      y={scaleY(Math.max(open, close))} 
+                      width="30" 
+                      height={Math.abs(scaleY(open) - scaleY(close)) || 2} 
+                      fill={isGreen ? '#22c55e' : '#ef4444'} 
+                    />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Current price overlay */}
+            <div style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              backgroundColor: agent.priceChange24h >= 0 ? '#22c55e' : '#ef4444',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: 600,
             }}>
-              Etherscan
-            </button>
+              {formatPrice(agent.price)}
+            </div>
+          </div>
+
+          {/* Bottom Tabs */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              {[
+                { id: 'transactions', label: 'Transactions' },
+                { id: 'topTraders', label: 'Top Traders' },
+                { id: 'holders', label: `Holders (${formatCompact(agent.holders)})` },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    padding: '12px 20px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    borderBottom: activeTab === tab.id ? '2px solid #FF4500' : '2px solid transparent',
+                    color: activeTab === tab.id ? 'white' : '#6b7280',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Transactions Table */}
+            <div style={{ height: '200px', overflow: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                    <th style={{ padding: '8px 12px', textAlign: 'left', color: '#6b7280', fontWeight: 500 }}>TIME</th>
+                    <th style={{ padding: '8px 12px', textAlign: 'left', color: '#6b7280', fontWeight: 500 }}>TYPE</th>
+                    <th style={{ padding: '8px 12px', textAlign: 'right', color: '#6b7280', fontWeight: 500 }}>USD</th>
+                    <th style={{ padding: '8px 12px', textAlign: 'right', color: '#6b7280', fontWeight: 500 }}>{agent.ticker.replace('$', '')}</th>
+                    <th style={{ padding: '8px 12px', textAlign: 'right', color: '#6b7280', fontWeight: 500 }}>PRICE</th>
+                    <th style={{ padding: '8px 12px', textAlign: 'right', color: '#6b7280', fontWeight: 500 }}>MAKER</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((tx) => (
+                    <tr key={tx.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      <td style={{ padding: '8px 12px', color: '#6b7280' }}>{tx.time}</td>
+                      <td style={{ padding: '8px 12px', color: tx.type === 'Buy' ? '#22c55e' : '#ef4444', fontWeight: 500 }}>{tx.type}</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: 'white' }}>${tx.usd.toFixed(2)}</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: '#9ca3af' }}>{formatCompact(tx.tokens)}</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right', color: '#9ca3af' }}>{formatPrice(tx.price)}</td>
+                      <td style={{ padding: '8px 12px', textAlign: 'right' }}>
+                        <span style={{ color: '#FF4500', cursor: 'pointer' }}>{tx.maker}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </AnimatePresence>
+
+        {/* Right Sidebar */}
+        <div style={{ width: '320px', overflow: 'auto', backgroundColor: '#0d0d0d' }}>
+          {/* Token Info */}
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <span style={{ fontSize: '48px' }}>{agent.avatar}</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '18px' }}>{agent.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280' }}>
+                  <span>@{agent.builder}</span>
+                  {agent.builderVerified && <CheckCircle2 size={12} color="#FF4500" />}
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Badge */}
+            {agent.validation !== 'None' && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 12px',
+                backgroundColor: 'rgba(34,197,94,0.1)',
+                borderRadius: '8px',
+                marginBottom: '12px',
+              }}>
+                <ShieldCheck size={16} color="#4ade80" />
+                <span style={{ color: '#4ade80', fontSize: '13px', fontWeight: 500 }}>
+                  {agent.validation === 'TEE' ? 'TEE Verified' : 'Cryptographic Proof'}
+                </span>
+                <span style={{ 
+                  marginLeft: 'auto',
+                  backgroundColor: 'rgba(34,197,94,0.2)',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#4ade80',
+                }}>
+                  {agent.reputation.toFixed(0)}
+                </span>
+              </div>
+            )}
+
+            {/* Contract */}
+            <button
+              onClick={copyAddress}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 12px',
+                backgroundColor: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              <span style={{ color: '#6b7280', fontSize: '12px' }}>CA:</span>
+              <span style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: '12px', flex: 1, textAlign: 'left' }}>
+                {truncateAddress(agent.id)}
+              </span>
+              {copied ? <CheckCircle2 size={14} color="#22c55e" /> : <Copy size={14} color="#6b7280" />}
+            </button>
+          </div>
+
+          {/* Price */}
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>PRICE USD</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'monospace' }}>{formatPrice(agent.price)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>PRICE {agent.chain === 'Solana' ? 'SOL' : 'ETH'}</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'monospace', color: '#9ca3af' }}>
+                  {(agent.price / (agent.chain === 'Solana' ? 100 : 2500)).toFixed(8)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Liquidity / FDV / MCap */}
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>LIQUIDITY</div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{formatNumber(agent.liquidity)}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>FDV</div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{formatNumber(agent.fdv)}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>MKT CAP</div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{formatNumber(agent.marketCap)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Price Changes */}
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
+              <PriceChange value={agent.priceChange5m} label="5M" />
+              <PriceChange value={agent.priceChange1h} label="1H" />
+              <PriceChange value={agent.priceChange6h} label="6H" />
+              <PriceChange value={agent.priceChange24h} label="24H" />
+            </div>
+          </div>
+
+          {/* Txns */}
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>TXNS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{formatCompact(agent.txns24h)}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>BUYS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#22c55e' }}>{formatCompact(agent.buys24h)}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>SELLS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#ef4444' }}>{formatCompact(agent.sells24h)}</div>
+              </div>
+            </div>
+            {/* Buy/Sell Bar */}
+            <div style={{ display: 'flex', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ 
+                width: `${(agent.buys24h / agent.txns24h) * 100}%`, 
+                backgroundColor: '#22c55e' 
+              }} />
+              <div style={{ 
+                width: `${(agent.sells24h / agent.txns24h) * 100}%`, 
+                backgroundColor: '#ef4444' 
+              }} />
+            </div>
+          </div>
+
+          {/* Volume */}
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>VOLUME</div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{formatNumber(agent.volume24h)}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>BUY VOL</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#22c55e' }}>{formatNumber(agent.buyVolume)}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>SELL VOL</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#ef4444' }}>{formatNumber(agent.sellVolume)}</div>
+              </div>
+            </div>
+            {/* Volume Bar */}
+            <div style={{ display: 'flex', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ 
+                width: `${(agent.buyVolume / agent.volume24h) * 100}%`, 
+                backgroundColor: '#22c55e' 
+              }} />
+              <div style={{ 
+                width: `${(agent.sellVolume / agent.volume24h) * 100}%`, 
+                backgroundColor: '#ef4444' 
+              }} />
+            </div>
+          </div>
+
+          {/* Makers */}
+          <div style={{ padding: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>MAKERS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{agent.makers}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>BUYERS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#22c55e' }}>{agent.buyers}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>SELLERS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#ef4444' }}>{agent.sellers}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
+// ========== MAIN LIST PAGE ==========
 function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; index: number; onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   const isPositive24h = agent.priceChange24h >= 0;
@@ -674,7 +886,6 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
         transition: 'background-color 0.2s',
       }}
     >
-      {/* Rank + Name */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ color: '#6b7280', fontSize: '14px', width: '24px' }}>#{index + 1}</span>
@@ -716,18 +927,12 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
           </div>
         </div>
       </td>
-
-      {/* Price */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <span style={{ color: 'white', fontWeight: 500, fontFamily: 'monospace' }}>{formatPrice(agent.price)}</span>
       </td>
-
-      {/* Chart */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <Sparkline data={agent.priceHistory} positive={isPositive24h} />
       </td>
-
-      {/* 1h Change */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <div style={{ 
           display: 'flex', 
@@ -742,8 +947,6 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
           {Math.abs(agent.priceChange1h).toFixed(1)}%
         </div>
       </td>
-
-      {/* 24h Change */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <div style={{ 
           display: 'flex', 
@@ -758,23 +961,15 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
           {Math.abs(agent.priceChange24h).toFixed(1)}%
         </div>
       </td>
-
-      {/* Market Cap */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <span style={{ color: 'white', fontFamily: 'monospace' }}>{formatNumber(agent.marketCap)}</span>
       </td>
-
-      {/* Volume */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <span style={{ color: '#9ca3af', fontFamily: 'monospace' }}>{formatNumber(agent.volume24h)}</span>
       </td>
-
-      {/* Liquidity */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <span style={{ color: '#9ca3af', fontFamily: 'monospace' }}>{formatNumber(agent.liquidity)}</span>
       </td>
-
-      {/* Trust Score */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
           {agent.validation !== 'None' && (
@@ -797,13 +992,9 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
           </span>
         </div>
       </td>
-
-      {/* Age */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <span style={{ color: '#6b7280', fontSize: '13px' }}>{agent.age}</span>
       </td>
-
-      {/* Actions */}
       <td style={{ padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'right' }}>
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
           <button 
@@ -842,11 +1033,10 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
   );
 }
 
-export default function AgentDiscovery() {
+function AgentList({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AGENTS[0]) => void }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFeed, setActiveFeed] = useState('trending');
   const [activeChain, setActiveChain] = useState('All Chains');
-  const [selectedAgent, setSelectedAgent] = useState<typeof MOCK_AGENTS[0] | null>(null);
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -869,11 +1059,6 @@ export default function AgentDiscovery() {
       color: 'white',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     }}>
-      {/* Agent Detail Drawer */}
-      {selectedAgent && (
-        <AgentDrawer agent={selectedAgent} onClose={() => setSelectedAgent(null)} />
-      )}
-
       {/* Header */}
       <header style={{
         position: 'sticky',
@@ -892,7 +1077,6 @@ export default function AgentDiscovery() {
           justifyContent: 'space-between',
           gap: '24px',
         }}>
-          {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '28px' }}>🍴</span>
             <div>
@@ -901,7 +1085,6 @@ export default function AgentDiscovery() {
             </div>
           </div>
 
-          {/* Search */}
           <div style={{ flex: 1, maxWidth: '400px' }}>
             <div style={{ position: 'relative' }}>
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
@@ -924,7 +1107,6 @@ export default function AgentDiscovery() {
             </div>
           </div>
 
-          {/* Stats Bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ color: '#22c55e', fontWeight: 700, fontSize: '16px' }}>$847M</div>
@@ -940,7 +1122,6 @@ export default function AgentDiscovery() {
             </div>
           </div>
 
-          {/* Connect */}
           <button style={{
             display: 'flex',
             alignItems: 'center',
@@ -959,7 +1140,7 @@ export default function AgentDiscovery() {
         </div>
       </header>
 
-      {/* Filters Bar */}
+      {/* Filters */}
       <div style={{
         borderBottom: '1px solid rgba(255,255,255,0.06)',
         backgroundColor: 'rgba(255,255,255,0.02)',
@@ -972,7 +1153,6 @@ export default function AgentDiscovery() {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          {/* Feed Tabs */}
           <div style={{ display: 'flex', gap: '4px' }}>
             {FEEDS.map((feed) => (
               <button
@@ -995,7 +1175,6 @@ export default function AgentDiscovery() {
             ))}
           </div>
 
-          {/* Chain Filter */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {CHAINS.map((chain) => (
               <button
@@ -1019,7 +1198,7 @@ export default function AgentDiscovery() {
         </div>
       </div>
 
-      {/* Main Table */}
+      {/* Table */}
       <main style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 24px 48px' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
@@ -1044,42 +1223,11 @@ export default function AgentDiscovery() {
                   key={agent.id} 
                   agent={agent} 
                   index={index} 
-                  onClick={() => setSelectedAgent(agent)}
+                  onClick={() => onSelectAgent(agent)}
                 />
               ))}
             </tbody>
           </table>
-        </div>
-
-        {/* Trust Score Legend */}
-        <div style={{
-          marginTop: '32px',
-          padding: '16px 20px',
-          backgroundColor: 'rgba(255,255,255,0.02)',
-          borderRadius: '12px',
-          border: '1px solid rgba(255,255,255,0.06)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
-            <span style={{ color: '#6b7280', fontSize: '13px', fontWeight: 500 }}>Trust Score:</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }}></span>
-              <span style={{ color: '#9ca3af', fontSize: '12px' }}>90+ Safe</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#eab308' }}></span>
-              <span style={{ color: '#9ca3af', fontSize: '12px' }}>70-89 Caution</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }}></span>
-              <span style={{ color: '#9ca3af', fontSize: '12px' }}>&lt;70 High Risk</span>
-            </div>
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ padding: '2px 6px', backgroundColor: 'rgba(34,197,94,0.15)', color: '#4ade80', fontSize: '10px', borderRadius: '4px' }}>TEE</span>
-              <span style={{ color: '#6b7280', fontSize: '11px' }}>= TEE Verified</span>
-              <span style={{ padding: '2px 6px', backgroundColor: 'rgba(34,197,94,0.15)', color: '#4ade80', fontSize: '10px', borderRadius: '4px' }}>Crypto</span>
-              <span style={{ color: '#6b7280', fontSize: '11px' }}>= Cryptographic Proof</span>
-            </div>
-          </div>
         </div>
       </main>
 
@@ -1111,4 +1259,15 @@ export default function AgentDiscovery() {
       </footer>
     </div>
   );
+}
+
+// ========== MAIN APP ==========
+export default function AgentDiscovery() {
+  const [selectedAgent, setSelectedAgent] = useState<typeof MOCK_AGENTS[0] | null>(null);
+
+  if (selectedAgent) {
+    return <AgentPage agent={selectedAgent} onBack={() => setSelectedAgent(null)} />;
+  }
+
+  return <AgentList onSelectAgent={setSelectedAgent} />;
 }
