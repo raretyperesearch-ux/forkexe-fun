@@ -401,7 +401,7 @@ function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
 }
 
 // ========== AGENT DETAIL PAGE ==========
-function AgentPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: () => void }) {
+function AgentPage({ agent, onBack, allAgents, onSelectAgent }: { agent: typeof MOCK_AGENTS[0]; onBack: () => void; allAgents: typeof MOCK_AGENTS; onSelectAgent: (agent: typeof MOCK_AGENTS[0]) => void }) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('transactions');
   const transactions = generateMockTransactions(agent);
@@ -428,6 +428,54 @@ function AgentPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
     );
   };
 
+  // Mini trending banner for detail page
+  const TrendingMini = () => {
+    const trendingAgents = allAgents.filter(a => a.trending && a.id !== agent.id).slice(0, 5);
+    return (
+      <div style={{
+        backgroundColor: '#000',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        padding: '6px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+        overflow: 'auto',
+      }}>
+        {trendingAgents.map((a, index) => {
+          const isPositive = a.priceChange24h >= 0;
+          return (
+            <button
+              key={a.id}
+              onClick={() => onSelectAgent(a)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span style={{ color: '#6b7280', fontSize: '11px', fontWeight: 600 }}>#{index + 1}</span>
+              <span style={{ fontSize: '14px' }}>{a.avatar}</span>
+              <span style={{ color: 'white', fontWeight: 600, fontSize: '12px' }}>{a.name}</span>
+              <span style={{ 
+                color: isPositive ? '#22c55e' : '#ef4444',
+                fontSize: '11px',
+                fontWeight: 600,
+              }}>
+                {isPositive ? '↑' : '↓'}{Math.abs(a.priceChange24h).toFixed(0)}%
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -435,6 +483,8 @@ function AgentPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
       color: 'white',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     }}>
+      {/* Trending Mini Banner */}
+      <TrendingMini />
       {/* Top Bar */}
       <header style={{
         borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -532,7 +582,7 @@ function AgentPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
         </div>
       </header>
 
-      <div style={{ display: 'flex', height: 'calc(100vh - 56px)' }}>
+      <div style={{ display: 'flex', height: 'calc(100vh - 90px)' }}>
         {/* Left: Chart Area */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
           {/* Chart */}
@@ -1033,6 +1083,79 @@ function AgentRow({ agent, index, onClick }: { agent: typeof MOCK_AGENTS[0]; ind
   );
 }
 
+// Trending Banner Component
+function TrendingBanner({ agents, onSelect }: { agents: typeof MOCK_AGENTS; onSelect: (agent: typeof MOCK_AGENTS[0]) => void }) {
+  const trendingAgents = agents.filter(a => a.trending).slice(0, 6);
+  
+  return (
+    <div style={{
+      backgroundColor: '#000',
+      borderBottom: '1px solid rgba(255,255,255,0.08)',
+      padding: '8px 0',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '24px',
+        maxWidth: '1600px',
+        margin: '0 auto',
+        padding: '0 24px',
+      }}>
+        {trendingAgents.map((agent, index) => {
+          const isPositive = agent.priceChange24h >= 0;
+          return (
+            <button
+              key={agent.id}
+              onClick={() => onSelect(agent)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+            >
+              <span style={{ 
+                color: '#6b7280', 
+                fontSize: '12px',
+                fontWeight: 600,
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                padding: '2px 6px',
+                borderRadius: '4px',
+              }}>
+                #{index + 1}
+              </span>
+              <span style={{ fontSize: '18px' }}>{agent.avatar}</span>
+              <span style={{ color: 'white', fontWeight: 600, fontSize: '13px' }}>{agent.name}</span>
+              <span style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px',
+                padding: '2px 6px',
+                backgroundColor: isPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+                color: isPositive ? '#22c55e' : '#ef4444',
+                fontSize: '12px',
+                fontWeight: 600,
+                borderRadius: '4px',
+              }}>
+                {isPositive ? '↑' : '↓'}{Math.abs(agent.priceChange24h).toFixed(1)}%
+              </span>
+              <span style={{ color: '#6b7280', fontSize: '11px' }}>{formatNumber(agent.marketCap)}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function AgentList({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AGENTS[0]) => void }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFeed, setActiveFeed] = useState('trending');
@@ -1059,6 +1182,9 @@ function AgentList({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AGENT
       color: 'white',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     }}>
+      {/* Trending Banner */}
+      <TrendingBanner agents={MOCK_AGENTS} onSelect={onSelectAgent} />
+
       {/* Header */}
       <header style={{
         position: 'sticky',
@@ -1266,7 +1392,14 @@ export default function AgentDiscovery() {
   const [selectedAgent, setSelectedAgent] = useState<typeof MOCK_AGENTS[0] | null>(null);
 
   if (selectedAgent) {
-    return <AgentPage agent={selectedAgent} onBack={() => setSelectedAgent(null)} />;
+    return (
+      <AgentPage 
+        agent={selectedAgent} 
+        onBack={() => setSelectedAgent(null)} 
+        allAgents={MOCK_AGENTS}
+        onSelectAgent={setSelectedAgent}
+      />
+    );
   }
 
   return <AgentList onSelectAgent={setSelectedAgent} />;
