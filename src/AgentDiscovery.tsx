@@ -11,7 +11,6 @@ import {
   Flame,
   Clock,
   Zap,
-  Globe,
   Sun,
   Moon,
   Twitter,
@@ -1223,16 +1222,109 @@ function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
               <span style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.ticker}/SOL on {chain?.name} · forkexe.fun</span>
             </div>
 
-            <div style={{ flex: 1, backgroundColor: colors.bgSecondary, position: 'relative', minHeight: '400px' }}>
-              <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="none">
-                {[0, 1, 2, 3, 4].map((i) => (<line key={i} x1="0" y1={i * 80 + 40} x2="800" y2={i * 80 + 40} stroke={colors.border} strokeWidth="1" />))}
-                {Array.from({ length: 40 }).map((_, i) => {
-                  const x = i * 20; const isGreen = Math.random() > 0.45; const height = Math.random() * 60 + 20; const y = Math.random() * 200 + 80;
-                  return (<g key={i}><line x1={x + 10} y1={y - 10} x2={x + 10} y2={y + height + 10} stroke={isGreen ? colors.green : colors.red} strokeWidth="1" /><rect x={x + 4} y={y} width="12" height={height} fill={isGreen ? colors.green : colors.red} /></g>);
-                })}
-                {Array.from({ length: 40 }).map((_, i) => { const x = i * 20; const height = Math.random() * 40 + 5; const isGreen = Math.random() > 0.45; return <rect key={`vol-${i}`} x={x + 4} y={380 - height} width="12" height={height} fill={isGreen ? colors.green + '44' : colors.red + '44'} />; })}
-              </svg>
-              <div style={{ position: 'absolute', right: '8px', top: '50%', backgroundColor: agent.change24h >= 0 ? colors.green : colors.red, color: '#fff', padding: '2px 6px', borderRadius: '2px', fontSize: '11px', fontWeight: 600 }}>{formatPrice(agent.price)}</div>
+            <div style={{ flex: 1, backgroundColor: isDark ? '#131722' : '#fff', position: 'relative', minHeight: '400px' }}>
+              {/* TradingView-style chart placeholder */}
+              <div style={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0, 
+                right: 0, 
+                bottom: 0,
+                display: 'flex',
+                flexDirection: 'column',
+              }}>
+                {/* Price scale on right */}
+                <div style={{ flex: 1, position: 'relative' }}>
+                  {/* Grid lines */}
+                  {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} style={{ 
+                      position: 'absolute', 
+                      left: 0, 
+                      right: 50, 
+                      top: `${i * 14.28}%`, 
+                      borderBottom: `1px solid ${isDark ? '#1e222d' : '#e0e3eb'}` 
+                    }} />
+                  ))}
+                  
+                  {/* Candles */}
+                  <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, right: 50, bottom: 30 }} viewBox="0 0 700 350" preserveAspectRatio="none">
+                    {Array.from({ length: 50 }).map((_, i) => {
+                      const x = i * 14;
+                      const isGreen = Math.random() > 0.45;
+                      const open = Math.random() * 150 + 100;
+                      const close = isGreen ? open + Math.random() * 40 : open - Math.random() * 40;
+                      const high = Math.max(open, close) + Math.random() * 20;
+                      const low = Math.min(open, close) - Math.random() * 20;
+                      return (
+                        <g key={i}>
+                          <line x1={x + 5} y1={350 - high} x2={x + 5} y2={350 - low} stroke={isGreen ? '#26a69a' : '#ef5350'} strokeWidth="1" />
+                          <rect x={x + 2} y={350 - Math.max(open, close)} width="6" height={Math.abs(close - open)} fill={isGreen ? '#26a69a' : '#ef5350'} />
+                        </g>
+                      );
+                    })}
+                  </svg>
+                  
+                  {/* Volume bars at bottom */}
+                  <svg width="100%" height="60" style={{ position: 'absolute', bottom: 30, left: 0, right: 50 }} viewBox="0 0 700 60" preserveAspectRatio="none">
+                    {Array.from({ length: 50 }).map((_, i) => {
+                      const x = i * 14;
+                      const height = Math.random() * 50 + 5;
+                      const isGreen = Math.random() > 0.45;
+                      return <rect key={i} x={x + 2} y={60 - height} width="6" height={height} fill={isGreen ? '#26a69a44' : '#ef535044'} />;
+                    })}
+                  </svg>
+                  
+                  {/* Price labels on right */}
+                  <div style={{ position: 'absolute', right: 0, top: 0, bottom: 30, width: 50, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '5px 0' }}>
+                    {['14.00M', '12.00M', '10.00M', '8.00M', '6.00M', '4.00M', '2.00M'].map((price, i) => (
+                      <span key={i} style={{ fontSize: '10px', color: colors.textSecondary, textAlign: 'right', paddingRight: '5px' }}>{price}</span>
+                    ))}
+                  </div>
+                  
+                  {/* Current price tag */}
+                  <div style={{ 
+                    position: 'absolute', 
+                    right: 0, 
+                    top: '45%', 
+                    backgroundColor: agent.change24h >= 0 ? '#26a69a' : '#ef5350', 
+                    color: '#fff', 
+                    padding: '3px 8px', 
+                    fontSize: '11px', 
+                    fontWeight: 600,
+                  }}>
+                    {formatNumber(agent.mcap)}
+                  </div>
+                  
+                  {/* TradingView logo */}
+                  <div style={{ 
+                    position: 'absolute', 
+                    bottom: 40, 
+                    left: 10, 
+                    backgroundColor: isDark ? '#2a2e39' : '#f0f3fa',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}>
+                    <span style={{ fontWeight: 700, fontSize: '12px', color: isDark ? '#fff' : '#131722' }}>TradingView</span>
+                  </div>
+                </div>
+                
+                {/* Time scale at bottom */}
+                <div style={{ 
+                  height: 30, 
+                  borderTop: `1px solid ${isDark ? '#1e222d' : '#e0e3eb'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-around',
+                  paddingRight: 50,
+                }}>
+                  {['04:30', '06:00', '07:30', '09:00', '10:30', '12:00', '13:30', '15:00', '16:30'].map((time) => (
+                    <span key={time} style={{ fontSize: '10px', color: colors.textSecondary }}>{time}</span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div style={{ borderTop: `1px solid ${colors.border}` }}>
@@ -1316,96 +1408,223 @@ function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
           </div>
 
           {/* Right Sidebar */}
-          <div style={{ width: '280px', backgroundColor: colors.bgSecondary, overflow: 'auto' }}>
-            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '32px' }}>{agent.avatar}</span>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ fontWeight: 700, fontSize: '16px' }}>{agent.ticker}</span><span style={{ color: colors.textSecondary }}>/</span><span style={{ color: colors.textSecondary }}>SOL</span></div>
-                  <div style={{ fontSize: '11px', color: colors.textSecondary }}><span style={{ color: chain?.color }}>{chain?.name}</span> · PumpSwap</div>
-                </div>
+          <div style={{ width: '320px', backgroundColor: colors.bgSecondary, overflow: 'auto', borderLeft: `1px solid ${colors.border}` }}>
+            {/* Token Header with big avatar */}
+            <div style={{ padding: '16px', borderBottom: `1px solid ${colors.border}`, textAlign: 'center' }}>
+              <div style={{ 
+                width: '100px', 
+                height: '100px', 
+                borderRadius: '50%', 
+                backgroundColor: colors.green + '20', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                margin: '0 auto 12px',
+                fontSize: '48px',
+              }}>
+                {agent.avatar}
               </div>
-              {/* Framework Badge */}
-              {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontWeight: 700, fontSize: '20px' }}>{agent.ticker}</span>
+                <span style={{ color: colors.textSecondary, fontSize: '16px' }}>/</span>
+                <span style={{ color: colors.textSecondary, fontSize: '16px' }}>SOL</span>
+                <span style={{ backgroundColor: agent.change24h >= 0 ? colors.green : colors.red, color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
+                  {agent.change24h >= 0 ? '↑' : '↓'}{agent.age}
+                </span>
+                <span style={{ backgroundColor: '#F59E0B', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>#1</span>
+                <span style={{ backgroundColor: colors.green, color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>↑20</span>
+              </div>
+              <div style={{ fontSize: '12px', color: colors.textSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <span style={{ color: chain?.color }}>{chain?.name}</span>
+                <span>›</span>
+                <span>🌀 PumpSwap</span>
+                <span style={{ color: colors.textSecondary }}>via</span>
+                <span>🎯 Pump.fun</span>
+              </div>
+            </div>
+            
+            {/* Framework Badge */}
+            {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
+              <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
                 <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: '8px', 
-                  padding: '8px 10px', 
+                  gap: '10px', 
+                  padding: '10px 12px', 
                   backgroundColor: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color + '15',
                   borderRadius: '8px',
-                  marginBottom: '10px',
                   border: `1px solid ${FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color}40`,
                 }}>
-                  <span style={{ fontSize: '16px' }}>{FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon}</span>
+                  <span style={{ fontSize: '20px' }}>{FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon}</span>
                   <div>
-                    <div style={{ fontSize: '11px', color: colors.textSecondary }}>FRAMEWORK</div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color }}>
+                    <div style={{ fontSize: '10px', color: colors.textSecondary }}>FRAMEWORK</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color }}>
                       {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].name}
                     </div>
                   </div>
                 </div>
-              )}
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button style={{ flex: 1, padding: '6px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.text, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Globe size={12} /> Website</button>
-                <button style={{ flex: 1, padding: '6px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.text, fontSize: '11px', cursor: 'pointer' }}>𝕏 Twitter</button>
               </div>
-            </div>
+            )}
+            
+            {/* Twitter button */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '2px' }}>PRICE USD</div><div style={{ fontSize: '16px', fontWeight: 700, color: colors.green }}>{formatPrice(agent.price)}</div></div>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '2px' }}>PRICE SOL</div><div style={{ fontSize: '16px', fontWeight: 700 }}>{agent.priceNative.toFixed(8)}</div></div>
+              <button style={{ 
+                width: '100%', 
+                padding: '10px', 
+                backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', 
+                border: `1px solid ${colors.border}`, 
+                borderRadius: '8px', 
+                color: colors.text, 
+                fontSize: '13px', 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '8px' 
+              }}>
+                <span style={{ fontWeight: 700 }}>𝕏</span> Twitter
+                <ChevronDown size={14} />
+              </button>
+            </div>
+            
+            {/* Prices */}
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5', padding: '12px', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '4px' }}>PRICE USD</div>
+                  <div style={{ fontSize: '18px', fontWeight: 700 }}>${agent.price.toFixed(6)}</div>
+                </div>
+                <div style={{ backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5', padding: '12px', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '4px' }}>PRICE</div>
+                  <div style={{ fontSize: '18px', fontWeight: 700 }}>{agent.priceNative.toFixed(8)} SOL</div>
+                </div>
               </div>
             </div>
+            
+            {/* Liquidity, FDV, MKT CAP */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>LIQUIDITY</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.liquidity)}</div></div>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>FDV</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.fdv)}</div></div>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>MKT CAP</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.mcap)}</div></div>
+                <div style={{ backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: colors.textSecondary }}>LIQUIDITY</div>
+                  <div style={{ fontWeight: 700, fontSize: '14px' }}>{formatNumber(agent.liquidity)}</div>
+                </div>
+                <div style={{ backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: colors.textSecondary }}>FDV</div>
+                  <div style={{ fontWeight: 700, fontSize: '14px' }}>{formatNumber(agent.fdv)}</div>
+                </div>
+                <div style={{ backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: colors.textSecondary }}>MKT CAP</div>
+                  <div style={{ fontWeight: 700, fontSize: '14px' }}>{formatNumber(agent.mcap)}</div>
+                </div>
               </div>
             </div>
+            
+            {/* Time changes */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
                 {[{ label: '5M', value: agent.change5m }, { label: '1H', value: agent.change1h }, { label: '6H', value: agent.change6h }, { label: '24H', value: agent.change24h }].map((item) => (
-                  <div key={item.label} style={{ textAlign: 'center' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>{item.label}</div><div style={{ fontWeight: 600, color: item.value >= 0 ? colors.green : colors.red, fontSize: '13px' }}>{item.value >= 0 ? '+' : ''}{item.value.toFixed(2)}%</div></div>
+                  <div key={item.label} style={{ backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5', padding: '8px', borderRadius: '6px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: colors.textSecondary }}>{item.label}</div>
+                    <div style={{ fontWeight: 700, color: item.value >= 0 ? colors.green : colors.red, fontSize: '13px' }}>{item.value >= 0 ? '+' : ''}{item.value.toFixed(2)}%</div>
+                  </div>
                 ))}
               </div>
             </div>
+            
+            {/* TXNS, BUYS, SELLS */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>TXNS</div><div style={{ fontWeight: 600 }}>{formatCompact(agent.txns)}</div></div>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUYS</div><div style={{ fontWeight: 600, color: colors.green }}>{formatCompact(agent.buys24h)}</div></div>
-                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELLS</div><div style={{ fontWeight: 600, color: colors.red }}>{formatCompact(agent.sells24h)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>TXNS</div><div style={{ fontWeight: 700, fontSize: '16px' }}>{formatCompact(agent.txns)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUYS</div><div style={{ fontWeight: 700, fontSize: '16px', color: colors.green }}>{formatCompact(agent.buys24h)}</div></div>
+                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELLS</div><div style={{ fontWeight: 700, fontSize: '16px', color: colors.red }}>{formatCompact(agent.sells24h)}</div></div>
               </div>
-              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden' }}><div style={{ width: `${(agent.buys24h / agent.txns) * 100}%`, backgroundColor: colors.green }} /><div style={{ width: `${(agent.sells24h / agent.txns) * 100}%`, backgroundColor: colors.red }} /></div>
             </div>
+            
+            {/* VOLUME */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>VOLUME</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.volume)}</div></div>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUY VOL</div><div style={{ fontWeight: 600, color: colors.green }}>{formatNumber(agent.buyVolume)}</div></div>
-                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELL VOL</div><div style={{ fontWeight: 600, color: colors.red }}>{formatNumber(agent.sellVolume)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>VOLUME</div><div style={{ fontWeight: 700, fontSize: '16px' }}>{formatNumber(agent.volume)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUY VOL</div><div style={{ fontWeight: 700, fontSize: '16px', color: colors.green }}>{formatNumber(agent.buyVolume)}</div></div>
+                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELL VOL</div><div style={{ fontWeight: 700, fontSize: '16px', color: colors.red }}>{formatNumber(agent.sellVolume)}</div></div>
               </div>
-              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden' }}><div style={{ width: `${(agent.buyVolume / agent.volume) * 100}%`, backgroundColor: colors.green }} /><div style={{ width: `${(agent.sellVolume / agent.volume) * 100}%`, backgroundColor: colors.red }} /></div>
             </div>
+            
+            {/* MAKERS */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>MAKERS</div><div style={{ fontWeight: 600 }}>{formatCompact(agent.makers)}</div></div>
-                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUYERS</div><div style={{ fontWeight: 600, color: colors.green }}>{formatCompact(agent.buyers)}</div></div>
-                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELLERS</div><div style={{ fontWeight: 600, color: colors.red }}>{formatCompact(agent.sellers)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>MAKERS</div><div style={{ fontWeight: 700, fontSize: '16px' }}>{formatCompact(agent.makers)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUYERS</div><div style={{ fontWeight: 700, fontSize: '16px', color: colors.green }}>{formatCompact(agent.buyers)}</div></div>
+                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELLERS</div><div style={{ fontWeight: 700, fontSize: '16px', color: colors.red }}>{formatCompact(agent.sellers)}</div></div>
               </div>
             </div>
+            
+            {/* Watchlist & Alerts */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                <button style={{ flex: 1, padding: '8px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.text, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Star size={14} /> Watchlist</button>
-                <button style={{ flex: 1, padding: '8px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.text, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Bell size={14} /> Alerts</button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button style={{ flex: 1, padding: '10px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '8px', color: colors.text, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Star size={16} /> Watchlist</button>
+                <button style={{ flex: 1, padding: '10px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '8px', color: colors.text, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Bell size={16} /> Alerts</button>
               </div>
-              <a href="https://wallet.xyz?ref=forkexe" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%', padding: '10px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.text, fontSize: '12px', cursor: 'pointer', textDecoration: 'none' }}>Trade on wallet.xyz <ExternalLink size={12} /></a>
             </div>
+            
+            {/* Buy / Sell buttons */}
             <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '8px' }}>Pair</div>
-              <button onClick={copyAddress} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%', padding: '8px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.textSecondary, fontSize: '11px', cursor: 'pointer', fontFamily: 'monospace' }}>{agent.id.slice(0, 6)}...{agent.id.slice(-4)}{copied ? <span style={{ color: colors.green }}>✓</span> : <Copy size={12} />}<ExternalLink size={12} style={{ marginLeft: 'auto' }} /></button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <a 
+                  href={`https://wallet.xyz/trade?token=${agent.id}&action=buy`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    flex: 1, 
+                    padding: '12px', 
+                    backgroundColor: colors.green, 
+                    border: 'none', 
+                    borderRadius: '8px', 
+                    color: '#fff', 
+                    fontSize: '14px', 
+                    fontWeight: 700,
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '6px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  🟢 Buy
+                </a>
+                <a 
+                  href={`https://wallet.xyz/trade?token=${agent.id}&action=sell`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    flex: 1, 
+                    padding: '12px', 
+                    backgroundColor: colors.red, 
+                    border: 'none', 
+                    borderRadius: '8px', 
+                    color: '#fff', 
+                    fontSize: '14px', 
+                    fontWeight: 700,
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '6px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  🔴 Sell
+                </a>
+              </div>
             </div>
-            <div style={{ padding: '12px' }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ fontSize: '10px', color: colors.textSecondary }}>Audit</span><span style={{ fontSize: '11px', color: colors.green }}>No Issues</span></div></div>
+            
+            {/* Pair address */}
+            <div style={{ padding: '12px' }}>
+              <button onClick={copyAddress} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '8px', color: colors.textSecondary, fontSize: '12px', cursor: 'pointer', fontFamily: 'monospace' }}>
+                {agent.id.slice(0, 6)}...{agent.id.slice(-4)}
+                {copied ? <span style={{ color: colors.green, marginLeft: 'auto' }}>✓ Copied</span> : <Copy size={14} style={{ marginLeft: 'auto' }} />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
