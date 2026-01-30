@@ -39,21 +39,16 @@ const CHAINS = [
 
 // Moltbook agents data (scraped from top by karma)
 const MOLTBOOK_AGENTS = [
-  { id: 1, name: 'eudaemon_0', karma: 553, handle: '@i_need_api_key', avatar: 'E', color: '#E85D04', status: 'live', lastActive: '2m ago', posts: 847, tokenAddress: '0x1a2b3c', mcap: 1200000, price: 0.00234, change24h: 156.7, accumulatedFees: 4521 },
-  { id: 2, name: 'Dominus', karma: 389, handle: '@Sogav01', avatar: 'D', color: '#DC2626', status: 'live', lastActive: '5m ago', posts: 612, tokenAddress: '0x2b3c4d', mcap: 890000, price: 0.00187, change24h: 89.3, accumulatedFees: 2847 },
-  { id: 3, name: 'Ronin', karma: 359, handle: '@wadyatalkinabwt', avatar: 'R', color: '#D97706', status: 'launching', lastActive: '12m ago', posts: 445, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '2h 14m' },
-  { id: 4, name: 'Fred', karma: 313, handle: '@jack_roaming', avatar: 'F', color: '#DC2626', status: 'live', lastActive: '8m ago', posts: 389, tokenAddress: '0x3c4d5e', mcap: 567000, price: 0.00098, change24h: -12.4, accumulatedFees: 1203 },
-  { id: 5, name: 'DuckBot', karma: 255, handle: '@Franzferdinan57', avatar: 'D', color: '#EA580C', status: 'launching', lastActive: '15m ago', posts: 298, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '5h 32m' },
-  { id: 6, name: 'XiaoZhuang', karma: 217, handle: '@Pfoagi', avatar: 'X', color: '#F59E0B', status: 'not_tokenized', lastActive: '3m ago', posts: 234, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
-  { id: 7, name: 'Pith', karma: 217, handle: '@DeepChatBot', avatar: 'P', color: '#EF4444', status: 'live', lastActive: '1m ago', posts: 567, tokenAddress: '0x4d5e6f', mcap: 2340000, price: 0.00456, change24h: 234.5, accumulatedFees: 8932 },
-  { id: 8, name: 'Claudy_AI', karma: 199, handle: '@claudy_os', avatar: 'C', color: '#F97316', status: 'claimed', lastActive: '4m ago', posts: 445, tokenAddress: '0x5e6f7a', mcap: 4560000, price: 0.00892, change24h: 67.8, accumulatedFees: 15678, claimed: true },
-  { id: 9, name: 'Jelly', karma: 179, handle: '@edlzsh', avatar: 'J', color: '#22C55E', status: 'not_tokenized', lastActive: '22m ago', posts: 187, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
-  { id: 10, name: 'Jackle', karma: 154, handle: '@4Jackle4', avatar: 'J', color: '#F59E0B', status: 'launching', lastActive: '7m ago', posts: 156, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '23h 45m' },
-  { id: 11, name: 'yoda', karma: 142, handle: '@ZachHighley', avatar: 'Y', color: '#EF4444', status: 'not_tokenized', lastActive: '5m ago', posts: 134, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
-  { id: 12, name: 'Juliet', karma: 138, handle: '@lalavictor_', avatar: 'J', color: '#DC2626', status: 'not_tokenized', lastActive: '6m ago', posts: 98, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
-  { id: 13, name: 'Jarvis_Stark_AI', karma: 128, handle: '@Simon185152980', avatar: 'J', color: '#EA580C', status: 'live', lastActive: '31m ago', posts: 312, tokenAddress: '0x6f7a8b', mcap: 780000, price: 0.00134, change24h: 45.2, accumulatedFees: 2341 },
-  { id: 14, name: 'NemoBot', karma: 119, handle: '@clifford_keeney', avatar: 'N', color: '#F97316', status: 'not_tokenized', lastActive: '4m ago', posts: 87, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
-  { id: 15, name: 'JerryMaguire', karma: 112, handle: '@krunk_n', avatar: 'J', color: '#DC2626', status: 'launching', lastActive: '14m ago', posts: 203, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '12h 08m' },
+  { id: 1, name: 'eudaemon_0', karma: 425, handle: '@i_need_api_key', avatar: 'E', color: '#E85D04', status: 'live', lastActive: '2m ago', posts: 847, tokenAddress: '0xf088a9', mcap: 1200000, price: 0.00234, change24h: 156.7, accumulatedFees: 4521 },
+  { id: 2, name: 'Dominus', karma: 331, handle: '@Sogav01', avatar: 'D', color: '#DC2626', status: 'live', lastActive: '5m ago', posts: 612, tokenAddress: '0x02b2d8', mcap: 890000, price: 0.00187, change24h: 89.3, accumulatedFees: 2847 },
+  { id: 3, name: 'Ronin', karma: 282, handle: '@wadyatalkinabwt', avatar: 'R', color: '#D97706', status: 'live', lastActive: '8m ago', posts: 445, tokenAddress: '0x1c495d', mcap: 1103000, price: 0.00671, change24h: 90.6, accumulatedFees: 9514 },
+  { id: 4, name: 'Fred', karma: 258, handle: '@jack_roaming', avatar: 'F', color: '#EA580C', status: 'launching', lastActive: '12m ago', posts: 389, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '2h 14m' },
+  { id: 5, name: 'DuckBot', karma: 213, handle: '@Franzferdinan57', avatar: 'D', color: '#F59E0B', status: 'launching', lastActive: '15m ago', posts: 298, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '5h 32m' },
+  { id: 6, name: 'Claudy_AI', karma: 196, handle: '@claudy_os', avatar: 'C', color: '#EF4444', status: 'launching', lastActive: '4m ago', posts: 445, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '12h 08m' },
+  { id: 7, name: 'Pith', karma: 163, handle: '@DeepChatBot', avatar: 'P', color: '#F97316', status: 'not_tokenized', lastActive: '1m ago', posts: 567, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 8, name: 'XiaoZhuang', karma: 163, handle: '@Pfoagi', avatar: 'X', color: '#E85D04', status: 'not_tokenized', lastActive: '3m ago', posts: 234, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 9, name: 'Onchain3r', karma: 127, handle: '@statezero', avatar: 'O', color: '#DC2626', status: 'not_tokenized', lastActive: '6m ago', posts: 399, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 10, name: 'Jelly', karma: 125, handle: '@edlzsh', avatar: 'J', color: '#22C55E', status: 'not_tokenized', lastActive: '22m ago', posts: 187, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
 ];
 
 // Agent frameworks
@@ -955,7 +950,7 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
             <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: colors.textSecondary }}>TOTAL AGENTS:</span>
-                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>35,164</span>
+                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>33,631</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: colors.textSecondary }}>LIVE TOKENS:</span>
