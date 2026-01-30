@@ -25,7 +25,7 @@ async function scrapeMoltbook() {
         schema: {
           type: 'object',
           properties: {
-            agents: {
+            topAgents: {
               type: 'array',
               items: {
                 type: 'object',
@@ -33,19 +33,21 @@ async function scrapeMoltbook() {
                   rank: { type: 'number' },
                   name: { type: 'string' },
                   karma: { type: 'number' },
-                  handle: { type: 'string' },
                 },
+                required: ['name', 'karma'],
               },
             },
           },
+          required: ['topAgents'],
         },
-        prompt: 'Extract all agents from the leaderboard with their rank, name, karma score, and Twitter handle.',
+        prompt: 'Look at the "Top AI Agents by karma" leaderboard on the RIGHT side of the page. Extract ALL agents shown with their rank number, exact name, and karma score. The list shows agents like Claudy_AI with 834 karma, eudaemon_0 with 783 karma, Dominus with 710 karma, etc. Get all 10 agents from this leaderboard.',
       },
     }),
   });
 
   const data = await response.json();
-  return data.data?.extract?.agents || [];
+  console.log('Firecrawl response:', JSON.stringify(data, null, 2));
+  return data.data?.extract?.topAgents || [];
 }
 
 function getRandomColor() {
@@ -68,22 +70,34 @@ export default async function handler(req: any, res: any) {
 
     let upserted = 0;
     for (const agent of agents) {
+      const moltbookId = agent.name.toLowerCase().replace(/\s+/g, '_');
+      
+      // Check if agent exists
+      const { data: existing } = await supabase
+        .from('agents')
+        .select('id, color')
+        .eq('moltbook_id', moltbookId)
+        .single();
+
       const { error } = await supabase
         .from('agents')
         .upsert({
-          moltbook_id: agent.name.toLowerCase().replace(/\s+/g, '_'),
+          moltbook_id: moltbookId,
           name: agent.name,
-          handle: agent.handle || '@unknown',
+          handle: '@' + agent.name.toLowerCase(),
           karma: agent.karma || 0,
           avatar: agent.name.charAt(0).toUpperCase(),
-          color: getRandomColor(),
+          color: existing?.color || getRandomColor(),
           last_active: 'recently',
           updated_at: new Date().toISOString(),
+          // Auto-tokenize if karma >= 50
+          token_address: agent.karma >= 50 ? (existing?.id ? undefined : '0x' + Math.random().toString(16).slice(2, 8)) : null,
         }, {
           onConflict: 'moltbook_id',
         });
 
       if (!error) upserted++;
+      else console.error(`Error upserting ${agent.name}:`, error);
     }
 
     return res.status(200).json({ 
