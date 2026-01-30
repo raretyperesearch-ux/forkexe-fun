@@ -12,11 +12,9 @@ import {
   Flame,
   Rocket,
   Clock,
-  BarChart2,
   Users,
   Zap,
   Globe,
-  X,
 } from 'lucide-react';
 
 // Chain icons as simple colored circles with letters
@@ -612,8 +610,7 @@ const styles = {
 function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AGENTS[0]) => void }) {
   const [activeChain, setActiveChain] = useState<string | null>(null);
   const [activePeriod, setActivePeriod] = useState('24h');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'trending' | 'gainers' | 'new' | 'volume'>('trending');
+  const [searchQuery] = useState('');
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -906,7 +903,7 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
 // =====================
 // TOKEN DETAIL PAGE
 // =====================
-function TokenPage({ agent, onBack, allAgents, onSelectAgent }: { 
+function TokenPage({ agent, onBack, allAgents: _allAgents, onSelectAgent: _onSelectAgent }: { 
   agent: typeof MOCK_AGENTS[0]; 
   onBack: () => void;
   allAgents: typeof MOCK_AGENTS;
