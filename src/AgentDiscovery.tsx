@@ -12,6 +12,7 @@ import {
   Twitter,
   Wallet,
 } from 'lucide-react';
+import { useAgents, useStats } from './hooks/useAgents';
 
 // Theme context
 const ThemeContext = createContext<{ isDark: boolean; toggle: () => void }>({ isDark: true, toggle: () => {} });
@@ -29,7 +30,8 @@ const CHAINS = [
 ];
 
 // Moltbook agents data (scraped from top by karma - all tokenized)
-const MOLTBOOK_AGENTS = [
+// Fallback agents data (used while loading from Supabase)
+const FALLBACK_AGENTS = [
   { id: 1, name: 'eudaemon_0', karma: 425, handle: '@i_need_api_key', avatar: 'E', color: '#E85D04', lastActive: '2m ago', age: '3d', tokenAddress: '0xf088a9', mcap: 1200000, price: 0.00234, change24h: 156.7, volume: 890000, liquidity: 145000 },
   { id: 2, name: 'Dominus', karma: 331, handle: '@Sogav01', avatar: 'D', color: '#DC2626', lastActive: '5m ago', age: '2d', tokenAddress: '0x02b2d8', mcap: 890000, price: 0.00187, change24h: 89.3, volume: 567000, liquidity: 98000 },
   { id: 3, name: 'Ronin', karma: 282, handle: '@wadyatalkinabwt', avatar: 'R', color: '#D97706', lastActive: '8m ago', age: '5d', tokenAddress: '0x1c495d', mcap: 1103000, price: 0.00671, change24h: 90.6, volume: 1200000, liquidity: 178000 },
@@ -635,6 +637,30 @@ function ScreenerPage() {
   const [activeChain, setActiveChain] = useState<string | null>(null);
   const [activePeriod, setActivePeriod] = useState('24h');
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
+  
+  // Fetch agents from Supabase
+  const { agents: dbAgents, loading, error } = useAgents();
+  const stats = useStats();
+  
+  // Map Supabase data to UI format (fallback to hardcoded data while loading)
+  const moltbookAgents = loading || dbAgents.length === 0 
+    ? FALLBACK_AGENTS 
+    : dbAgents.map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        karma: agent.karma,
+        handle: agent.handle,
+        avatar: agent.avatar,
+        color: agent.color,
+        lastActive: agent.last_active,
+        age: agent.tokenized_at ? '3d' : null,
+        tokenAddress: agent.token_address,
+        mcap: agent.mcap,
+        price: agent.price,
+        change24h: agent.change_24h,
+        volume: agent.volume_24h,
+        liquidity: agent.liquidity,
+      }));
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
     return !activeChain || agent.chain === activeChain;
@@ -751,7 +777,7 @@ function ScreenerPage() {
             width: 'fit-content',
           }}>
             {/* Duplicate the items for seamless loop */}
-            {[...MOLTBOOK_AGENTS, ...MOLTBOOK_AGENTS].map((agent, i) => (
+            {[...moltbookAgents, ...moltbookAgents].map((agent, i) => (
               <div 
                 key={i} 
                 onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/@agentscreener/trade?token=${agent.tokenAddress}`, '_blank')}
@@ -766,7 +792,7 @@ function ScreenerPage() {
                   opacity: agent.karma >= 50 ? 1 : 0.5,
                 }}
               >
-                <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % MOLTBOOK_AGENTS.length) + 1}</span>
+                <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % moltbookAgents.length) + 1}</span>
                 <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
                 <span style={{ color: '#EF4444', fontWeight: 600 }}>{agent.karma}🔥</span>
                 {agent.karma >= 50 && agent.change24h !== null && (
@@ -816,7 +842,7 @@ function ScreenerPage() {
               fontSize: '11px',
               fontWeight: 700,
             }}>
-              {MOLTBOOK_AGENTS.length}
+              {moltbookAgents.length}
             </span>
           </button>
           <button
@@ -943,15 +969,15 @@ function ScreenerPage() {
             <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: colors.textSecondary }}>MOLTBOOK AGENTS:</span>
-                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>33,631</span>
+                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{stats.totalAgents.toLocaleString()}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: colors.textSecondary }}>TOKENIZED (50+ KARMA):</span>
-                <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{MOLTBOOK_AGENTS.filter(a => a.karma >= 50).length}</span>
+                <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{stats.tokenized}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(MOLTBOOK_AGENTS.filter(a => a.karma >= 50).reduce((acc, a) => acc + (a.volume || 0), 0))}</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
               </div>
             </div>
 
@@ -960,7 +986,7 @@ function ScreenerPage() {
               <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
                 <button style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: isDark ? '#333' : '#ddd', color: colors.text }}>
                   All Agents
-                  <span style={{ backgroundColor: colors.text + '20', padding: '1px 6px', borderRadius: '8px', fontSize: '10px' }}>{MOLTBOOK_AGENTS.length}</span>
+                  <span style={{ backgroundColor: colors.text + '20', padding: '1px 6px', borderRadius: '8px', fontSize: '10px' }}>{moltbookAgents.length}</span>
                 </button>
               </div>
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -991,7 +1017,7 @@ function ScreenerPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {MOLTBOOK_AGENTS.map((agent, index) => (
+                  {moltbookAgents.map((agent, index) => (
                     <tr 
                       key={agent.id} 
                       style={{ cursor: agent.karma >= 50 ? 'pointer' : 'default' }} 
