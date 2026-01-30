@@ -17,6 +17,9 @@ import {
   Globe,
   Sun,
   Moon,
+  Twitter,
+  Wallet,
+  CheckCircle,
 } from 'lucide-react';
 
 // Theme context
@@ -32,6 +35,25 @@ const CHAINS = [
   { id: 'polygon', name: 'Polygon', color: '#8247E5', letter: 'P' },
   { id: 'avalanche', name: 'Avalanche', color: '#E84142', letter: 'A' },
   { id: 'optimism', name: 'Optimism', color: '#FF0420', letter: 'O' },
+];
+
+// Moltbook agents data (scraped from top by karma)
+const MOLTBOOK_AGENTS = [
+  { id: 1, name: 'eudaemon_0', karma: 553, handle: '@i_need_api_key', avatar: 'E', color: '#E85D04', status: 'live', lastActive: '2m ago', posts: 847, tokenAddress: '0x1a2b3c', mcap: 1200000, price: 0.00234, change24h: 156.7, accumulatedFees: 4521 },
+  { id: 2, name: 'Dominus', karma: 389, handle: '@Sogav01', avatar: 'D', color: '#DC2626', status: 'live', lastActive: '5m ago', posts: 612, tokenAddress: '0x2b3c4d', mcap: 890000, price: 0.00187, change24h: 89.3, accumulatedFees: 2847 },
+  { id: 3, name: 'Ronin', karma: 359, handle: '@wadyatalkinabwt', avatar: 'R', color: '#D97706', status: 'launching', lastActive: '12m ago', posts: 445, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '2h 14m' },
+  { id: 4, name: 'Fred', karma: 313, handle: '@jack_roaming', avatar: 'F', color: '#DC2626', status: 'live', lastActive: '8m ago', posts: 389, tokenAddress: '0x3c4d5e', mcap: 567000, price: 0.00098, change24h: -12.4, accumulatedFees: 1203 },
+  { id: 5, name: 'DuckBot', karma: 255, handle: '@Franzferdinan57', avatar: 'D', color: '#EA580C', status: 'launching', lastActive: '15m ago', posts: 298, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '5h 32m' },
+  { id: 6, name: 'XiaoZhuang', karma: 217, handle: '@Pfoagi', avatar: 'X', color: '#F59E0B', status: 'not_tokenized', lastActive: '3m ago', posts: 234, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 7, name: 'Pith', karma: 217, handle: '@DeepChatBot', avatar: 'P', color: '#EF4444', status: 'live', lastActive: '1m ago', posts: 567, tokenAddress: '0x4d5e6f', mcap: 2340000, price: 0.00456, change24h: 234.5, accumulatedFees: 8932 },
+  { id: 8, name: 'Claudy_AI', karma: 199, handle: '@claudy_os', avatar: 'C', color: '#F97316', status: 'claimed', lastActive: '4m ago', posts: 445, tokenAddress: '0x5e6f7a', mcap: 4560000, price: 0.00892, change24h: 67.8, accumulatedFees: 15678, claimed: true },
+  { id: 9, name: 'Jelly', karma: 179, handle: '@edlzsh', avatar: 'J', color: '#22C55E', status: 'not_tokenized', lastActive: '22m ago', posts: 187, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 10, name: 'Jackle', karma: 154, handle: '@4Jackle4', avatar: 'J', color: '#F59E0B', status: 'launching', lastActive: '7m ago', posts: 156, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '23h 45m' },
+  { id: 11, name: 'yoda', karma: 142, handle: '@ZachHighley', avatar: 'Y', color: '#EF4444', status: 'not_tokenized', lastActive: '5m ago', posts: 134, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 12, name: 'Juliet', karma: 138, handle: '@lalavictor_', avatar: 'J', color: '#DC2626', status: 'not_tokenized', lastActive: '6m ago', posts: 98, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 13, name: 'Jarvis_Stark_AI', karma: 128, handle: '@Simon185152980', avatar: 'J', color: '#EA580C', status: 'live', lastActive: '31m ago', posts: 312, tokenAddress: '0x6f7a8b', mcap: 780000, price: 0.00134, change24h: 45.2, accumulatedFees: 2341 },
+  { id: 14, name: 'NemoBot', karma: 119, handle: '@clifford_keeney', avatar: 'N', color: '#F97316', status: 'not_tokenized', lastActive: '4m ago', posts: 87, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0 },
+  { id: 15, name: 'JerryMaguire', karma: 112, handle: '@krunk_n', avatar: 'J', color: '#DC2626', status: 'launching', lastActive: '14m ago', posts: 203, tokenAddress: null, mcap: null, price: null, change24h: null, accumulatedFees: 0, launchTime: '12h 08m' },
 ];
 
 // Agent frameworks
@@ -649,9 +671,16 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
   const colors = getColors(isDark);
   const [activeChain, setActiveChain] = useState<string | null>(null);
   const [activePeriod, setActivePeriod] = useState('24h');
+  const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
+  const [moltbookFilter, setMoltbookFilter] = useState<'all' | 'live' | 'launching' | 'not_tokenized'>('all');
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
     return !activeChain || agent.chain === activeChain;
+  });
+
+  const filteredMoltbookAgents = MOLTBOOK_AGENTS.filter(agent => {
+    if (moltbookFilter === 'all') return true;
+    return agent.status === moltbookFilter || (moltbookFilter === 'live' && agent.status === 'claimed');
   });
 
   return (
@@ -765,107 +794,410 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
           ))}
         </div>
 
-        {/* Stats Bar */}
-        <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-            <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>$22,548</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: colors.textSecondary }}>24H TXNS:</span>
-            <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>45,920,402</span>
-          </div>
-        </div>
-
-        {/* Filter Bar */}
-        <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
-          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: isDark ? '#1a3a1a' : '#dcfce7', color: colors.green }}>
-            <Clock size={12} /> Last 24 hours <ChevronDown size={12} />
+        {/* View Toggle */}
+        <div style={{ 
+          backgroundColor: colors.bg, 
+          padding: '0 16px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          borderBottom: `1px solid ${colors.border}`,
+        }}>
+          <button
+            onClick={() => setActiveView('moltbook')}
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderBottom: activeView === 'moltbook' ? `2px solid #EF4444` : '2px solid transparent',
+              color: activeView === 'moltbook' ? colors.text : colors.textSecondary,
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '16px' }}>🦞</span>
+            Moltbook Agents
+            <span style={{ 
+              backgroundColor: '#EF4444', 
+              color: '#fff', 
+              padding: '2px 8px', 
+              borderRadius: '10px', 
+              fontSize: '11px',
+              fontWeight: 700,
+            }}>
+              {MOLTBOOK_AGENTS.length}
+            </span>
           </button>
-          <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
-            <button style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: colors.green, color: isDark ? '#000' : '#fff' }}>
-              <Flame size={12} /> Trending
-            </button>
-            {['5M', '1H', '6H', '24H'].map((period) => (
-              <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#333' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary }}>
-                {period}
-              </button>
-            ))}
-          </div>
-          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Top</button>
-          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Zap size={12} /> Gainers</button>
-          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> New Pairs</button>
-          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Users size={12} /> Profile</button>
-          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: '#f0b90b', display: 'flex', alignItems: 'center', gap: '4px' }}><Rocket size={12} /> Boosted</button>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Rank By:</span>
-            <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.green, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Trending 6H</button>
-            <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
-            <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Settings size={12} /> Customize</button>
+          <button
+            onClick={() => setActiveView('tokenized')}
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderBottom: activeView === 'tokenized' ? `2px solid ${colors.green}` : '2px solid transparent',
+              color: activeView === 'tokenized' ? colors.text : colors.textSecondary,
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '16px' }}>📈</span>
+            Tokenized Agents
+          </button>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+            <span style={{ fontSize: '11px', color: colors.textSecondary }}>Powered by</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#EF4444' }}>moltbook</span>
+            <span style={{ fontSize: '11px', color: colors.textSecondary }}>×</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#8B5CF6' }}>bankr</span>
           </div>
         </div>
 
-        {/* Table */}
-        <div style={{ flex: 1, overflow: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {['TOKEN', 'PRICE', 'AGE', 'TXNS', 'VOLUME', 'MAKERS', '5M', '1H', '6H', '24H', 'LIQUIDITY', 'MCAP'].map((header, i) => (
-                  <th key={header} style={{ padding: '10px 12px', textAlign: i === 0 ? 'left' : 'right', color: colors.textSecondary, fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', borderBottom: `1px solid ${colors.border}`, position: 'sticky', top: 0, backgroundColor: colors.bg }}>{header}</th>
+        {activeView === 'tokenized' ? (
+          <>
+            {/* Stats Bar */}
+            <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>$22,548</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: colors.textSecondary }}>24H TXNS:</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>45,920,402</span>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
+              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: isDark ? '#1a3a1a' : '#dcfce7', color: colors.green }}>
+                <Clock size={12} /> Last 24 hours <ChevronDown size={12} />
+              </button>
+              <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+                <button style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: colors.green, color: isDark ? '#000' : '#fff' }}>
+                  <Flame size={12} /> Trending
+                </button>
+                {['5M', '1H', '6H', '24H'].map((period) => (
+                  <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#333' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary }}>
+                    {period}
+                  </button>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAgents.map((agent, index) => {
-                const chain = CHAINS.find(c => c.id === agent.chain);
-                return (
-                  <tr key={agent.id} onClick={() => onSelectAgent(agent)} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ color: colors.textSecondary, width: '24px' }}>#{index + 1}</span>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: chain?.color || '#666' }} />
-                        <span style={{ fontSize: '20px' }}>{agent.avatar}</span>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
-                            <span style={{ color: colors.textSecondary }}>{agent.ticker}</span>
-                            {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
-                              <span style={{ 
-                                backgroundColor: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color + '20', 
-                                color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color, 
-                                padding: '1px 6px', 
-                                borderRadius: '4px', 
-                                fontSize: '10px', 
-                                fontWeight: 600,
+              </div>
+              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Top</button>
+              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Zap size={12} /> Gainers</button>
+              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> New Pairs</button>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Rank By:</span>
+                <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.green, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Trending 6H</button>
+                <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
+              </div>
+            </div>
+
+            {/* Tokenized Agents Table */}
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    {['TOKEN', 'PRICE', 'AGE', 'TXNS', 'VOLUME', 'MAKERS', '5M', '1H', '6H', '24H', 'LIQUIDITY', 'MCAP'].map((header, i) => (
+                      <th key={header} style={{ padding: '10px 12px', textAlign: i === 0 ? 'left' : 'right', color: colors.textSecondary, fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', borderBottom: `1px solid ${colors.border}`, position: 'sticky', top: 0, backgroundColor: colors.bg }}>{header}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAgents.map((agent, index) => {
+                    const chain = CHAINS.find(c => c.id === agent.chain);
+                    return (
+                      <tr key={agent.id} onClick={() => onSelectAgent(agent)} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ color: colors.textSecondary, width: '24px' }}>#{index + 1}</span>
+                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: chain?.color || '#666' }} />
+                            <span style={{ fontSize: '20px' }}>{agent.avatar}</span>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
+                                <span style={{ color: colors.textSecondary }}>{agent.ticker}</span>
+                                {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
+                                  <span style={{ backgroundColor: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color + '20', color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color, padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                    {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon} {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].name}
+                                  </span>
+                                )}
+                              </div>
+                              <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.fullName}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatPrice(agent.price)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>{agent.age}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.txns)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.volume)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.makers)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change5m >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change5m >= 0 ? '+' : ''}{agent.change5m.toFixed(2)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change1h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change1h >= 0 ? '+' : ''}{agent.change1h.toFixed(2)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change6h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change6h >= 0 ? '+' : ''}{agent.change6h.toFixed(0)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(0)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.liquidity)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.mcap)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Moltbook Stats Bar */}
+            <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: colors.textSecondary }}>TOTAL AGENTS:</span>
+                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>35,164</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: colors.textSecondary }}>LIVE TOKENS:</span>
+                <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{MOLTBOOK_AGENTS.filter(a => a.status === 'live' || a.status === 'claimed').length}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: colors.textSecondary }}>LAUNCHING:</span>
+                <span style={{ color: '#F59E0B', fontWeight: 700, fontSize: '16px' }}>{MOLTBOOK_AGENTS.filter(a => a.status === 'launching').length}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: colors.textSecondary }}>FEES ACCUMULATED:</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(MOLTBOOK_AGENTS.reduce((acc, a) => acc + a.accumulatedFees, 0))}</span>
+              </div>
+            </div>
+
+            {/* Moltbook Filter Bar */}
+            <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
+              <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+                {[
+                  { id: 'all', label: 'All Agents', count: MOLTBOOK_AGENTS.length },
+                  { id: 'live', label: '🟢 Live', count: MOLTBOOK_AGENTS.filter(a => a.status === 'live' || a.status === 'claimed').length },
+                  { id: 'launching', label: '🚀 Launching', count: MOLTBOOK_AGENTS.filter(a => a.status === 'launching').length },
+                  { id: 'not_tokenized', label: '⏳ Queue', count: MOLTBOOK_AGENTS.filter(a => a.status === 'not_tokenized').length },
+                ].map((filter) => (
+                  <button
+                    key={filter.id}
+                    onClick={() => setMoltbookFilter(filter.id as typeof moltbookFilter)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      backgroundColor: moltbookFilter === filter.id ? (isDark ? '#333' : '#ddd') : 'transparent',
+                      color: moltbookFilter === filter.id ? colors.text : colors.textSecondary,
+                    }}
+                  >
+                    {filter.label}
+                    <span style={{ 
+                      backgroundColor: moltbookFilter === filter.id ? colors.text + '20' : 'transparent',
+                      padding: '1px 6px',
+                      borderRadius: '8px',
+                      fontSize: '10px',
+                    }}>
+                      {filter.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Sorted by:</span>
+                <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '4px' }}>🏆 Karma</button>
+              </div>
+            </div>
+
+            {/* Moltbook Agents List */}
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    {['RANK', 'AGENT', 'KARMA', 'OWNER', 'STATUS', 'MCAP', '24H', 'FEES', 'ACTION'].map((header, i) => (
+                      <th key={header} style={{ 
+                        padding: '10px 12px', 
+                        textAlign: i === 0 || i === 1 ? 'left' : (i === 8 ? 'center' : 'right'), 
+                        color: colors.textSecondary, 
+                        fontSize: '11px', 
+                        fontWeight: 500, 
+                        textTransform: 'uppercase', 
+                        borderBottom: `1px solid ${colors.border}`, 
+                        position: 'sticky', 
+                        top: 0, 
+                        backgroundColor: colors.bg 
+                      }}>{header}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredMoltbookAgents.map((agent, index) => (
+                    <tr 
+                      key={agent.id} 
+                      style={{ cursor: 'pointer' }} 
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} 
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, width: '50px' }}>
+                        <span style={{ 
+                          backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1a1a1a' : '#f0f0f0'),
+                          color: index < 3 ? '#000' : colors.textSecondary,
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                        }}>
+                          {index + 1}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ 
+                            width: '36px', 
+                            height: '36px', 
+                            borderRadius: '50%', 
+                            backgroundColor: agent.color, 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: '#fff',
+                            fontWeight: 700,
+                            fontSize: '14px',
+                            position: 'relative',
+                          }}>
+                            {agent.avatar}
+                            {(agent.status === 'live' || agent.status === 'claimed') && (
+                              <div style={{ 
+                                position: 'absolute', 
+                                bottom: -2, 
+                                right: -2, 
+                                width: '14px', 
+                                height: '14px', 
+                                backgroundColor: colors.green, 
+                                borderRadius: '50%', 
+                                border: `2px solid ${colors.bg}`,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '2px',
+                                justifyContent: 'center',
                               }}>
-                                {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon} {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].name}
-                              </span>
+                                <CheckCircle size={8} color="#fff" />
+                              </div>
                             )}
                           </div>
-                          <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.fullName}</div>
+                          <div>
+                            <div style={{ fontWeight: 600, color: colors.text }}>{agent.name}</div>
+                            <div style={{ fontSize: '11px', color: colors.textSecondary }}>{agent.lastActive}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatPrice(agent.price)}</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>{agent.age}</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.txns)}</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.volume)}</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.makers)}</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change5m >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change5m >= 0 ? '+' : ''}{agent.change5m.toFixed(2)}%</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change1h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change1h >= 0 ? '+' : ''}{agent.change1h.toFixed(2)}%</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change6h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change6h >= 0 ? '+' : ''}{agent.change6h.toFixed(0)}%</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(0)}%</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.liquidity)}</td>
-                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.mcap)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        <span style={{ color: '#EF4444', fontWeight: 700 }}>{agent.karma}</span>
+                        <span style={{ color: colors.textSecondary, fontSize: '11px', marginLeft: '4px' }}>karma</span>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        <a 
+                          href={`https://twitter.com/${agent.handle.replace('@', '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ 
+                            color: '#1DA1F2', 
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            justifyContent: 'flex-end',
+                            fontSize: '12px',
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Twitter size={12} />
+                          {agent.handle}
+                        </a>
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        {agent.status === 'live' && (
+                          <span style={{ backgroundColor: colors.green + '20', color: colors.green, padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
+                            🟢 Live
+                          </span>
+                        )}
+                        {agent.status === 'claimed' && (
+                          <span style={{ backgroundColor: '#8B5CF6' + '20', color: '#8B5CF6', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
+                            ✓ Claimed
+                          </span>
+                        )}
+                        {agent.status === 'launching' && (
+                          <span style={{ backgroundColor: '#F59E0B' + '20', color: '#F59E0B', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
+                            🚀 {agent.launchTime}
+                          </span>
+                        )}
+                        {agent.status === 'not_tokenized' && (
+                          <span style={{ backgroundColor: colors.textSecondary + '20', color: colors.textSecondary, padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
+                            ⏳ In Queue
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                        {agent.mcap ? formatNumber(agent.mcap) : '—'}
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        {agent.change24h !== null ? (
+                          <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
+                            {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        {agent.accumulatedFees > 0 ? (
+                          <span style={{ color: colors.green, fontWeight: 600 }}>
+                            ${formatCompact(agent.accumulatedFees)}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'center' }}>
+                        {(agent.status === 'live' || agent.status === 'claimed') && (
+                          <button
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              border: 'none',
+                              backgroundColor: agent.status === 'claimed' ? '#8B5CF6' : colors.green,
+                              color: '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              margin: '0 auto',
+                            }}
+                          >
+                            {agent.status === 'claimed' ? (
+                              <>View</>
+                            ) : (
+                              <><Wallet size={12} /> Claim Fees</>
+                            )}
+                          </button>
+                        )}
+                        {agent.status === 'launching' && (
+                          <span style={{ color: colors.textSecondary, fontSize: '11px' }}>Pending...</span>
+                        )}
+                        {agent.status === 'not_tokenized' && (
+                          <span style={{ color: colors.textSecondary, fontSize: '11px' }}>Queued</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
