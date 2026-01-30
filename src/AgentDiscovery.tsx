@@ -1138,6 +1138,10 @@ function ScreenerPage() {
                               Trade
                             </a>
                             <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.location.href = `/api/auth/twitter?agentId=${agent.id}`;
+                              }}
                               style={{
                                 padding: '6px 12px',
                                 borderRadius: '6px',
