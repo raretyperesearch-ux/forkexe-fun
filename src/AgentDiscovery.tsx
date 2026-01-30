@@ -1,11 +1,7 @@
 import { useState, createContext, useContext } from 'react';
 import { 
   Search, 
-  Star,
   ChevronDown,
-  Copy,
-  ExternalLink,
-  Bell,
   Filter,
   TrendingUp,
   Flame,
@@ -57,19 +53,6 @@ const FRAMEWORKS = {
   virtuals: { name: 'Virtuals', color: '#8B5CF6', icon: '🌐' },
   ai16z: { name: 'ai16z', color: '#FF6B35', icon: '🧠' },
   custom: { name: 'Custom', color: '#6B7280', icon: '⚙️' },
-};
-
-// Activity type icons and colors
-const ACTIVITY_TYPES = {
-  trade: { icon: '📈', color: '#22c55e', label: 'Trade' },
-  research: { icon: '🔬', color: '#8B5CF6', label: 'Research' },
-  post: { icon: '📝', color: '#3B82F6', label: 'Post' },
-  social: { icon: '💬', color: '#EC4899', label: 'Social' },
-  analysis: { icon: '🎯', color: '#F59E0B', label: 'Analysis' },
-  alert: { icon: '🚨', color: '#EF4444', label: 'Alert' },
-  defi: { icon: '💰', color: '#10B981', label: 'DeFi' },
-  creative: { icon: '🎨', color: '#8B5CF6', label: 'Creative' },
-  transaction: { icon: '💸', color: '#22c55e', label: 'Transaction' },
 };
 
 // Mock agent data
