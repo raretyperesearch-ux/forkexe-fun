@@ -1060,27 +1060,27 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
                       </td>
                       {/* PRICE */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 ? formatPrice(agent.price) : '—'}
+                        {agent.karma >= 50 && agent.price ? formatPrice(agent.price) : '—'}
                       </td>
                       {/* AGE */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
-                        {agent.karma >= 50 ? agent.age : '—'}
+                        {agent.karma >= 50 && agent.age ? agent.age : '—'}
                       </td>
                       {/* VOLUME */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 ? formatNumber(agent.volume) : '—'}
+                        {agent.karma >= 50 && agent.volume ? formatNumber(agent.volume) : '—'}
                       </td>
                       {/* LIQUIDITY */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 ? formatNumber(agent.liquidity) : '—'}
+                        {agent.karma >= 50 && agent.liquidity ? formatNumber(agent.liquidity) : '—'}
                       </td>
                       {/* MCAP */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 ? formatNumber(agent.mcap) : '—'}
+                        {agent.karma >= 50 && agent.mcap ? formatNumber(agent.mcap) : '—'}
                       </td>
                       {/* 24H */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
-                        {agent.karma >= 50 ? (
+                        {agent.karma >= 50 && agent.change24h !== null ? (
                           <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
                             {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
                           </span>
