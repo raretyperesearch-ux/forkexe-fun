@@ -508,39 +508,6 @@ const MOCK_AGENTS = [
   },
 ];
 
-const TRENDING_BANNER = [
-  { name: 'CANCER', change: 600.24, up: true, boosted: true },
-  { name: 'Win', change: 100.16, up: true, boosted: false },
-  { name: 'ELON', change: 116, up: false, boosted: false },
-  { name: 'DADS', change: 100.36, up: true, boosted: true },
-  { name: 'Donald', change: 10.23, up: true, boosted: false },
-  { name: 'PEPECASH', change: 77, up: false, boosted: false },
-  { name: 'WAR', change: 0.27, up: true, boosted: false },
-  { name: 'SOULGUY', change: 130.34, up: true, boosted: false },
-  { name: 'COCK', change: 20.67, up: true, boosted: false },
-  { name: 'BTM', change: -12, up: false, boosted: false },
-  { name: 'PENGUIN', change: -11, up: false, boosted: false },
-  { name: 'HITLANA', change: 96, up: true, boosted: true },
-  { name: 'MOCHI', change: 45.2, up: true, boosted: false },
-  { name: 'WOJAK', change: -8.5, up: false, boosted: false },
-  { name: 'PEPE2', change: 234.1, up: true, boosted: true },
-  { name: 'DOGE3', change: 67.8, up: true, boosted: false },
-  { name: 'SHIB2', change: -15.3, up: false, boosted: false },
-  { name: 'BONK2', change: 89.4, up: true, boosted: false },
-  { name: 'FLOKI2', change: 12.7, up: true, boosted: false },
-  { name: 'SAMO', change: -22.1, up: false, boosted: false },
-  { name: 'MYRO', change: 156.9, up: true, boosted: true },
-  { name: 'WIF2', change: 78.3, up: true, boosted: false },
-  { name: 'POPCAT', change: -5.6, up: false, boosted: false },
-  { name: 'MEW', change: 43.2, up: true, boosted: false },
-  { name: 'BRETT', change: 112.5, up: true, boosted: true },
-  { name: 'TOSHI', change: -18.9, up: false, boosted: false },
-  { name: 'PONKE', change: 67.1, up: true, boosted: false },
-  { name: 'SLERF', change: 234.8, up: true, boosted: true },
-  { name: 'BOME', change: -9.4, up: false, boosted: false },
-  { name: 'GIGA', change: 445.2, up: true, boosted: true },
-];
-
 const formatNumber = (num: number): string => {
   if (num >= 1000000000) return `$${(num / 1000000000).toFixed(2)}B`;
   if (num >= 1000000) return `$${(num / 1000000).toFixed(1)}M`;
@@ -780,15 +747,36 @@ function ScreenerPage() {
           `}</style>
           <div style={{
             display: 'flex',
-            animation: 'marquee 30s linear infinite',
+            animation: 'marquee 40s linear infinite',
             width: 'fit-content',
           }}>
             {/* Duplicate the items for seamless loop */}
-            {[...TRENDING_BANNER, ...TRENDING_BANNER].map((token, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '12px' }}>
-                <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % TRENDING_BANNER.length) + 1}</span>
-                <span style={{ color: colors.text, fontWeight: 600 }}>{token.name}</span>
-                <span style={{ color: token.up ? colors.green : colors.red, fontWeight: 500 }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
+            {[...MOLTBOOK_AGENTS, ...MOLTBOOK_AGENTS].map((agent, i) => (
+              <div 
+                key={i} 
+                onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/trade?token=${agent.tokenAddress}`, '_blank')}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '6px', 
+                  padding: '8px 16px', 
+                  cursor: agent.karma >= 50 ? 'pointer' : 'default', 
+                  whiteSpace: 'nowrap', 
+                  fontSize: '12px',
+                  opacity: agent.karma >= 50 ? 1 : 0.5,
+                }}
+              >
+                <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % MOLTBOOK_AGENTS.length) + 1}</span>
+                <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
+                <span style={{ color: '#EF4444', fontWeight: 600 }}>{agent.karma}🔥</span>
+                {agent.karma >= 50 && agent.change24h !== null && (
+                  <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
+                    {agent.change24h >= 0 ? '↑' : '↓'}{Math.abs(agent.change24h).toFixed(0)}%
+                  </span>
+                )}
+                {agent.karma < 50 && (
+                  <span style={{ color: '#F59E0B', fontSize: '10px' }}>⏳</span>
+                )}
               </div>
             ))}
           </div>
