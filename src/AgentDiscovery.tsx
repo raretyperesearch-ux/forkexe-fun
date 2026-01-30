@@ -1153,28 +1153,51 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
                       </td>
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'center' }}>
                         {(agent.status === 'live' || agent.status === 'claimed') && (
-                          <button
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              border: 'none',
-                              backgroundColor: agent.status === 'claimed' ? '#8B5CF6' : colors.green,
-                              color: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              margin: '0 auto',
-                            }}
-                          >
-                            {agent.status === 'claimed' ? (
-                              <>View</>
-                            ) : (
-                              <><Wallet size={12} /> Claim Fees</>
-                            )}
-                          </button>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                            <a
+                              href={`https://wallet.xyz/trade?token=${agent.tokenAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: 'none',
+                                backgroundColor: '#0052FF',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                textDecoration: 'none',
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Trade
+                            </a>
+                            <button
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: 'none',
+                                backgroundColor: agent.status === 'claimed' ? '#8B5CF6' : colors.green,
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                              }}
+                            >
+                              {agent.status === 'claimed' ? (
+                                <>View</>
+                              ) : (
+                                <><Wallet size={12} /> Claim</>
+                              )}
+                            </button>
+                          </div>
                         )}
                         {agent.status === 'launching' && (
                           <span style={{ color: colors.textSecondary, fontSize: '11px' }}>Pending...</span>
