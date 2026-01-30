@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://edspwhxvlqwvylrgiygz.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkc3B3aHh2bHF3dnlscmdpeWd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MDk0NTQsImV4cCI6MjA4NTM4NTQ1NH0.f6AuOz7HfkMFGf-RuoRP3BJofxzPd1DXKsQd1MFfmUA';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export type Agent = {
   id: number;
@@ -80,7 +80,7 @@ export function useStats() {
 
       if (allAgents) {
         setStats({
-          totalAgents: 33631, // Moltbook total
+          totalAgents: 33631,
           tokenized: allAgents.filter(a => a.karma >= 50).length,
           volume24h: allAgents.reduce((sum, a) => sum + (a.volume_24h || 0), 0),
         });
