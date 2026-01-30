@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, createContext, useContext } from 'react';
 import { 
   Search, 
   Star,
@@ -15,9 +15,14 @@ import {
   Users,
   Zap,
   Globe,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
-// Chain icons as simple colored circles with letters
+// Theme context
+const ThemeContext = createContext<{ isDark: boolean; toggle: () => void }>({ isDark: true, toggle: () => {} });
+
+// Chain icons
 const CHAINS = [
   { id: 'solana', name: 'Solana', color: '#9945FF', letter: 'S' },
   { id: 'ethereum', name: 'Ethereum', color: '#627EEA', letter: 'E' },
@@ -50,10 +55,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 400,
     avatar: '🦀',
-    image: '',
-    website: 'https://cancer.io',
-    twitter: 'cancer_token',
-    description: 'A moonshot for cancer research funding',
     priceNative: 0.00001366,
     fdv: 1600000,
     buys24h: 34088,
@@ -84,10 +85,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 100,
     avatar: '🏆',
-    image: '',
-    website: '',
-    twitter: 'win_token',
-    description: 'Win big or go home',
     priceNative: 0.0000045,
     fdv: 900000,
     buys24h: 28000,
@@ -118,10 +115,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 0,
     avatar: '🚀',
-    image: '',
-    website: 'https://eloncoin.io',
-    twitter: 'elon_coin',
-    description: 'To Mars and beyond',
     priceNative: 0.000028,
     fdv: 7000000,
     buys24h: 18000,
@@ -152,10 +145,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 109,
     avatar: '👴',
-    image: '',
-    website: '',
-    twitter: 'dads_token',
-    description: 'For all the tired dads out there',
     priceNative: 0.0000035,
     fdv: 707000,
     buys24h: 3200,
@@ -186,10 +175,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 68,
     avatar: '🦆',
-    image: '',
-    website: 'https://donald.io',
-    twitter: 'donald_token',
-    description: 'Quack quack to the moon',
     priceNative: 0.000033,
     fdv: 1600000,
     buys24h: 52000,
@@ -220,10 +205,6 @@ const MOCK_AGENTS = [
     chain: 'ethereum',
     boosted: 0,
     avatar: '🐸',
-    image: '',
-    website: '',
-    twitter: 'pepe_cash',
-    description: 'The OG meme coin returns',
     priceNative: 0.0000048,
     fdv: 203000,
     buys24h: 4000,
@@ -254,10 +235,6 @@ const MOCK_AGENTS = [
     chain: 'base',
     boosted: 500,
     avatar: '⚔️',
-    image: '',
-    website: 'https://war.gg',
-    twitter: 'war_token',
-    description: 'War never changes',
     priceNative: 0.0000027,
     fdv: 16700000,
     buys24h: 7500,
@@ -288,10 +265,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 188,
     avatar: '👻',
-    image: '',
-    website: 'https://soulguy.io',
-    twitter: 'soulguy',
-    description: 'Your soul belongs to us',
     priceNative: 0.000082,
     fdv: 16400000,
     buys24h: 32000,
@@ -322,10 +295,6 @@ const MOCK_AGENTS = [
     chain: 'base',
     boosted: 10,
     avatar: '🐓',
-    image: '',
-    website: '',
-    twitter: 'chrome_cock',
-    description: 'Rise and shine',
     priceNative: 0.00000016,
     fdv: 393000,
     buys24h: 8000,
@@ -356,10 +325,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 0,
     avatar: '⏰',
-    image: '',
-    website: 'https://btm.io',
-    twitter: 'btm_token',
-    description: 'Back to the future of Bitcoin',
     priceNative: 0.00000032,
     fdv: 633000,
     buys24h: 14000,
@@ -390,10 +355,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 0,
     avatar: '🐧',
-    image: '',
-    website: 'https://penguin.io',
-    twitter: 'penguin_token',
-    description: 'The philosopher penguin',
     priceNative: 0.000413,
     fdv: 82500000,
     buys24h: 18000,
@@ -424,10 +385,6 @@ const MOCK_AGENTS = [
     chain: 'solana',
     boosted: 0,
     avatar: '💥',
-    image: '',
-    website: '',
-    twitter: 'hitlana',
-    description: 'Hits different',
     priceNative: 0.0000196,
     fdv: 3600000,
     buys24h: 21000,
@@ -441,7 +398,6 @@ const MOCK_AGENTS = [
   },
 ];
 
-// Trending banner tokens
 const TRENDING_BANNER = [
   { name: 'CANCER', change: 600.24, up: true, boosted: true },
   { name: 'Win', change: 100.16, up: true, boosted: false },
@@ -477,157 +433,84 @@ const formatCompact = (num: number): string => {
   return num.toFixed(0);
 };
 
-// Styles
-const styles = {
-  app: {
-    minHeight: '100vh',
-    backgroundColor: '#0d0d0d',
-    color: '#e5e5e5',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    fontSize: '13px',
-  } as React.CSSProperties,
-  // Left sidebar
-  sidebar: {
-    position: 'fixed' as const,
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '40px',
-    backgroundColor: '#0d0d0d',
-    borderRight: '1px solid #1a1a1a',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    paddingTop: '12px',
-    gap: '4px',
-    zIndex: 100,
-  },
-  sidebarIcon: {
-    width: '28px',
-    height: '28px',
-    borderRadius: '6px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    fontSize: '11px',
-    fontWeight: 700,
-    transition: 'all 0.15s',
-  },
-  // Main content
-  main: {
-    marginLeft: '40px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    minHeight: '100vh',
-  },
-  // Trending banner
-  banner: {
-    backgroundColor: '#000',
-    borderBottom: '1px solid #1a1a1a',
-    padding: '6px 12px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    overflow: 'hidden',
-  },
-  bannerItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap' as const,
-    fontSize: '12px',
-  },
-  // Header bar
-  header: {
-    backgroundColor: '#0d0d0d',
-    borderBottom: '1px solid #1a1a1a',
-    padding: '8px 16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  // Stats bar
-  statsBar: {
-    backgroundColor: '#0a0a0a',
-    padding: '12px 16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '48px',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  // Filter bar
-  filterBar: {
-    backgroundColor: '#0d0d0d',
-    padding: '10px 16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  filterPill: {
-    padding: '6px 12px',
-    borderRadius: '6px',
-    fontSize: '12px',
-    fontWeight: 500,
-    cursor: 'pointer',
-    border: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    transition: 'all 0.15s',
-  },
-  // Table
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse' as const,
-  },
-  th: {
-    padding: '10px 12px',
-    textAlign: 'left' as const,
-    color: '#6b6b6b',
-    fontSize: '11px',
-    fontWeight: 500,
-    textTransform: 'uppercase' as const,
-    borderBottom: '1px solid #1a1a1a',
-    position: 'sticky' as const,
-    top: 0,
-    backgroundColor: '#0d0d0d',
-  },
-  td: {
-    padding: '12px',
-    borderBottom: '1px solid #141414',
-  },
-};
+// Theme hook
+const useTheme = () => useContext(ThemeContext);
+
+// Get theme colors
+const getColors = (isDark: boolean) => ({
+  bg: isDark ? '#0d0d0d' : '#fafafa',
+  bgSecondary: isDark ? '#0a0a0a' : '#ffffff',
+  bgHover: isDark ? '#141414' : '#f5f5f5',
+  border: isDark ? '#1a1a1a' : '#e5e5e5',
+  text: isDark ? '#e5e5e5' : '#1a1a1a',
+  textSecondary: isDark ? '#6b6b6b' : '#666666',
+  green: '#22c55e',
+  red: '#ef4444',
+});
+
+// Dotted background for light mode
+const DottedBackground = () => (
+  <div style={{
+    position: 'fixed',
+    inset: 0,
+    backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
+    backgroundSize: '24px 24px',
+    pointerEvents: 'none',
+    zIndex: 0,
+  }} />
+);
 
 // =====================
 // SCREENER PAGE
 // =====================
 function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AGENTS[0]) => void }) {
+  const { isDark, toggle } = useTheme();
+  const colors = getColors(isDark);
   const [activeChain, setActiveChain] = useState<string | null>(null);
   const [activePeriod, setActivePeriod] = useState('24h');
-  const [searchQuery] = useState('');
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
-    const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         agent.ticker.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesChain = !activeChain || agent.chain === activeChain;
-    return matchesSearch && matchesChain;
+    return !activeChain || agent.chain === activeChain;
   });
 
   return (
-    <div style={styles.app}>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: colors.bg,
+      color: colors.text,
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '13px',
+      position: 'relative',
+    }}>
+      {!isDark && <DottedBackground />}
+      
       {/* Left Sidebar */}
-      <div style={styles.sidebar}>
+      <div style={{
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: '40px',
+        backgroundColor: colors.bg,
+        borderRight: `1px solid ${colors.border}`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingTop: '12px',
+        gap: '4px',
+        zIndex: 100,
+      }}>
         <div 
           style={{
-            ...styles.sidebarIcon,
-            backgroundColor: !activeChain ? '#2a2a2a' : 'transparent',
-            color: '#fff',
+            width: '28px',
+            height: '28px',
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            backgroundColor: !activeChain ? (isDark ? '#2a2a2a' : '#e5e5e5') : 'transparent',
+            color: colors.text,
             marginBottom: '8px',
           }}
           onClick={() => setActiveChain(null)}
@@ -639,7 +522,15 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
             key={chain.id}
             onClick={() => setActiveChain(activeChain === chain.id ? null : chain.id)}
             style={{
-              ...styles.sidebarIcon,
+              width: '28px',
+              height: '28px',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '11px',
+              fontWeight: 700,
               backgroundColor: activeChain === chain.id ? chain.color + '33' : 'transparent',
               color: chain.color,
               border: activeChain === chain.id ? `1px solid ${chain.color}` : '1px solid transparent',
@@ -649,246 +540,131 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
             {chain.letter}
           </div>
         ))}
+        
+        {/* Theme Toggle */}
+        <div style={{ marginTop: 'auto', marginBottom: '12px' }}>
+          <div
+            onClick={toggle}
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+              color: colors.text,
+            }}
+          >
+            {isDark ? <Sun size={14} /> : <Moon size={14} />}
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div style={styles.main}>
+      <div style={{ marginLeft: '40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
         {/* Trending Banner */}
-        <div style={styles.banner}>
+        <div style={{
+          backgroundColor: isDark ? '#000' : '#ffffff',
+          borderBottom: `1px solid ${colors.border}`,
+          padding: '6px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          overflow: 'hidden',
+        }}>
           {TRENDING_BANNER.map((token, i) => (
-            <div
-              key={i}
-              style={{
-                ...styles.bannerItem,
-                backgroundColor: 'transparent',
-              }}
-            >
-              <span style={{ color: '#6b6b6b', fontWeight: 600 }}>#{i + 1}</span>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '12px' }}>
+              <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{i + 1}</span>
               {token.boosted && <Rocket size={12} color="#f0b90b" />}
-              <span style={{ color: '#fff', fontWeight: 600 }}>{token.name}</span>
-              <span style={{
-                color: token.up ? '#22c55e' : '#ef4444',
-                fontWeight: 500,
-              }}>
-                {token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%
-              </span>
+              <span style={{ color: colors.text, fontWeight: 600 }}>{token.name}</span>
+              <span style={{ color: token.up ? colors.green : colors.red, fontWeight: 500 }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
             </div>
           ))}
         </div>
 
         {/* Stats Bar */}
-        <div style={styles.statsBar}>
+        <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#6b6b6b' }}>24H VOLUME:</span>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>$22,548</span>
+            <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
+            <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>$22,548</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#6b6b6b' }}>24H TXNS:</span>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>45,920,402</span>
+            <span style={{ color: colors.textSecondary }}>24H TXNS:</span>
+            <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>45,920,402</span>
           </div>
         </div>
 
         {/* Filter Bar */}
-        <div style={styles.filterBar}>
-          <button 
-            style={{
-              ...styles.filterPill,
-              backgroundColor: '#1a3a1a',
-              color: '#22c55e',
-            }}
-          >
-            <Clock size={12} />
-            Last 24 hours
-            <ChevronDown size={12} />
+        <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
+          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: isDark ? '#1a3a1a' : '#dcfce7', color: colors.green }}>
+            <Clock size={12} /> Last 24 hours <ChevronDown size={12} />
           </button>
-
-          <div style={{ 
-            display: 'flex', 
-            backgroundColor: '#1a1a1a', 
-            borderRadius: '6px',
-            padding: '2px',
-          }}>
-            <button style={{
-              ...styles.filterPill,
-              backgroundColor: '#22c55e',
-              color: '#000',
-              padding: '4px 8px',
-            }}>
-              <Flame size={12} />
-              Trending
+          <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+            <button style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: colors.green, color: isDark ? '#000' : '#fff' }}>
+              <Flame size={12} /> Trending
             </button>
             {['5M', '1H', '6H', '24H'].map((period) => (
-              <button
-                key={period}
-                onClick={() => setActivePeriod(period.toLowerCase())}
-                style={{
-                  ...styles.filterPill,
-                  backgroundColor: activePeriod === period.toLowerCase() ? '#333' : 'transparent',
-                  color: activePeriod === period.toLowerCase() ? '#fff' : '#6b6b6b',
-                  padding: '4px 8px',
-                }}
-              >
+              <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#333' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary }}>
                 {period}
               </button>
             ))}
           </div>
-
-          <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#6b6b6b' }}>
-            <TrendingUp size={12} />
-            Top
-          </button>
-          <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#6b6b6b' }}>
-            <Zap size={12} />
-            Gainers
-          </button>
-          <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#6b6b6b' }}>
-            <Clock size={12} />
-            New Pairs
-          </button>
-          <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#6b6b6b' }}>
-            <Users size={12} />
-            Profile
-          </button>
-          <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#f0b90b' }}>
-            <Rocket size={12} />
-            Boosted
-          </button>
-          <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#6b6b6b' }}>
-            Ads
-            <ChevronDown size={12} />
-          </button>
-
+          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Top</button>
+          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Zap size={12} /> Gainers</button>
+          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> New Pairs</button>
+          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Users size={12} /> Profile</button>
+          <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: '#f0b90b', display: 'flex', alignItems: 'center', gap: '4px' }}><Rocket size={12} /> Boosted</button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ color: '#6b6b6b', fontSize: '12px' }}>Rank By:</span>
-            <button style={{ ...styles.filterPill, backgroundColor: 'transparent', color: '#22c55e' }}>
-              <TrendingUp size={12} />
-              Trending 6H
-            </button>
-            <button style={{ ...styles.filterPill, backgroundColor: '#1a1a1a', color: '#6b6b6b' }}>
-              <Filter size={12} />
-              Filters
-            </button>
-            <button style={{ ...styles.filterPill, backgroundColor: '#1a1a1a', color: '#6b6b6b' }}>
-              <Settings size={12} />
-              Customize
-            </button>
+            <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Rank By:</span>
+            <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.green, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Trending 6H</button>
+            <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
+            <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Settings size={12} /> Customize</button>
           </div>
         </div>
 
         {/* Table */}
         <div style={{ flex: 1, overflow: 'auto' }}>
-          <table style={styles.table}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={styles.th}>TOKEN</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>PRICE</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>AGE</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>TXNS</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>VOLUME</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>MAKERS</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>5M</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>1H</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>6H</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>24H</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>LIQUIDITY</th>
-                <th style={{ ...styles.th, textAlign: 'right' }}>MCAP</th>
+                {['TOKEN', 'PRICE', 'AGE', 'TXNS', 'VOLUME', 'MAKERS', '5M', '1H', '6H', '24H', 'LIQUIDITY', 'MCAP'].map((header, i) => (
+                  <th key={header} style={{ padding: '10px 12px', textAlign: i === 0 ? 'left' : 'right', color: colors.textSecondary, fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', borderBottom: `1px solid ${colors.border}`, position: 'sticky', top: 0, backgroundColor: colors.bg }}>{header}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {filteredAgents.map((agent, index) => {
                 const chain = CHAINS.find(c => c.id === agent.chain);
                 return (
-                  <tr
-                    key={agent.id}
-                    onClick={() => onSelectAgent(agent)}
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#141414'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <td style={styles.td}>
+                  <tr key={agent.id} onClick={() => onSelectAgent(agent)} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ color: '#6b6b6b', width: '24px' }}>#{index + 1}</span>
-                        <div style={{
-                          width: '8px',
-                          height: '8px',
-                          borderRadius: '50%',
-                          backgroundColor: chain?.color || '#666',
-                        }} />
+                        <span style={{ color: colors.textSecondary, width: '24px' }}>#{index + 1}</span>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: chain?.color || '#666' }} />
                         <span style={{ fontSize: '20px' }}>{agent.avatar}</span>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ color: '#fff', fontWeight: 600 }}>{agent.name}</span>
-                            <span style={{ color: '#6b6b6b' }}>{agent.ticker}</span>
-                            {agent.boosted > 0 && (
-                              <span style={{
-                                backgroundColor: '#332b00',
-                                color: '#f0b90b',
-                                padding: '1px 6px',
-                                borderRadius: '4px',
-                                fontSize: '10px',
-                                fontWeight: 600,
-                              }}>
-                                🚀{agent.boosted}
-                              </span>
-                            )}
+                            <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
+                            <span style={{ color: colors.textSecondary }}>{agent.ticker}</span>
+                            {agent.boosted > 0 && <span style={{ backgroundColor: '#332b00', color: '#f0b90b', padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>🚀{agent.boosted}</span>}
                           </div>
-                          <div style={{ color: '#6b6b6b', fontSize: '11px' }}>{agent.fullName}</div>
+                          <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.fullName}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ ...styles.td, textAlign: 'right', fontFamily: 'monospace' }}>
-                      {formatPrice(agent.price)}
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'right', color: '#6b6b6b' }}>
-                      {agent.age}
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'right', fontFamily: 'monospace' }}>
-                      {formatCompact(agent.txns)}
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'right', fontFamily: 'monospace' }}>
-                      {formatNumber(agent.volume)}
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'right', fontFamily: 'monospace' }}>
-                      {formatCompact(agent.makers)}
-                    </td>
-                    <td style={{ 
-                      ...styles.td, 
-                      textAlign: 'right', 
-                      color: agent.change5m >= 0 ? '#22c55e' : '#ef4444',
-                      fontWeight: 500,
-                    }}>
-                      {agent.change5m >= 0 ? '+' : ''}{agent.change5m.toFixed(2)}%
-                    </td>
-                    <td style={{ 
-                      ...styles.td, 
-                      textAlign: 'right', 
-                      color: agent.change1h >= 0 ? '#22c55e' : '#ef4444',
-                      fontWeight: 500,
-                    }}>
-                      {agent.change1h >= 0 ? '+' : ''}{agent.change1h.toFixed(2)}%
-                    </td>
-                    <td style={{ 
-                      ...styles.td, 
-                      textAlign: 'right', 
-                      color: agent.change6h >= 0 ? '#22c55e' : '#ef4444',
-                      fontWeight: 500,
-                    }}>
-                      {agent.change6h >= 0 ? '+' : ''}{agent.change6h.toFixed(0)}%
-                    </td>
-                    <td style={{ 
-                      ...styles.td, 
-                      textAlign: 'right', 
-                      color: agent.change24h >= 0 ? '#22c55e' : '#ef4444',
-                      fontWeight: 500,
-                    }}>
-                      {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(0)}%
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'right', fontFamily: 'monospace' }}>
-                      {formatNumber(agent.liquidity)}
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'right', fontFamily: 'monospace' }}>
-                      {formatNumber(agent.mcap)}
-                    </td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatPrice(agent.price)}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>{agent.age}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.txns)}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.volume)}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.makers)}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change5m >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change5m >= 0 ? '+' : ''}{agent.change5m.toFixed(2)}%</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change1h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change1h >= 0 ? '+' : ''}{agent.change1h.toFixed(2)}%</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change6h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change6h >= 0 ? '+' : ''}{agent.change6h.toFixed(0)}%</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(0)}%</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.liquidity)}</td>
+                    <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.mcap)}</td>
                   </tr>
                 );
               })}
@@ -903,14 +679,12 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
 // =====================
 // TOKEN DETAIL PAGE
 // =====================
-function TokenPage({ agent, onBack, allAgents: _allAgents, onSelectAgent: _onSelectAgent }: { 
-  agent: typeof MOCK_AGENTS[0]; 
-  onBack: () => void;
-  allAgents: typeof MOCK_AGENTS;
-  onSelectAgent: (agent: typeof MOCK_AGENTS[0]) => void;
-}) {
+function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: () => void }) {
+  const { isDark, toggle } = useTheme();
+  const colors = getColors(isDark);
   const [activeTab, setActiveTab] = useState('transactions');
   const [copied, setCopied] = useState(false);
+  const chain = CHAINS.find(c => c.id === agent.chain);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(agent.id);
@@ -918,9 +692,6 @@ function TokenPage({ agent, onBack, allAgents: _allAgents, onSelectAgent: _onSel
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const chain = CHAINS.find(c => c.id === agent.chain);
-
-  // Generate mock transactions
   const transactions = Array.from({ length: 20 }, (_, i) => ({
     id: i,
     time: `${Math.floor(Math.random() * 59) + 1}s ago`,
@@ -933,182 +704,78 @@ function TokenPage({ agent, onBack, allAgents: _allAgents, onSelectAgent: _onSel
   }));
 
   return (
-    <div style={styles.app}>
+    <div style={{ minHeight: '100vh', backgroundColor: colors.bg, color: colors.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontSize: '13px', position: 'relative' }}>
+      {!isDark && <DottedBackground />}
+
       {/* Left Sidebar */}
-      <div style={styles.sidebar}>
-        <div 
-          style={{ ...styles.sidebarIcon, backgroundColor: '#1a1a1a', color: '#fff', marginBottom: '8px' }}
-          onClick={onBack}
-        >
-          ←
-        </div>
+      <div style={{ position: 'fixed', left: 0, top: 0, bottom: 0, width: '40px', backgroundColor: colors.bg, borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '12px', gap: '4px', zIndex: 100 }}>
+        <div onClick={onBack} style={{ width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.text, marginBottom: '8px' }}>←</div>
         {CHAINS.map((c) => (
-          <div
-            key={c.id}
-            style={{
-              ...styles.sidebarIcon,
-              backgroundColor: c.id === agent.chain ? c.color + '33' : 'transparent',
-              color: c.color,
-            }}
-          >
-            {c.letter}
-          </div>
+          <div key={c.id} style={{ width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, backgroundColor: c.id === agent.chain ? c.color + '33' : 'transparent', color: c.color }}>{c.letter}</div>
         ))}
+        <div style={{ marginTop: 'auto', marginBottom: '12px' }}>
+          <div onClick={toggle} style={{ width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5', color: colors.text }}>{isDark ? <Sun size={14} /> : <Moon size={14} />}</div>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div style={styles.main}>
+      {/* Main */}
+      <div style={{ marginLeft: '40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
         {/* Trending Banner */}
-        <div style={styles.banner}>
+        <div style={{ backgroundColor: isDark ? '#000' : '#ffffff', borderBottom: `1px solid ${colors.border}`, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
           {TRENDING_BANNER.slice(0, 10).map((token, i) => (
-            <div key={i} style={styles.bannerItem}>
-              <span style={{ color: '#6b6b6b', fontWeight: 600 }}>#{i + 1}</span>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', whiteSpace: 'nowrap', fontSize: '11px' }}>
+              <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{i + 1}</span>
               {token.boosted && <Rocket size={10} color="#f0b90b" />}
-              <span style={{ color: '#fff', fontWeight: 500, fontSize: '11px' }}>{token.name}</span>
-              <span style={{ color: token.up ? '#22c55e' : '#ef4444', fontSize: '11px' }}>
-                {token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%
-              </span>
+              <span style={{ color: colors.text, fontWeight: 500 }}>{token.name}</span>
+              <span style={{ color: token.up ? colors.green : colors.red }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
             </div>
           ))}
         </div>
 
         <div style={{ display: 'flex', flex: 1 }}>
           {/* Chart Area */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #1a1a1a' }}>
-            {/* Chart Header */}
-            <div style={{ 
-              padding: '8px 12px', 
-              borderBottom: '1px solid #1a1a1a',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-            }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid ${colors.border}` }}>
+            <div style={{ padding: '8px 12px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 {['1s', '1m', '5m', '15m', '1h', '4h', 'D'].map((tf) => (
-                  <button key={tf} style={{
-                    padding: '4px 8px',
-                    backgroundColor: tf === '5m' ? '#333' : 'transparent',
-                    color: tf === '5m' ? '#fff' : '#6b6b6b',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    cursor: 'pointer',
-                  }}>
-                    {tf}
-                  </button>
+                  <button key={tf} style={{ padding: '4px 8px', backgroundColor: tf === '5m' ? (isDark ? '#333' : '#ddd') : 'transparent', color: tf === '5m' ? colors.text : colors.textSecondary, border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}>{tf}</button>
                 ))}
               </div>
-              <span style={{ color: '#6b6b6b', fontSize: '11px' }}>
-                {agent.ticker}/SOL on {chain?.name} · dexscreener.com
-              </span>
+              <span style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.ticker}/SOL on {chain?.name} · forkexe.fun</span>
             </div>
 
-            {/* Chart */}
-            <div style={{ flex: 1, backgroundColor: '#0a0a0a', position: 'relative', minHeight: '400px' }}>
-              {/* Mock TradingView-style chart */}
+            <div style={{ flex: 1, backgroundColor: colors.bgSecondary, position: 'relative', minHeight: '400px' }}>
               <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="none">
-                {/* Grid */}
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <line key={i} x1="0" y1={i * 80 + 40} x2="800" y2={i * 80 + 40} stroke="#1a1a1a" strokeWidth="1" />
-                ))}
-                {/* Candlesticks */}
+                {[0, 1, 2, 3, 4].map((i) => (<line key={i} x1="0" y1={i * 80 + 40} x2="800" y2={i * 80 + 40} stroke={colors.border} strokeWidth="1" />))}
                 {Array.from({ length: 40 }).map((_, i) => {
-                  const x = i * 20;
-                  const isGreen = Math.random() > 0.45;
-                  const height = Math.random() * 60 + 20;
-                  const y = Math.random() * 200 + 80;
-                  return (
-                    <g key={i}>
-                      <line x1={x + 10} y1={y - 10} x2={x + 10} y2={y + height + 10} stroke={isGreen ? '#22c55e' : '#ef4444'} strokeWidth="1" />
-                      <rect x={x + 4} y={y} width="12" height={height} fill={isGreen ? '#22c55e' : '#ef4444'} />
-                    </g>
-                  );
+                  const x = i * 20; const isGreen = Math.random() > 0.45; const height = Math.random() * 60 + 20; const y = Math.random() * 200 + 80;
+                  return (<g key={i}><line x1={x + 10} y1={y - 10} x2={x + 10} y2={y + height + 10} stroke={isGreen ? colors.green : colors.red} strokeWidth="1" /><rect x={x + 4} y={y} width="12" height={height} fill={isGreen ? colors.green : colors.red} /></g>);
                 })}
-                {/* Volume bars */}
-                {Array.from({ length: 40 }).map((_, i) => {
-                  const x = i * 20;
-                  const height = Math.random() * 40 + 5;
-                  const isGreen = Math.random() > 0.45;
-                  return (
-                    <rect key={`vol-${i}`} x={x + 4} y={380 - height} width="12" height={height} fill={isGreen ? '#22c55e44' : '#ef444444'} />
-                  );
-                })}
+                {Array.from({ length: 40 }).map((_, i) => { const x = i * 20; const height = Math.random() * 40 + 5; const isGreen = Math.random() > 0.45; return <rect key={`vol-${i}`} x={x + 4} y={380 - height} width="12" height={height} fill={isGreen ? colors.green + '44' : colors.red + '44'} />; })}
               </svg>
-              {/* Price label */}
-              <div style={{
-                position: 'absolute',
-                right: '8px',
-                top: '50%',
-                backgroundColor: agent.change24h >= 0 ? '#22c55e' : '#ef4444',
-                padding: '2px 6px',
-                borderRadius: '2px',
-                fontSize: '11px',
-                fontWeight: 600,
-              }}>
-                {formatPrice(agent.price)}
-              </div>
-              {/* TradingView logo */}
-              <div style={{ position: 'absolute', bottom: '8px', left: '8px', color: '#333', fontSize: '12px' }}>
-                TV
-              </div>
+              <div style={{ position: 'absolute', right: '8px', top: '50%', backgroundColor: agent.change24h >= 0 ? colors.green : colors.red, color: '#fff', padding: '2px 6px', borderRadius: '2px', fontSize: '11px', fontWeight: 600 }}>{formatPrice(agent.price)}</div>
             </div>
 
-            {/* Bottom Tabs */}
-            <div style={{ borderTop: '1px solid #1a1a1a' }}>
-              <div style={{ display: 'flex', borderBottom: '1px solid #1a1a1a' }}>
-                {[
-                  { id: 'transactions', label: 'Transactions' },
-                  { id: 'topTraders', label: 'Top Traders' },
-                  { id: 'kols', label: 'KOLs' },
-                  { id: 'holders', label: `Holders (${formatCompact(agent.makers)})` },
-                  { id: 'bubblemaps', label: 'Bubblemaps' },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    style={{
-                      padding: '10px 16px',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderBottom: activeTab === tab.id ? '2px solid #22c55e' : '2px solid transparent',
-                      color: activeTab === tab.id ? '#fff' : '#6b6b6b',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {tab.label}
-                  </button>
+            <div style={{ borderTop: `1px solid ${colors.border}` }}>
+              <div style={{ display: 'flex', borderBottom: `1px solid ${colors.border}` }}>
+                {[{ id: 'transactions', label: 'Transactions' }, { id: 'topTraders', label: 'Top Traders' }, { id: 'kols', label: 'KOLs' }, { id: 'holders', label: `Holders (${formatCompact(agent.makers)})` }, { id: 'bubblemaps', label: 'Bubblemaps' }].map((tab) => (
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: '10px 16px', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === tab.id ? `2px solid ${colors.green}` : '2px solid transparent', color: activeTab === tab.id ? colors.text : colors.textSecondary, fontSize: '12px', cursor: 'pointer' }}>{tab.label}</button>
                 ))}
               </div>
-
-              {/* Transactions */}
-              <div style={{ height: '200px', overflow: 'auto' }}>
+              <div style={{ height: '200px', overflow: 'auto', backgroundColor: colors.bgSecondary }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
-                  <thead>
-                    <tr style={{ backgroundColor: '#0a0a0a' }}>
-                      <th style={{ padding: '8px', textAlign: 'left', color: '#6b6b6b' }}>DATE</th>
-                      <th style={{ padding: '8px', textAlign: 'left', color: '#6b6b6b' }}>TYPE</th>
-                      <th style={{ padding: '8px', textAlign: 'right', color: '#6b6b6b' }}>USD</th>
-                      <th style={{ padding: '8px', textAlign: 'right', color: '#6b6b6b' }}>{agent.ticker}</th>
-                      <th style={{ padding: '8px', textAlign: 'right', color: '#6b6b6b' }}>SOL</th>
-                      <th style={{ padding: '8px', textAlign: 'right', color: '#6b6b6b' }}>PRICE</th>
-                      <th style={{ padding: '8px', textAlign: 'right', color: '#6b6b6b' }}>MAKER</th>
-                      <th style={{ padding: '8px', textAlign: 'right', color: '#6b6b6b' }}>TXN</th>
-                    </tr>
-                  </thead>
+                  <thead><tr style={{ backgroundColor: colors.bg }}>{['DATE', 'TYPE', 'USD', agent.ticker, 'SOL', 'PRICE', 'MAKER', 'TXN'].map((h) => (<th key={h} style={{ padding: '8px', textAlign: h === 'DATE' || h === 'TYPE' ? 'left' : 'right', color: colors.textSecondary }}>{h}</th>))}</tr></thead>
                   <tbody>
                     {transactions.map((tx) => (
-                      <tr key={tx.id} style={{ borderBottom: '1px solid #141414' }}>
-                        <td style={{ padding: '6px 8px', color: '#6b6b6b' }}>{tx.time}</td>
-                        <td style={{ padding: '6px 8px', color: tx.type === 'Buy' ? '#22c55e' : '#ef4444', fontWeight: 500 }}>{tx.type}</td>
+                      <tr key={tx.id} style={{ borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                        <td style={{ padding: '6px 8px', color: colors.textSecondary }}>{tx.time}</td>
+                        <td style={{ padding: '6px 8px', color: tx.type === 'Buy' ? colors.green : colors.red, fontWeight: 500 }}>{tx.type}</td>
                         <td style={{ padding: '6px 8px', textAlign: 'right' }}>{tx.usd.toFixed(2)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: '#6b6b6b' }}>{formatCompact(tx.tokens)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: '#6b6b6b' }}>{tx.native.toFixed(4)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: tx.type === 'Buy' ? '#22c55e' : '#ef4444' }}>{formatPrice(tx.price)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: '#22c55e', cursor: 'pointer' }}>{tx.maker}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: '#6b6b6b' }}>
-                          <ExternalLink size={12} />
-                        </td>
+                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}>{formatCompact(tx.tokens)}</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}>{tx.native.toFixed(4)}</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'right', color: tx.type === 'Buy' ? colors.green : colors.red }}>{formatPrice(tx.price)}</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.green, cursor: 'pointer' }}>{tx.maker}</td>
+                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}><ExternalLink size={12} /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -1118,280 +785,75 @@ function TokenPage({ agent, onBack, allAgents: _allAgents, onSelectAgent: _onSel
           </div>
 
           {/* Right Sidebar */}
-          <div style={{ width: '280px', backgroundColor: '#0a0a0a', overflow: 'auto' }}>
-            {/* Token Header */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+          <div style={{ width: '280px', backgroundColor: colors.bgSecondary, overflow: 'auto' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '32px' }}>{agent.avatar}</span>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontWeight: 700, fontSize: '16px' }}>{agent.ticker}</span>
-                    <span style={{ color: '#6b6b6b' }}>/</span>
-                    <span style={{ color: '#6b6b6b' }}>SOL</span>
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#6b6b6b' }}>
-                    <span style={{ color: chain?.color }}>{chain?.name}</span> · PumpSwap
-                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ fontWeight: 700, fontSize: '16px' }}>{agent.ticker}</span><span style={{ color: colors.textSecondary }}>/</span><span style={{ color: colors.textSecondary }}>SOL</span></div>
+                  <div style={{ fontSize: '11px', color: colors.textSecondary }}><span style={{ color: chain?.color }}>{chain?.name}</span> · PumpSwap</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '6px' }}>
-                <button style={{
-                  flex: 1,
-                  padding: '6px',
-                  backgroundColor: '#1a1a1a',
-                  border: 'none',
-                  borderRadius: '4px',
-                  color: '#fff',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                }}>
-                  <Globe size={12} /> Website
-                </button>
-                <button style={{
-                  flex: 1,
-                  padding: '6px',
-                  backgroundColor: '#1a1a1a',
-                  border: 'none',
-                  borderRadius: '4px',
-                  color: '#fff',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                }}>
-                  𝕏 Twitter
-                </button>
+                <button style={{ flex: 1, padding: '6px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.text, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Globe size={12} /> Website</button>
+                <button style={{ flex: 1, padding: '6px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.text, fontSize: '11px', cursor: 'pointer' }}>𝕏 Twitter</button>
               </div>
             </div>
-
-            {/* Price */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b', marginBottom: '2px' }}>PRICE USD</div>
-                  <div style={{ fontSize: '16px', fontWeight: 700, color: '#22c55e' }}>{formatPrice(agent.price)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b', marginBottom: '2px' }}>PRICE SOL</div>
-                  <div style={{ fontSize: '16px', fontWeight: 700 }}>{agent.priceNative.toFixed(8)}</div>
-                </div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '2px' }}>PRICE USD</div><div style={{ fontSize: '16px', fontWeight: 700, color: colors.green }}>{formatPrice(agent.price)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '2px' }}>PRICE SOL</div><div style={{ fontSize: '16px', fontWeight: 700 }}>{agent.priceNative.toFixed(8)}</div></div>
               </div>
             </div>
-
-            {/* Liquidity / FDV / MCap */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>LIQUIDITY</div>
-                  <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {formatNumber(agent.liquidity)}
-                    <span style={{ fontSize: '10px', color: '#22c55e' }}>🔒</span>
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>FDV</div>
-                  <div style={{ fontWeight: 600 }}>{formatNumber(agent.fdv)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>MKT CAP</div>
-                  <div style={{ fontWeight: 600 }}>{formatNumber(agent.mcap)}</div>
-                </div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>LIQUIDITY</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.liquidity)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>FDV</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.fdv)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>MKT CAP</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.mcap)}</div></div>
               </div>
             </div>
-
-            {/* Price Changes */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
-                {[
-                  { label: '5M', value: agent.change5m },
-                  { label: '1H', value: agent.change1h },
-                  { label: '6H', value: agent.change6h },
-                  { label: '24H', value: agent.change24h },
-                ].map((item) => (
-                  <div key={item.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '10px', color: '#6b6b6b' }}>{item.label}</div>
-                    <div style={{ 
-                      fontWeight: 600, 
-                      color: item.value >= 0 ? '#22c55e' : '#ef4444',
-                      fontSize: '13px',
-                    }}>
-                      {item.value >= 0 ? '+' : ''}{item.value.toFixed(2)}%
-                    </div>
-                  </div>
+                {[{ label: '5M', value: agent.change5m }, { label: '1H', value: agent.change1h }, { label: '6H', value: agent.change6h }, { label: '24H', value: agent.change24h }].map((item) => (
+                  <div key={item.label} style={{ textAlign: 'center' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>{item.label}</div><div style={{ fontWeight: 600, color: item.value >= 0 ? colors.green : colors.red, fontSize: '13px' }}>{item.value >= 0 ? '+' : ''}{item.value.toFixed(2)}%</div></div>
                 ))}
               </div>
             </div>
-
-            {/* Txns */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>TXNS</div>
-                  <div style={{ fontWeight: 600 }}>{formatCompact(agent.txns)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>BUYS</div>
-                  <div style={{ fontWeight: 600, color: '#22c55e' }}>{formatCompact(agent.buys24h)}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>SELLS</div>
-                  <div style={{ fontWeight: 600, color: '#ef4444' }}>{formatCompact(agent.sells24h)}</div>
-                </div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>TXNS</div><div style={{ fontWeight: 600 }}>{formatCompact(agent.txns)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUYS</div><div style={{ fontWeight: 600, color: colors.green }}>{formatCompact(agent.buys24h)}</div></div>
+                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELLS</div><div style={{ fontWeight: 600, color: colors.red }}>{formatCompact(agent.sells24h)}</div></div>
               </div>
-              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
-                <div style={{ width: `${(agent.buys24h / agent.txns) * 100}%`, backgroundColor: '#22c55e' }} />
-                <div style={{ width: `${(agent.sells24h / agent.txns) * 100}%`, backgroundColor: '#ef4444' }} />
-              </div>
+              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden' }}><div style={{ width: `${(agent.buys24h / agent.txns) * 100}%`, backgroundColor: colors.green }} /><div style={{ width: `${(agent.sells24h / agent.txns) * 100}%`, backgroundColor: colors.red }} /></div>
             </div>
-
-            {/* Volume */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>VOLUME</div>
-                  <div style={{ fontWeight: 600 }}>{formatNumber(agent.volume)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>BUY VOL</div>
-                  <div style={{ fontWeight: 600, color: '#22c55e' }}>{formatNumber(agent.buyVolume)}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>SELL VOL</div>
-                  <div style={{ fontWeight: 600, color: '#ef4444' }}>{formatNumber(agent.sellVolume)}</div>
-                </div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>VOLUME</div><div style={{ fontWeight: 600 }}>{formatNumber(agent.volume)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUY VOL</div><div style={{ fontWeight: 600, color: colors.green }}>{formatNumber(agent.buyVolume)}</div></div>
+                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELL VOL</div><div style={{ fontWeight: 600, color: colors.red }}>{formatNumber(agent.sellVolume)}</div></div>
               </div>
-              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
-                <div style={{ width: `${(agent.buyVolume / agent.volume) * 100}%`, backgroundColor: '#22c55e' }} />
-                <div style={{ width: `${(agent.sellVolume / agent.volume) * 100}%`, backgroundColor: '#ef4444' }} />
-              </div>
+              <div style={{ display: 'flex', height: '4px', borderRadius: '2px', overflow: 'hidden' }}><div style={{ width: `${(agent.buyVolume / agent.volume) * 100}%`, backgroundColor: colors.green }} /><div style={{ width: `${(agent.sellVolume / agent.volume) * 100}%`, backgroundColor: colors.red }} /></div>
             </div>
-
-            {/* Makers */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>MAKERS</div>
-                  <div style={{ fontWeight: 600 }}>{formatCompact(agent.makers)}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>BUYERS</div>
-                  <div style={{ fontWeight: 600, color: '#22c55e' }}>{formatCompact(agent.buyers)}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '10px', color: '#6b6b6b' }}>SELLERS</div>
-                  <div style={{ fontWeight: 600, color: '#ef4444' }}>{formatCompact(agent.sellers)}</div>
-                </div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>MAKERS</div><div style={{ fontWeight: 600 }}>{formatCompact(agent.makers)}</div></div>
+                <div><div style={{ fontSize: '10px', color: colors.textSecondary }}>BUYERS</div><div style={{ fontWeight: 600, color: colors.green }}>{formatCompact(agent.buyers)}</div></div>
+                <div style={{ textAlign: 'right' }}><div style={{ fontSize: '10px', color: colors.textSecondary }}>SELLERS</div><div style={{ fontWeight: 600, color: colors.red }}>{formatCompact(agent.sellers)}</div></div>
               </div>
             </div>
-
-            {/* Buttons */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                <button style={{
-                  flex: 1,
-                  padding: '8px',
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #333',
-                  borderRadius: '6px',
-                  color: '#fff',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                }}>
-                  <Star size={14} /> Watchlist
-                </button>
-                <button style={{
-                  flex: 1,
-                  padding: '8px',
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #333',
-                  borderRadius: '6px',
-                  color: '#fff',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                }}>
-                  <Bell size={14} /> Alerts
-                </button>
+                <button style={{ flex: 1, padding: '8px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.text, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Star size={14} /> Watchlist</button>
+                <button style={{ flex: 1, padding: '8px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.text, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Bell size={14} /> Alerts</button>
               </div>
-              <a 
-                href="https://wallet.xyz?ref=forkexe"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  width: '100%',
-                  padding: '10px',
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #333',
-                  borderRadius: '6px',
-                  color: '#fff',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                }}
-              >
-                Trade on wallet.xyz
-                <ExternalLink size={12} />
-              </a>
+              <a href="https://wallet.xyz?ref=forkexe" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', width: '100%', padding: '10px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.text, fontSize: '12px', cursor: 'pointer', textDecoration: 'none' }}>Trade on wallet.xyz <ExternalLink size={12} /></a>
             </div>
-
-            {/* Pooled */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '10px', color: '#6b6b6b' }}>Pooled {agent.ticker}</span>
-                <span style={{ fontSize: '12px' }}>{formatCompact(agent.pooledToken)} <span style={{ color: '#6b6b6b' }}>${formatCompact(agent.pooledNative)}</span></span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '10px', color: '#6b6b6b' }}>Pooled SOL</span>
-                <span style={{ fontSize: '12px' }}>575.56 <span style={{ color: '#6b6b6b' }}>$67K</span></span>
-              </div>
+            <div style={{ padding: '12px', borderBottom: `1px solid ${colors.border}` }}>
+              <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '8px' }}>Pair</div>
+              <button onClick={copyAddress} style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%', padding: '8px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.textSecondary, fontSize: '11px', cursor: 'pointer', fontFamily: 'monospace' }}>{agent.id.slice(0, 6)}...{agent.id.slice(-4)}{copied ? <span style={{ color: colors.green }}>✓</span> : <Copy size={12} />}<ExternalLink size={12} style={{ marginLeft: 'auto' }} /></button>
             </div>
-
-            {/* Contract */}
-            <div style={{ padding: '12px', borderBottom: '1px solid #1a1a1a' }}>
-              <div style={{ fontSize: '10px', color: '#6b6b6b', marginBottom: '8px' }}>Pair</div>
-              <button
-                onClick={copyAddress}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  width: '100%',
-                  padding: '8px',
-                  backgroundColor: '#1a1a1a',
-                  border: 'none',
-                  borderRadius: '4px',
-                  color: '#6b6b6b',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  fontFamily: 'monospace',
-                }}
-              >
-                {agent.id.slice(0, 6)}...{agent.id.slice(-4)}
-                {copied ? <span style={{ color: '#22c55e' }}>✓</span> : <Copy size={12} />}
-                <ExternalLink size={12} style={{ marginLeft: 'auto' }} />
-              </button>
-            </div>
-
-            {/* Audit */}
-            <div style={{ padding: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '10px', color: '#6b6b6b' }}>Audit</span>
-                <span style={{ fontSize: '11px', color: '#22c55e' }}>No Issues</span>
-              </div>
-            </div>
+            <div style={{ padding: '12px' }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ fontSize: '10px', color: colors.textSecondary }}>Audit</span><span style={{ fontSize: '11px', color: colors.green }}>No Issues</span></div></div>
           </div>
         </div>
       </div>
@@ -1403,18 +865,13 @@ function TokenPage({ agent, onBack, allAgents: _allAgents, onSelectAgent: _onSel
 // MAIN APP
 // =====================
 export default function AgentDiscovery() {
+  const [isDark, setIsDark] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<typeof MOCK_AGENTS[0] | null>(null);
+  const toggle = () => setIsDark(!isDark);
 
-  if (selectedAgent) {
-    return (
-      <TokenPage
-        agent={selectedAgent}
-        onBack={() => setSelectedAgent(null)}
-        allAgents={MOCK_AGENTS}
-        onSelectAgent={setSelectedAgent}
-      />
-    );
-  }
-
-  return <ScreenerPage onSelectAgent={setSelectedAgent} />;
+  return (
+    <ThemeContext.Provider value={{ isDark, toggle }}>
+      {selectedAgent ? <TokenPage agent={selectedAgent} onBack={() => setSelectedAgent(null)} /> : <ScreenerPage onSelectAgent={setSelectedAgent} />}
+    </ThemeContext.Provider>
+  );
 }
