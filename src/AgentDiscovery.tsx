@@ -639,7 +639,7 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   
   // Fetch agents from Supabase
-  const { agents: dbAgents, loading, error } = useAgents();
+  const { agents: dbAgents, loading } = useAgents();
   const stats = useStats();
   
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
