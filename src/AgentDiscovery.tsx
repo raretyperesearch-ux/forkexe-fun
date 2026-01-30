@@ -460,6 +460,77 @@ const DottedBackground = () => (
   }} />
 );
 
+// Bubbles background for dark mode
+const BubblesBackground = () => (
+  <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+    {/* Large gradient bubbles */}
+    <div style={{
+      position: 'absolute',
+      width: '600px',
+      height: '600px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, transparent 70%)',
+      top: '-200px',
+      right: '-100px',
+    }} />
+    <div style={{
+      position: 'absolute',
+      width: '500px',
+      height: '500px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
+      bottom: '-150px',
+      left: '-100px',
+    }} />
+    <div style={{
+      position: 'absolute',
+      width: '400px',
+      height: '400px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, transparent 70%)',
+      top: '30%',
+      left: '20%',
+    }} />
+    <div style={{
+      position: 'absolute',
+      width: '350px',
+      height: '350px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(59, 130, 246, 0.07) 0%, transparent 70%)',
+      bottom: '20%',
+      right: '15%',
+    }} />
+    <div style={{
+      position: 'absolute',
+      width: '250px',
+      height: '250px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(168, 85, 247, 0.06) 0%, transparent 70%)',
+      top: '50%',
+      right: '30%',
+    }} />
+    {/* Smaller accent bubbles */}
+    <div style={{
+      position: 'absolute',
+      width: '150px',
+      height: '150px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%)',
+      top: '15%',
+      left: '40%',
+    }} />
+    <div style={{
+      position: 'absolute',
+      width: '100px',
+      height: '100px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%)',
+      bottom: '40%',
+      left: '60%',
+    }} />
+  </div>
+);
+
 // =====================
 // SCREENER PAGE
 // =====================
@@ -483,6 +554,7 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
       position: 'relative',
     }}>
       {!isDark && <DottedBackground />}
+      {isDark && <BubblesBackground />}
       
       {/* Left Sidebar */}
       <div style={{
@@ -706,6 +778,7 @@ function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
   return (
     <div style={{ minHeight: '100vh', backgroundColor: colors.bg, color: colors.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontSize: '13px', position: 'relative' }}>
       {!isDark && <DottedBackground />}
+      {isDark && <BubblesBackground />}
 
       {/* Left Sidebar */}
       <div style={{ position: 'fixed', left: 0, top: 0, bottom: 0, width: '40px', backgroundColor: colors.bg, borderRight: `1px solid ${colors.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '12px', gap: '4px', zIndex: 100 }}>
