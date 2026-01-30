@@ -17,6 +17,7 @@
     "ethers": "^6.16.0",
     "framer-motion": "^12.29.2",
     "lucide-react": "^0.563.0",
+    "oauth-1.0a": "^2.2.6",
     "postcss": "^8.5.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
