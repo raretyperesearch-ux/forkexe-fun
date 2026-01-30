@@ -34,6 +34,27 @@ const CHAINS = [
   { id: 'optimism', name: 'Optimism', color: '#FF0420', letter: 'O' },
 ];
 
+// Agent frameworks
+const FRAMEWORKS = {
+  eliza: { name: 'ElizaOS', color: '#00D4AA', icon: '🤖' },
+  virtuals: { name: 'Virtuals', color: '#8B5CF6', icon: '🌐' },
+  ai16z: { name: 'ai16z', color: '#FF6B35', icon: '🧠' },
+  custom: { name: 'Custom', color: '#6B7280', icon: '⚙️' },
+};
+
+// Activity type icons and colors
+const ACTIVITY_TYPES = {
+  trade: { icon: '📈', color: '#22c55e', label: 'Trade' },
+  research: { icon: '🔬', color: '#8B5CF6', label: 'Research' },
+  post: { icon: '📝', color: '#3B82F6', label: 'Post' },
+  social: { icon: '💬', color: '#EC4899', label: 'Social' },
+  analysis: { icon: '🎯', color: '#F59E0B', label: 'Analysis' },
+  alert: { icon: '🚨', color: '#EF4444', label: 'Alert' },
+  defi: { icon: '💰', color: '#10B981', label: 'DeFi' },
+  creative: { icon: '🎨', color: '#8B5CF6', label: 'Creative' },
+  transaction: { icon: '💸', color: '#22c55e', label: 'Transaction' },
+};
+
 // Mock agent data
 const MOCK_AGENTS = [
   {
@@ -65,6 +86,14 @@ const MOCK_AGENTS = [
     sellers: 7445,
     pooledToken: 575.56,
     pooledNative: 67000,
+    framework: 'virtuals',
+    category: 'research',
+    activities: [
+      { type: 'research', action: 'Analyzed 847 research papers on pancreatic cancer', time: '2m ago' },
+      { type: 'post', action: 'Published funding proposal to DAO', time: '15m ago' },
+      { type: 'transaction', action: 'Distributed $12.4K to 3 research grants', time: '1h ago' },
+      { type: 'research', action: 'Identified 12 promising clinical trials', time: '2h ago' },
+    ],
   },
   {
     id: '0x2b3c4d',
@@ -95,6 +124,14 @@ const MOCK_AGENTS = [
     sellers: 2321,
     pooledToken: 450,
     pooledNative: 52000,
+    framework: 'eliza',
+    category: 'social',
+    activities: [
+      { type: 'post', action: 'Posted motivational thread on X (42K views)', time: '5m ago' },
+      { type: 'social', action: 'Replied to 128 community messages', time: '30m ago' },
+      { type: 'post', action: 'Generated daily alpha report', time: '1h ago' },
+      { type: 'social', action: 'Hosted Twitter Space (2.1K listeners)', time: '3h ago' },
+    ],
   },
   {
     id: '0x3c4d5e',
@@ -125,6 +162,14 @@ const MOCK_AGENTS = [
     sellers: 2976,
     pooledToken: 890,
     pooledNative: 145000,
+    framework: 'custom',
+    category: 'trading',
+    activities: [
+      { type: 'trade', action: 'Opened 3 long positions on DOGE', time: '1m ago' },
+      { type: 'analysis', action: 'Detected Elon tweet sentiment: bullish', time: '8m ago' },
+      { type: 'trade', action: 'Closed SOL position (+24.5%)', time: '45m ago' },
+      { type: 'alert', action: 'Sent whale movement alert to holders', time: '1h ago' },
+    ],
   },
   {
     id: '0x4d5e6f',
@@ -155,6 +200,13 @@ const MOCK_AGENTS = [
     sellers: 697,
     pooledToken: 120,
     pooledNative: 28000,
+    framework: 'eliza',
+    category: 'social',
+    activities: [
+      { type: 'post', action: 'Shared dad joke #4,521', time: '3m ago' },
+      { type: 'social', action: 'Engaged with 89 replies', time: '20m ago' },
+      { type: 'post', action: 'Created meme (shared 1.2K times)', time: '2h ago' },
+    ],
   },
   {
     id: '0x5e6f7a',
@@ -185,6 +237,13 @@ const MOCK_AGENTS = [
     sellers: 3957,
     pooledToken: 340,
     pooledNative: 89000,
+    framework: 'virtuals',
+    category: 'social',
+    activities: [
+      { type: 'post', action: 'Quacked at 12 trending topics', time: '10m ago' },
+      { type: 'social', action: 'Raided competitor thread', time: '1h ago' },
+      { type: 'analysis', action: 'Sentiment analysis on duck memes', time: '3h ago' },
+    ],
   },
   {
     id: '0x6f7a8b',
@@ -215,6 +274,13 @@ const MOCK_AGENTS = [
     sellers: 767,
     pooledToken: 85,
     pooledNative: 15000,
+    framework: 'custom',
+    category: 'defi',
+    activities: [
+      { type: 'defi', action: 'Rebalanced LP position on Uniswap', time: '15m ago' },
+      { type: 'transaction', action: 'Claimed 2.4 ETH in fees', time: '2h ago' },
+      { type: 'defi', action: 'Added liquidity to PEPE/ETH pool', time: '6h ago' },
+    ],
   },
   {
     id: '0x7a8b9c',
@@ -245,6 +311,14 @@ const MOCK_AGENTS = [
     sellers: 929,
     pooledToken: 780,
     pooledNative: 195000,
+    framework: 'ai16z',
+    category: 'trading',
+    activities: [
+      { type: 'trade', action: 'Executed mass buy order ($45K)', time: '2m ago' },
+      { type: 'analysis', action: 'War room strategy update published', time: '30m ago' },
+      { type: 'alert', action: 'Detected 3 whale wallets accumulating', time: '1h ago' },
+      { type: 'trade', action: 'Closed 5 profitable positions', time: '4h ago' },
+    ],
   },
   {
     id: '0x8b9c0d',
@@ -275,6 +349,13 @@ const MOCK_AGENTS = [
     sellers: 2450,
     pooledToken: 920,
     pooledNative: 210000,
+    framework: 'virtuals',
+    category: 'creative',
+    activities: [
+      { type: 'creative', action: 'Generated 24 new NFT artworks', time: '5m ago' },
+      { type: 'post', action: 'Livestream started (8.2K watching)', time: '1h ago' },
+      { type: 'creative', action: 'Composed new song "Soul Anthem"', time: '6h ago' },
+    ],
   },
   {
     id: '0x9c0d1e',
@@ -305,6 +386,13 @@ const MOCK_AGENTS = [
     sellers: 1700,
     pooledToken: 145,
     pooledNative: 32000,
+    framework: 'eliza',
+    category: 'social',
+    activities: [
+      { type: 'post', action: 'Wake-up call tweet (viral: 89K likes)', time: '8m ago' },
+      { type: 'social', action: 'Roasted 47 paper hands', time: '1h ago' },
+      { type: 'post', action: 'Daily alpha drop published', time: '5h ago' },
+    ],
   },
   {
     id: '0x0d1e2f',
@@ -335,6 +423,13 @@ const MOCK_AGENTS = [
     sellers: 9704,
     pooledToken: 180,
     pooledNative: 38000,
+    framework: 'custom',
+    category: 'research',
+    activities: [
+      { type: 'research', action: 'Backtested 2017 bull run patterns', time: '12m ago' },
+      { type: 'analysis', action: 'Published cycle analysis report', time: '3h ago' },
+      { type: 'alert', action: 'Historical pattern match detected', time: '8h ago' },
+    ],
   },
   {
     id: '0x1e2f3a',
@@ -365,6 +460,13 @@ const MOCK_AGENTS = [
     sellers: 1955,
     pooledToken: 1450,
     pooledNative: 890000,
+    framework: 'ai16z',
+    category: 'research',
+    activities: [
+      { type: 'research', action: 'Published "Beyond Good and Evil Markets"', time: '1h ago' },
+      { type: 'analysis', action: 'Philosophical analysis of market psychology', time: '4h ago' },
+      { type: 'post', action: 'Quoted Nietzsche on diamond hands', time: '8h ago' },
+    ],
   },
   {
     id: '0x2f3a4b',
@@ -395,6 +497,14 @@ const MOCK_AGENTS = [
     sellers: 1335,
     pooledToken: 380,
     pooledNative: 95000,
+    framework: 'eliza',
+    category: 'trading',
+    activities: [
+      { type: 'trade', action: 'Sniped new launch (+340%)', time: '3m ago' },
+      { type: 'alert', action: 'New meta detected: AI agents', time: '20m ago' },
+      { type: 'trade', action: 'Rotated into 4 new positions', time: '1h ago' },
+      { type: 'analysis', action: 'Alpha call hit target (5x)', time: '3h ago' },
+    ],
   },
 ];
 
@@ -720,6 +830,21 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
                             <span style={{ color: colors.textSecondary }}>{agent.ticker}</span>
+                            {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
+                              <span style={{ 
+                                backgroundColor: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color + '20', 
+                                color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color, 
+                                padding: '1px 6px', 
+                                borderRadius: '4px', 
+                                fontSize: '10px', 
+                                fontWeight: 600,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '2px',
+                              }}>
+                                {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon} {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].name}
+                              </span>
+                            )}
                             {agent.boosted > 0 && <span style={{ backgroundColor: '#332b00', color: '#f0b90b', padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>🚀{agent.boosted}</span>}
                           </div>
                           <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.fullName}</div>
@@ -754,7 +879,7 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
 function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: () => void }) {
   const { isDark, toggle } = useTheme();
   const colors = getColors(isDark);
-  const [activeTab, setActiveTab] = useState('transactions');
+  const [activeTab, setActiveTab] = useState('activity');
   const [copied, setCopied] = useState(false);
   const chain = CHAINS.find(c => c.id === agent.chain);
 
@@ -831,28 +956,80 @@ function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
 
             <div style={{ borderTop: `1px solid ${colors.border}` }}>
               <div style={{ display: 'flex', borderBottom: `1px solid ${colors.border}` }}>
-                {[{ id: 'transactions', label: 'Transactions' }, { id: 'topTraders', label: 'Top Traders' }, { id: 'kols', label: 'KOLs' }, { id: 'holders', label: `Holders (${formatCompact(agent.makers)})` }, { id: 'bubblemaps', label: 'Bubblemaps' }].map((tab) => (
+                {[{ id: 'activity', label: '⚡ Activity' }, { id: 'transactions', label: 'Transactions' }, { id: 'topTraders', label: 'Top Traders' }, { id: 'kols', label: 'KOLs' }, { id: 'holders', label: `Holders (${formatCompact(agent.makers)})` }, { id: 'bubblemaps', label: 'Bubblemaps' }].map((tab) => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: '10px 16px', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === tab.id ? `2px solid ${colors.green}` : '2px solid transparent', color: activeTab === tab.id ? colors.text : colors.textSecondary, fontSize: '12px', cursor: 'pointer' }}>{tab.label}</button>
                 ))}
               </div>
               <div style={{ height: '200px', overflow: 'auto', backgroundColor: colors.bgSecondary }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
-                  <thead><tr style={{ backgroundColor: colors.bg }}>{['DATE', 'TYPE', 'USD', agent.ticker, 'SOL', 'PRICE', 'MAKER', 'TXN'].map((h) => (<th key={h} style={{ padding: '8px', textAlign: h === 'DATE' || h === 'TYPE' ? 'left' : 'right', color: colors.textSecondary }}>{h}</th>))}</tr></thead>
-                  <tbody>
-                    {transactions.map((tx) => (
-                      <tr key={tx.id} style={{ borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
-                        <td style={{ padding: '6px 8px', color: colors.textSecondary }}>{tx.time}</td>
-                        <td style={{ padding: '6px 8px', color: tx.type === 'Buy' ? colors.green : colors.red, fontWeight: 500 }}>{tx.type}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right' }}>{tx.usd.toFixed(2)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}>{formatCompact(tx.tokens)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}>{tx.native.toFixed(4)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: tx.type === 'Buy' ? colors.green : colors.red }}>{formatPrice(tx.price)}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.green, cursor: 'pointer' }}>{tx.maker}</td>
-                        <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}><ExternalLink size={12} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {activeTab === 'activity' ? (
+                  <div style={{ padding: '8px' }}>
+                    {agent.activities && agent.activities.map((activity: { type: string; action: string; time: string }, i: number) => {
+                      const activityType = ACTIVITY_TYPES[activity.type as keyof typeof ACTIVITY_TYPES] || ACTIVITY_TYPES.alert;
+                      return (
+                        <div key={i} style={{ 
+                          display: 'flex', 
+                          alignItems: 'flex-start', 
+                          gap: '10px', 
+                          padding: '10px 8px',
+                          borderBottom: `1px solid ${isDark ? '#1a1a1a' : '#f0f0f0'}`,
+                        }}>
+                          <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '6px',
+                            backgroundColor: activityType.color + '20',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                            flexShrink: 0,
+                          }}>
+                            {activityType.icon}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '12px', color: colors.text, lineHeight: 1.4 }}>{activity.action}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                              <span style={{ 
+                                fontSize: '10px', 
+                                color: activityType.color,
+                                backgroundColor: activityType.color + '20',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontWeight: 500,
+                              }}>
+                                {activityType.label}
+                              </span>
+                              <span style={{ fontSize: '10px', color: colors.textSecondary }}>{activity.time}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {(!agent.activities || agent.activities.length === 0) && (
+                      <div style={{ padding: '20px', textAlign: 'center', color: colors.textSecondary, fontSize: '12px' }}>
+                        No recent activity
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+                    <thead><tr style={{ backgroundColor: colors.bg }}>{['DATE', 'TYPE', 'USD', agent.ticker, 'SOL', 'PRICE', 'MAKER', 'TXN'].map((h) => (<th key={h} style={{ padding: '8px', textAlign: h === 'DATE' || h === 'TYPE' ? 'left' : 'right', color: colors.textSecondary }}>{h}</th>))}</tr></thead>
+                    <tbody>
+                      {transactions.map((tx) => (
+                        <tr key={tx.id} style={{ borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                          <td style={{ padding: '6px 8px', color: colors.textSecondary }}>{tx.time}</td>
+                          <td style={{ padding: '6px 8px', color: tx.type === 'Buy' ? colors.green : colors.red, fontWeight: 500 }}>{tx.type}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right' }}>{tx.usd.toFixed(2)}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}>{formatCompact(tx.tokens)}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}>{tx.native.toFixed(4)}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', color: tx.type === 'Buy' ? colors.green : colors.red }}>{formatPrice(tx.price)}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.green, cursor: 'pointer' }}>{tx.maker}</td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', color: colors.textSecondary }}><ExternalLink size={12} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>
@@ -867,6 +1044,27 @@ function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
                   <div style={{ fontSize: '11px', color: colors.textSecondary }}><span style={{ color: chain?.color }}>{chain?.name}</span> · PumpSwap</div>
                 </div>
               </div>
+              {/* Framework Badge */}
+              {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  padding: '8px 10px', 
+                  backgroundColor: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color + '15',
+                  borderRadius: '8px',
+                  marginBottom: '10px',
+                  border: `1px solid ${FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color}40`,
+                }}>
+                  <span style={{ fontSize: '16px' }}>{FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon}</span>
+                  <div>
+                    <div style={{ fontSize: '11px', color: colors.textSecondary }}>FRAMEWORK</div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color }}>
+                      {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].name}
+                    </div>
+                  </div>
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button style={{ flex: 1, padding: '6px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.text, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><Globe size={12} /> Website</button>
                 <button style={{ flex: 1, padding: '6px', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', border: 'none', borderRadius: '4px', color: colors.text, fontSize: '11px', cursor: 'pointer' }}>𝕏 Twitter</button>
