@@ -538,6 +538,24 @@ const TRENDING_BANNER = [
   { name: 'BTM', change: -12, up: false, boosted: false },
   { name: 'PENGUIN', change: -11, up: false, boosted: false },
   { name: 'HITLANA', change: 96, up: true, boosted: true },
+  { name: 'MOCHI', change: 45.2, up: true, boosted: false },
+  { name: 'WOJAK', change: -8.5, up: false, boosted: false },
+  { name: 'PEPE2', change: 234.1, up: true, boosted: true },
+  { name: 'DOGE3', change: 67.8, up: true, boosted: false },
+  { name: 'SHIB2', change: -15.3, up: false, boosted: false },
+  { name: 'BONK2', change: 89.4, up: true, boosted: false },
+  { name: 'FLOKI2', change: 12.7, up: true, boosted: false },
+  { name: 'SAMO', change: -22.1, up: false, boosted: false },
+  { name: 'MYRO', change: 156.9, up: true, boosted: true },
+  { name: 'WIF2', change: 78.3, up: true, boosted: false },
+  { name: 'POPCAT', change: -5.6, up: false, boosted: false },
+  { name: 'MEW', change: 43.2, up: true, boosted: false },
+  { name: 'BRETT', change: 112.5, up: true, boosted: true },
+  { name: 'TOSHI', change: -18.9, up: false, boosted: false },
+  { name: 'PONKE', change: 67.1, up: true, boosted: false },
+  { name: 'SLERF', change: 234.8, up: true, boosted: true },
+  { name: 'BOME', change: -9.4, up: false, boosted: false },
+  { name: 'GIGA', change: 445.2, up: true, boosted: true },
 ];
 
 const formatNumber = (num: number): string => {
@@ -764,23 +782,33 @@ function ScreenerPage() {
 
       {/* Main Content */}
       <div style={{ marginLeft: '40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        {/* Trending Banner */}
+        {/* Trending Banner - Scrolling Marquee */}
         <div style={{
           backgroundColor: isDark ? '#000' : '#ffffff',
           borderBottom: `1px solid ${colors.border}`,
-          padding: '6px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
           overflow: 'hidden',
+          position: 'relative',
         }}>
-          {TRENDING_BANNER.map((token, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '12px' }}>
-              <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{i + 1}</span>
-              <span style={{ color: colors.text, fontWeight: 600 }}>{token.name}</span>
-              <span style={{ color: token.up ? colors.green : colors.red, fontWeight: 500 }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
-            </div>
-          ))}
+          <style>{`
+            @keyframes marquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+          `}</style>
+          <div style={{
+            display: 'flex',
+            animation: 'marquee 30s linear infinite',
+            width: 'fit-content',
+          }}>
+            {/* Duplicate the items for seamless loop */}
+            {[...TRENDING_BANNER, ...TRENDING_BANNER].map((token, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '12px' }}>
+                <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % TRENDING_BANNER.length) + 1}</span>
+                <span style={{ color: colors.text, fontWeight: 600 }}>{token.name}</span>
+                <span style={{ color: token.up ? colors.green : colors.red, fontWeight: 500 }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* View Toggle */}
