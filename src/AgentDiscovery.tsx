@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Search, 
   TrendingUp, 
@@ -12,11 +12,8 @@ import {
   CheckCircle2,
   ArrowLeft,
   Copy,
-  ExternalLink,
   Globe,
-  MessageCircle,
   ShieldCheck,
-  RefreshCw,
 } from 'lucide-react';
 
 // Mock data with trading metrics
@@ -321,7 +318,6 @@ const MOCK_AGENTS = [
 
 // Mock transactions
 const generateMockTransactions = (agent: typeof MOCK_AGENTS[0]) => {
-  const types = ['Buy', 'Sell'];
   const transactions = [];
   for (let i = 0; i < 20; i++) {
     const isBuy = Math.random() > 0.45;
