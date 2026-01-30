@@ -759,7 +759,6 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
           {TRENDING_BANNER.map((token, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '12px' }}>
               <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{i + 1}</span>
-              {token.boosted && <Rocket size={12} color="#f0b90b" />}
               <span style={{ color: colors.text, fontWeight: 600 }}>{token.name}</span>
               <span style={{ color: token.up ? colors.green : colors.red, fontWeight: 500 }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
             </div>
@@ -845,7 +844,6 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
                                 {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].icon} {FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].name}
                               </span>
                             )}
-                            {agent.boosted > 0 && <span style={{ backgroundColor: '#332b00', color: '#f0b90b', padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>🚀{agent.boosted}</span>}
                           </div>
                           <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.fullName}</div>
                         </div>
@@ -923,7 +921,6 @@ function TokenPage({ agent, onBack }: { agent: typeof MOCK_AGENTS[0]; onBack: ()
           {TRENDING_BANNER.slice(0, 10).map((token, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', whiteSpace: 'nowrap', fontSize: '11px' }}>
               <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{i + 1}</span>
-              {token.boosted && <Rocket size={10} color="#f0b90b" />}
               <span style={{ color: colors.text, fontWeight: 500 }}>{token.name}</span>
               <span style={{ color: token.up ? colors.green : colors.red }}>{token.up ? '↑' : '↓'}{Math.abs(token.change).toFixed(0)}%</span>
             </div>
