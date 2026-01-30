@@ -1,58 +1,88 @@
-import crypto from 'crypto';
-import OAuth from 'oauth-1.0a';
 import { createClient } from '@supabase/supabase-js';
 
-const CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY || 'basvE0m5N73lZql07Q8BTd3Tu';
-const CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET || '4jY9mYCos7lE3MUMrdGimihMeJvoCeG8wEBGXmrE3lopJyZpB5';
+const CLIENT_ID = process.env.TWITTER_CLIENT_ID || 'ZFRiY29yVWdaSnlBRm5rVDlydVU6MTpjaQ';
+const CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET || 'lmOuFfBhn-ONvltevEgUYbASzsM5_9q7luQyyzMToYYTxafMR9';
+const CALLBACK_URL = 'https://forkexe-fun.vercel.app/api/auth/callback';
 
 const supabase = createClient(
   process.env.SUPABASE_URL || 'https://edspwhxvlqwvylrgiygz.supabase.co',
   process.env.SUPABASE_SERVICE_KEY || ''
 );
 
-const oauth = new OAuth({
-  consumer: { key: CONSUMER_KEY, secret: CONSUMER_SECRET },
-  signature_method: 'HMAC-SHA1',
-  hash_function(base_string, key) {
-    return crypto.createHmac('sha1', key).update(base_string).digest('base64');
-  },
-});
+function parseCookies(cookieHeader: string): Record<string, string> {
+  const cookies: Record<string, string> = {};
+  if (cookieHeader) {
+    cookieHeader.split(';').forEach(cookie => {
+      const [name, value] = cookie.trim().split('=');
+      cookies[name] = value;
+    });
+  }
+  return cookies;
+}
 
 export default async function handler(req: any, res: any) {
-  const { oauth_token, oauth_verifier, agentId } = req.query;
+  const { code, state, error } = req.query;
 
-  if (!oauth_token || !oauth_verifier || !agentId) {
+  if (error) {
+    return res.redirect(`/?error=${error}`);
+  }
+
+  if (!code || !state) {
     return res.redirect('/?error=missing_params');
   }
 
+  // Get code verifier from cookie
+  const cookies = parseCookies(req.headers.cookie || '');
+  const codeVerifier = cookies['code_verifier'];
+
+  if (!codeVerifier) {
+    return res.redirect('/?error=missing_verifier');
+  }
+
+  // Decode state to get agentId
+  let agentId: string;
   try {
-    // Step 2: Exchange for access token
-    const accessTokenData = {
-      url: 'https://api.twitter.com/oauth/access_token',
-      method: 'POST',
-      data: { oauth_token, oauth_verifier },
-    };
+    const stateData = JSON.parse(Buffer.from(state, 'base64url').toString());
+    agentId = stateData.agentId;
+  } catch {
+    return res.redirect('/?error=invalid_state');
+  }
 
-    const authHeader = oauth.toHeader(oauth.authorize(accessTokenData, { key: oauth_token, secret: '' }));
-
-    const tokenResponse = await fetch(accessTokenData.url, {
+  try {
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://api.twitter.com/2/oauth2/token', {
       method: 'POST',
       headers: {
-        ...authHeader,
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
       },
-      body: `oauth_verifier=${oauth_verifier}`,
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: CALLBACK_URL,
+        code_verifier: codeVerifier,
+      }).toString(),
     });
 
-    const tokenText = await tokenResponse.text();
-    const tokenParams = new URLSearchParams(tokenText);
-    const accessToken = tokenParams.get('oauth_token');
-    const accessTokenSecret = tokenParams.get('oauth_token_secret');
-    const twitterHandle = tokenParams.get('screen_name');
-    const twitterUserId = tokenParams.get('user_id');
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenData.access_token) {
+      console.error('Token error:', tokenData);
+      return res.redirect('/?error=token_failed');
+    }
+
+    // Get user info
+    const userResponse = await fetch('https://api.twitter.com/2/users/me', {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+      },
+    });
+
+    const userData = await userResponse.json();
+    const twitterHandle = userData.data?.username;
 
     if (!twitterHandle) {
-      throw new Error('Failed to get Twitter handle');
+      return res.redirect('/?error=user_fetch_failed');
     }
 
     // Check if this Twitter handle owns the agent
@@ -74,8 +104,7 @@ export default async function handler(req: any, res: any) {
       return res.redirect(`/?error=handle_mismatch&expected=${agentHandle}&got=${userHandle}`);
     }
 
-    // Handle matches! Ask for wallet address
-    // For now, redirect to a page where they can enter their wallet
+    // Handle matches! Redirect to claim page
     res.redirect(`/claim?agentId=${agentId}&handle=${twitterHandle}&verified=true`);
 
   } catch (error) {

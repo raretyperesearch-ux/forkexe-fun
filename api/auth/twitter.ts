@@ -1,17 +1,15 @@
 import crypto from 'crypto';
-import OAuth from 'oauth-1.0a';
 
-const CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY || 'basvE0m5N73lZql07Q8BTd3Tu';
-const CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET || '4jY9mYCos7lE3MUMrdGimihMeJvoCeG8wEBGXmrE3lopJyZpB5';
+const CLIENT_ID = process.env.TWITTER_CLIENT_ID || 'ZFRiY29yVWdaSnlBRm5rVDlydVU6MTpjaQ';
 const CALLBACK_URL = 'https://forkexe-fun.vercel.app/api/auth/callback';
 
-const oauth = new OAuth({
-  consumer: { key: CONSUMER_KEY, secret: CONSUMER_SECRET },
-  signature_method: 'HMAC-SHA1',
-  hash_function(base_string, key) {
-    return crypto.createHmac('sha1', key).update(base_string).digest('base64');
-  },
-});
+function generateCodeVerifier(): string {
+  return crypto.randomBytes(64).toString('base64url');
+}
+
+function generateCodeChallenge(verifier: string): string {
+  return crypto.createHash('sha256').update(verifier).digest('base64url');
+}
 
 export default async function handler(req: any, res: any) {
   const agentId = req.query.agentId;
@@ -20,36 +18,25 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: 'agentId required' });
   }
 
-  try {
-    // Step 1: Get request token
-    const requestData = {
-      url: 'https://api.twitter.com/oauth/request_token',
-      method: 'POST',
-      data: { oauth_callback: `${CALLBACK_URL}?agentId=${agentId}` },
-    };
+  // Generate state with agentId
+  const state = Buffer.from(JSON.stringify({ agentId })).toString('base64url');
+  
+  // Generate code verifier and challenge for PKCE
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = generateCodeChallenge(codeVerifier);
+  
+  // Store code verifier in cookie for callback
+  res.setHeader('Set-Cookie', `code_verifier=${codeVerifier}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
 
-    const authHeader = oauth.toHeader(oauth.authorize(requestData));
+  const params = new URLSearchParams({
+    response_type: 'code',
+    client_id: CLIENT_ID,
+    redirect_uri: CALLBACK_URL,
+    scope: 'tweet.read users.read',
+    state: state,
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
+  });
 
-    const response = await fetch(requestData.url, {
-      method: 'POST',
-      headers: {
-        ...authHeader,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    const text = await response.text();
-    const params = new URLSearchParams(text);
-    const oauthToken = params.get('oauth_token');
-
-    if (!oauthToken) {
-      throw new Error('Failed to get request token');
-    }
-
-    // Redirect to Twitter auth page
-    res.redirect(`https://api.twitter.com/oauth/authorize?oauth_token=${oauthToken}`);
-  } catch (error) {
-    console.error('Twitter auth error:', error);
-    res.status(500).json({ error: 'Auth failed' });
-  }
+  res.redirect(`https://twitter.com/i/oauth2/authorize?${params.toString()}`);
 }
