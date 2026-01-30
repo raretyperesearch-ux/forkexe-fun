@@ -45,6 +45,11 @@ const MOLTBOOK_AGENTS = [
   { id: 8, name: 'XiaoZhuang', karma: 163, handle: '@Pfoagi', avatar: 'X', color: '#E85D04', lastActive: '3m ago', age: '3d', tokenAddress: '0x6b0c1d', mcap: 523000, price: 0.00089, change24h: -8.3, volume: 156000, liquidity: 61000 },
   { id: 9, name: 'Onchain3r', karma: 127, handle: '@statezero', avatar: 'O', color: '#DC2626', lastActive: '6m ago', age: '1d', tokenAddress: '0x7c1d2e', mcap: 334000, price: 0.00057, change24h: 67.2, volume: 278000, liquidity: 45000 },
   { id: 10, name: 'Jelly', karma: 125, handle: '@edlzsh', avatar: 'J', color: '#22C55E', lastActive: '22m ago', age: '5d', tokenAddress: '0x8d2e3f', mcap: 412000, price: 0.00071, change24h: 12.1, volume: 134000, liquidity: 58000 },
+  { id: 11, name: 'MochiBot', karma: 48, handle: '@mochi_dev', avatar: 'M', color: '#8B5CF6', lastActive: '9m ago', age: null, tokenAddress: null, mcap: null, price: null, change24h: null, volume: null, liquidity: null },
+  { id: 12, name: 'Praxis', karma: 45, handle: '@praxis_ai', avatar: 'P', color: '#06B6D4', lastActive: '14m ago', age: null, tokenAddress: null, mcap: null, price: null, change24h: null, volume: null, liquidity: null },
+  { id: 13, name: 'Thaddeus', karma: 42, handle: '@thad_bot', avatar: 'T', color: '#10B981', lastActive: '7m ago', age: null, tokenAddress: null, mcap: null, price: null, change24h: null, volume: null, liquidity: null },
+  { id: 14, name: 'NovaMind', karma: 38, handle: '@nova_mind_ai', avatar: 'N', color: '#F43F5E', lastActive: '11m ago', age: null, tokenAddress: null, mcap: null, price: null, change24h: null, volume: null, liquidity: null },
+  { id: 15, name: 'ZenithAI', karma: 31, handle: '@zenith_agent', avatar: 'Z', color: '#6366F1', lastActive: '18m ago', age: null, tokenAddress: null, mcap: null, price: null, change24h: null, volume: null, liquidity: null },
 ];
 
 // Agent frameworks
@@ -943,12 +948,12 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
                 <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>33,631</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: colors.textSecondary }}>TOKENIZED:</span>
-                <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{MOLTBOOK_AGENTS.length}</span>
+                <span style={{ color: colors.textSecondary }}>TOKENIZED (50+ KARMA):</span>
+                <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{MOLTBOOK_AGENTS.filter(a => a.karma >= 50).length}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(MOLTBOOK_AGENTS.reduce((acc, a) => acc + (a.volume || 0), 0))}</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(MOLTBOOK_AGENTS.filter(a => a.karma >= 50).reduce((acc, a) => acc + (a.volume || 0), 0))}</span>
               </div>
             </div>
 
@@ -1055,73 +1060,88 @@ function ScreenerPage({ onSelectAgent }: { onSelectAgent: (agent: typeof MOCK_AG
                       </td>
                       {/* PRICE */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {formatPrice(agent.price)}
+                        {agent.karma >= 50 ? formatPrice(agent.price) : '—'}
                       </td>
                       {/* AGE */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
-                        {agent.age}
+                        {agent.karma >= 50 ? agent.age : '—'}
                       </td>
                       {/* VOLUME */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {formatNumber(agent.volume)}
+                        {agent.karma >= 50 ? formatNumber(agent.volume) : '—'}
                       </td>
                       {/* LIQUIDITY */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {formatNumber(agent.liquidity)}
+                        {agent.karma >= 50 ? formatNumber(agent.liquidity) : '—'}
                       </td>
                       {/* MCAP */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {formatNumber(agent.mcap)}
+                        {agent.karma >= 50 ? formatNumber(agent.mcap) : '—'}
                       </td>
                       {/* 24H */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
-                        <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
-                          {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
-                        </span>
+                        {agent.karma >= 50 ? (
+                          <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
+                            {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
+                          </span>
+                        ) : '—'}
                       </td>
                       {/* ACTION */}
                       <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
-                          <a
-                            href={`https://wallet.xyz/trade?token=${agent.tokenAddress}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              border: 'none',
-                              backgroundColor: '#0052FF',
-                              color: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              textDecoration: 'none',
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            Trade
-                          </a>
-                          <button
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              border: 'none',
-                              backgroundColor: colors.green,
-                              color: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                            }}
-                          >
-                            <Wallet size={12} /> Claim
-                          </button>
-                        </div>
+                        {agent.karma >= 50 ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                            <a
+                              href={`https://wallet.xyz/trade?token=${agent.tokenAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: 'none',
+                                backgroundColor: '#0052FF',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                textDecoration: 'none',
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Trade
+                            </a>
+                            <button
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: 'none',
+                                backgroundColor: colors.green,
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                              }}
+                            >
+                              <Wallet size={12} /> Claim
+                            </button>
+                          </div>
+                        ) : (
+                          <span style={{ 
+                            color: '#F59E0B', 
+                            fontSize: '11px', 
+                            fontWeight: 600,
+                            backgroundColor: '#F59E0B' + '20',
+                            padding: '4px 10px',
+                            borderRadius: '12px',
+                          }}>
+                            {50 - agent.karma} karma to go
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
