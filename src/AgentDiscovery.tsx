@@ -865,7 +865,9 @@ function ScreenerPage() {
             Tokenized Agents
           </button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
-            <span style={{ fontSize: '11px', color: colors.textSecondary }}>Powered by</span>
+            <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
+            <span style={{ fontSize: '13px', fontWeight: 700, color: colors.text }}>agentscreener</span>
+            <span style={{ fontSize: '11px', color: colors.textSecondary }}>powered by</span>
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#EF4444' }}>moltbook</span>
             <span style={{ fontSize: '11px', color: colors.textSecondary }}>×</span>
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#8B5CF6' }}>bankr</span>

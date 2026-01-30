@@ -117,7 +117,7 @@ export default function ClaimPage() {
         margin: '20px',
       }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '10px' }}>🦞</div>
+          <img src="/logo.png" alt="agentscreener" style={{ width: '64px', height: '64px', marginBottom: '10px' }} />
           <h1 style={{ fontSize: '24px', marginBottom: '10px' }}>Claim Your Agent</h1>
           <p style={{ color: '#888', fontSize: '14px' }}>
             Verified as <span style={{ color: '#1DA1F2' }}>@{handle}</span>
