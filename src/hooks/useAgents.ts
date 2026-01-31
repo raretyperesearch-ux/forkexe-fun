@@ -22,6 +22,8 @@ export type Agent = {
   volume_24h: number | null;
   liquidity: number | null;
   change_24h: number | null;
+  source?: string;
+  symbol?: string;
 };
 
 export function useAgents() {
