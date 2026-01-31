@@ -602,6 +602,7 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'bankr' | 'clanker' | 'agent'>('all');
   
   // Detect mobile screen
   useEffect(() => {
@@ -633,10 +634,20 @@ function ScreenerPage() {
         change24h: agent.change_24h,
         volume: agent.volume_24h,
         liquidity: agent.liquidity,
+        source: agent.source || 'unknown',
+        symbol: agent.symbol,
       }));
 
-  // Filter by search
+  // Filter by search and source
   const moltbookAgents = allAgents.filter(agent => {
+    // Source filter
+    if (sourceFilter !== 'all') {
+      const agentSource = (agent as any).source || 'unknown';
+      if (sourceFilter === 'bankr' && agentSource !== 'bankr') return false;
+      if (sourceFilter === 'clanker' && agentSource !== 'clanker') return false;
+      if (sourceFilter === 'agent' && !['agent', 'bankr', 'moltbook'].includes(agentSource)) return false;
+    }
+    // Search filter
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return agent.name.toLowerCase().includes(query) || 
@@ -1045,7 +1056,7 @@ function ScreenerPage() {
             {/* Mobile DexScreener-style header */}
             {isMobile ? (
               <>
-                {/* Filter Pills - DexScreener style */}
+                {/* Filter Pills - Source filter */}
                 <div style={{ 
                   display: 'flex', 
                   gap: '6px', 
@@ -1053,21 +1064,65 @@ function ScreenerPage() {
                   overflowX: 'auto',
                   WebkitOverflowScrolling: 'touch',
                 }}>
-                  <button style={{ 
-                    padding: '5px 10px', 
-                    borderRadius: '14px', 
-                    fontSize: '11px', 
-                    fontWeight: 600, 
-                    cursor: 'pointer', 
-                    border: 'none', 
-                    backgroundColor: colors.green,
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    🦞 MOLT agents
+                  <button 
+                    onClick={() => setSourceFilter('all')}
+                    style={{ 
+                      padding: '5px 10px', 
+                      borderRadius: '14px', 
+                      fontSize: '11px', 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      border: sourceFilter === 'all' ? 'none' : `1px solid ${colors.border}`,
+                      backgroundColor: sourceFilter === 'all' ? colors.green : 'transparent',
+                      color: sourceFilter === 'all' ? '#fff' : colors.text,
+                      whiteSpace: 'nowrap',
+                    }}>
+                    🔥 All
+                  </button>
+                  <button 
+                    onClick={() => setSourceFilter('bankr')}
+                    style={{ 
+                      padding: '5px 10px', 
+                      borderRadius: '14px', 
+                      fontSize: '11px', 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      border: sourceFilter === 'bankr' ? 'none' : `1px solid ${colors.border}`,
+                      backgroundColor: sourceFilter === 'bankr' ? '#0052FF' : 'transparent',
+                      color: sourceFilter === 'bankr' ? '#fff' : colors.text,
+                      whiteSpace: 'nowrap',
+                    }}>
+                    🏦 Bankr
+                  </button>
+                  <button 
+                    onClick={() => setSourceFilter('agent')}
+                    style={{ 
+                      padding: '5px 10px', 
+                      borderRadius: '14px', 
+                      fontSize: '11px', 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      border: sourceFilter === 'agent' ? 'none' : `1px solid ${colors.border}`,
+                      backgroundColor: sourceFilter === 'agent' ? '#8B5CF6' : 'transparent',
+                      color: sourceFilter === 'agent' ? '#fff' : colors.text,
+                      whiteSpace: 'nowrap',
+                    }}>
+                    🤖 Agents
+                  </button>
+                  <button 
+                    onClick={() => setSourceFilter('clanker')}
+                    style={{ 
+                      padding: '5px 10px', 
+                      borderRadius: '14px', 
+                      fontSize: '11px', 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      border: sourceFilter === 'clanker' ? 'none' : `1px solid ${colors.border}`,
+                      backgroundColor: sourceFilter === 'clanker' ? '#F59E0B' : 'transparent',
+                      color: sourceFilter === 'clanker' ? '#fff' : colors.text,
+                      whiteSpace: 'nowrap',
+                    }}>
+                    🦾 Clanker
                   </button>
                 </div>
                 
@@ -1177,9 +1232,23 @@ function ScreenerPage() {
                         
                         {/* Name & Handle */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
                             <span style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>{agent.name}</span>
-                            <span style={{ color: '#EF4444', fontWeight: 600, fontSize: '11px' }}>{agent.karma}🔥</span>
+                            {(agent as any).source && (agent as any).source !== 'unknown' && (
+                              <span style={{ 
+                                fontSize: '8px', 
+                                fontWeight: 600, 
+                                padding: '1px 4px', 
+                                borderRadius: '4px',
+                                backgroundColor: (agent as any).source === 'bankr' ? '#0052FF' : 
+                                                 (agent as any).source === 'agent' ? '#8B5CF6' : 
+                                                 (agent as any).source === 'moltbook' ? '#EF4444' : '#F59E0B',
+                                color: '#fff',
+                                textTransform: 'uppercase',
+                              }}>
+                                {(agent as any).source}
+                              </span>
+                            )}
                           </div>
                           <div style={{ color: colors.textSecondary, fontSize: '11px' }}>
                             @{agent.handle?.replace('@', '')}
