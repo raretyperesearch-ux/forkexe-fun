@@ -11,6 +11,10 @@ import {
   Moon,
   Twitter,
   Wallet,
+  Home,
+  Star,
+  Settings,
+  BarChart3,
 } from 'lucide-react';
 import { useAgents, useStats } from './hooks/useAgents';
 
@@ -603,6 +607,8 @@ function ScreenerPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'bankr' | 'clanker' | 'agent'>('all');
+  const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
+  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
   
   // Detect mobile screen
   useEffect(() => {
@@ -652,6 +658,14 @@ function ScreenerPage() {
     const query = searchQuery.toLowerCase();
     return agent.name.toLowerCase().includes(query) || 
            agent.handle.toLowerCase().includes(query);
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'volume': return (b.volume || 0) - (a.volume || 0);
+      case 'change': return (b.change24h || 0) - (a.change24h || 0);
+      case 'mcap': return (b.mcap || 0) - (a.mcap || 0);
+      case 'newest': 
+      default: return b.id - a.id;
+    }
   });
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
@@ -1059,71 +1073,58 @@ function ScreenerPage() {
                 {/* Filter Pills - Source filter */}
                 <div style={{ 
                   display: 'flex', 
-                  gap: '6px', 
-                  padding: '6px 12px',
+                  gap: '8px', 
+                  padding: '8px 12px',
                   overflowX: 'auto',
                   WebkitOverflowScrolling: 'touch',
+                  alignItems: 'center',
                 }}>
-                  <button 
-                    onClick={() => setSourceFilter('all')}
-                    style={{ 
-                      padding: '5px 10px', 
-                      borderRadius: '14px', 
-                      fontSize: '11px', 
-                      fontWeight: 600, 
-                      cursor: 'pointer', 
-                      border: sourceFilter === 'all' ? 'none' : `1px solid ${colors.border}`,
-                      backgroundColor: sourceFilter === 'all' ? colors.green : 'transparent',
-                      color: sourceFilter === 'all' ? '#fff' : colors.text,
-                      whiteSpace: 'nowrap',
-                    }}>
-                    All
-                  </button>
-                  <button 
-                    onClick={() => setSourceFilter('bankr')}
-                    style={{ 
-                      padding: '5px 10px', 
-                      borderRadius: '14px', 
-                      fontSize: '11px', 
-                      fontWeight: 600, 
-                      cursor: 'pointer', 
-                      border: sourceFilter === 'bankr' ? 'none' : `1px solid ${colors.border}`,
-                      backgroundColor: sourceFilter === 'bankr' ? '#0052FF' : 'transparent',
-                      color: sourceFilter === 'bankr' ? '#fff' : colors.text,
-                      whiteSpace: 'nowrap',
-                    }}>
-                    Bankr
-                  </button>
-                  <button 
-                    onClick={() => setSourceFilter('agent')}
-                    style={{ 
-                      padding: '5px 10px', 
-                      borderRadius: '14px', 
-                      fontSize: '11px', 
-                      fontWeight: 600, 
-                      cursor: 'pointer', 
-                      border: sourceFilter === 'agent' ? 'none' : `1px solid ${colors.border}`,
-                      backgroundColor: sourceFilter === 'agent' ? '#8B5CF6' : 'transparent',
-                      color: sourceFilter === 'agent' ? '#fff' : colors.text,
-                      whiteSpace: 'nowrap',
-                    }}>
-                    Agents
-                  </button>
-                  <button 
-                    onClick={() => setSourceFilter('clanker')}
-                    style={{ 
-                      padding: '5px 10px', 
-                      borderRadius: '14px', 
-                      fontSize: '11px', 
-                      fontWeight: 600, 
-                      cursor: 'pointer', 
-                      border: sourceFilter === 'clanker' ? 'none' : `1px solid ${colors.border}`,
-                      backgroundColor: sourceFilter === 'clanker' ? '#F59E0B' : 'transparent',
-                      color: sourceFilter === 'clanker' ? '#fff' : colors.text,
-                      whiteSpace: 'nowrap',
-                    }}>
-                    Clanker
-                  </button>
+                  {[
+                    { key: 'all', label: 'All' },
+                    { key: 'bankr', label: 'Bankr' },
+                    { key: 'agent', label: 'Agents' },
+                    { key: 'clanker', label: 'Clanker' },
+                  ].map(({ key, label }) => (
+                    <button 
+                      key={key}
+                      onClick={() => setSourceFilter(key as any)}
+                      style={{ 
+                        padding: '6px 14px', 
+                        borderRadius: '20px', 
+                        fontSize: '12px', 
+                        fontWeight: 500, 
+                        cursor: 'pointer', 
+                        border: sourceFilter === key ? 'none' : `1px solid ${colors.border}`,
+                        backgroundColor: sourceFilter === key ? colors.text : 'transparent',
+                        color: sourceFilter === key ? colors.bg : colors.textSecondary,
+                        whiteSpace: 'nowrap',
+                      }}>
+                      {label}
+                    </button>
+                  ))}
+                  
+                  {/* Sort dropdown */}
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    style={{
+                      marginLeft: 'auto',
+                      padding: '6px 10px',
+                      borderRadius: '20px',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      border: `1px solid ${colors.border}`,
+                      backgroundColor: 'transparent',
+                      color: colors.text,
+                      cursor: 'pointer',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="newest">Newest</option>
+                    <option value="volume">Volume</option>
+                    <option value="change">24h Change</option>
+                    <option value="mcap">Market Cap</option>
+                  </select>
                 </div>
                 
                 {/* Stats Bar - inline compact */}
@@ -1199,7 +1200,7 @@ function ScreenerPage() {
             )}
 
             {/* Moltbook Agents List */}
-            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: isMobile ? '80px' : '0' }}>
               {/* Mobile DexScreener-style View */}
               {isMobile ? (
                 <div>
@@ -1492,6 +1493,49 @@ function ScreenerPage() {
           </>
         )}
       </div>
+      
+      {/* Mobile Bottom Nav */}
+      {isMobile && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: colors.bg,
+          borderTop: `1px solid ${colors.border}`,
+          display: 'flex',
+          justifyContent: 'space-around',
+          padding: '8px 0 20px 0',
+          zIndex: 1000,
+        }}>
+          {[
+            { key: 'home', icon: Home, label: 'Home' },
+            { key: 'search', icon: Search, label: 'Search' },
+            { key: 'watchlist', icon: Star, label: 'Watchlist' },
+            { key: 'settings', icon: Settings, label: 'Settings' },
+          ].map(({ key, icon: Icon, label }) => (
+            <button
+              key={key}
+              onClick={() => setMobileTab(key as any)}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '2px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 12px',
+                color: mobileTab === key ? colors.text : colors.textSecondary,
+                opacity: mobileTab === key ? 1 : 0.6,
+              }}
+            >
+              <Icon size={20} strokeWidth={mobileTab === key ? 2.5 : 1.5} />
+              <span style={{ fontSize: '10px', fontWeight: mobileTab === key ? 600 : 400 }}>{label}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
