@@ -39,7 +39,7 @@ export function useAgents() {
         .from('agents')
         .select('*')
         .order('volume_24h', { ascending: false, nullsFirst: false })
-        .limit(1000);
+        .limit(100);
         
       if (error) throw error;
       setAgents(data || []);
