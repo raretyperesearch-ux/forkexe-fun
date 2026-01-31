@@ -1121,15 +1121,32 @@ function ScreenerPage() {
             )}
 
             {isMobile && mobileTab === 'watchlist' && (
-              <div style={{ padding: '16px', paddingBottom: '100px', textAlign: 'center' }}>
-                <Star size={48} style={{ color: colors.textSecondary, marginTop: '60px', marginBottom: '16px' }} />
-                <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Watchlist</h3>
-                <p style={{ color: colors.textSecondary, fontSize: '14px', marginBottom: '24px' }}>
-                  Save your favorite tokens here
-                </p>
-                <p style={{ color: colors.textSecondary, fontSize: '12px' }}>
-                  Coming soon - tap the star on any token to add it
-                </p>
+              <div style={{ padding: '16px', paddingBottom: '100px' }}>
+                <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>Watchlist</h3>
+                {watchlist.length === 0 ? (
+                  <div style={{ textAlign: 'center', paddingTop: '40px' }}>
+                    <Star size={40} style={{ color: colors.textSecondary, marginBottom: '12px' }} />
+                    <p style={{ color: colors.textSecondary, fontSize: '14px' }}>No tokens saved yet</p>
+                    <p style={{ color: colors.textSecondary, fontSize: '12px', marginTop: '8px' }}>Tap the ★ on any token to add it</p>
+                  </div>
+                ) : (
+                  <div>
+                    {moltbookAgents.filter(a => watchlist.includes(a.id)).map(agent => (
+                    <div key={agent.id} onClick={() => setSelectedAgent(agent)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', borderRadius: '12px', marginBottom: '8px', background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', cursor: 'pointer' }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#1C1C1D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🦞</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: '14px' }}>{agent.name}</div>
+                          <div style={{ color: colors.textSecondary, fontSize: '12px' }}>{agent.price ? formatPrice(agent.price) : '$0.00'}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '13px', color: (agent.change24h || 0) >= 0 ? '#22C55E' : '#EF4444', fontWeight: 600 }}>{(agent.change24h || 0) >= 0 ? '↑' : '↓'}{Math.abs(agent.change24h || 0).toFixed(1)}%</div>
+                          <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</div>
+                        </div>
+                        <button onClick={(e) => toggleWatchlist(agent.id, e)} style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}><Star size={18} fill={'#F59E0B'} color={'#F59E0B'} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -1755,6 +1772,7 @@ function ScreenerPage() {
         <>
           {/* Backdrop */}
           <div 
+              <button onClick={(e) => toggleWatchlist(selectedAgent.id, e)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}><Star size={20} fill={watchlist.includes(selectedAgent.id) ? "#F59E0B" : "none"} color={watchlist.includes(selectedAgent.id) ? "#F59E0B" : colors.textSecondary} /></button>
             onClick={() => setSelectedAgent(null)}
             style={{
               position: 'fixed',
