@@ -1142,7 +1142,8 @@ function ScreenerPage() {
                 {watchlist.length === 0 ? (
                   <div style={{ textAlign: 'center', paddingTop: '60px' }}>
                     <Star size={48} style={{ color: colors.textSecondary, marginBottom: '16px' }} />
-                    <p style={{ color: colors.text, fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>No tokens save                    <p style={{ color: colors.textSecondary, fontSize: '13px' }}>Tap ★ in token details to add</p>
+                    <p style={{ color: colors.text, fontSize: "16px", fontWeight: 600, marginBottom: "8px" }}>No tokens saved</p>
+                    <p style={{ color: colors.textSecondary, fontSize: "13px" }}>Tap ★ in token details to add</p>
                   </div>
                 ) : (
                   <>
@@ -1183,7 +1184,7 @@ function ScreenerPage() {
                               <span style={{ color: colors.textSecondary }}>LIQ </span><span style={{ color: colors.text }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</span>
                             </span>
                             <span style={{ fontSize: '10px', padding: '4px 8px', borderRadius: '6px', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
-                              <span style={{ color: colors.textSecondary }}>VOL </span><sp style={{ color: colors.text }}>{agent.volume ? formatNumber(agent.volume) : '—'}</span>
+                              <span style={{ color: colors.textSecondary }}>VOL </span><span style={{ color: colors.text }}>{agent.volume ? formatNumber(agent.volume) : '—'}</span>
                             </span>
                             <span style={{ fontSize: '10px', padding: '4px 8px', borderRadius: '6px', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
                               <span style={{ color: colors.textSecondary }}>MCAP </span><span style={{ color: colors.text }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
