@@ -14,7 +14,6 @@ import {
   Home,
   Star,
   Settings,
-  BarChart3,
 } from 'lucide-react';
 import { useAgents, useStats } from './hooks/useAgents';
 
