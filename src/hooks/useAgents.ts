@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://edspwhxvlqwvylrgiygz.supabase.co';
@@ -31,66 +31,67 @@ export function useAgents() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchAgents() {
-      try {
-        const { data, error } = await supabase
-          .from('agents')
-          .select('*')
-          .order('volume_24h', { ascending: false, nullsFirst: false })
-          .limit(1000);
-
-        if (error) throw error;
-        setAgents(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch agents');
-      } finally {
-        setLoading(false);
-      }
+  const fetchAgents = useCallback(async (isInitial = false) => {
+    try {
+      if (isInitial) setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .order('volume_24h', { ascending: false, nullsFirst: false })
+        .limit(1000);
+        
+      if (error) throw error;
+      setAgents(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch agents');
+    } finally {
+      if (isInitial) setLoading(false);
     }
-
-    fetchAgents();
-
-    // Subscribe to realtime updates
-    const subscription = supabase
-      .channel('agents')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, (payload) => {
-        if (payload.eventType === 'INSERT') {
-          setAgents(prev => [...prev, payload.new as Agent].sort((a, b) => b.karma - a.karma));
-        } else if (payload.eventType === 'UPDATE') {
-          setAgents(prev => prev.map(a => a.id === payload.new.id ? payload.new as Agent : a).sort((a, b) => b.karma - a.karma));
-        }
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
-  return { agents, loading, error };
+  useEffect(() => {
+    // Initial fetch
+    fetchAgents(true);
+
+    // Poll every 30 seconds for fresh data
+    const pollInterval = setInterval(() => {
+      fetchAgents(false);
+    }, 30000);
+
+    // Cleanup
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [fetchAgents]);
+
+  return { agents, loading, error, refetch: () => fetchAgents(false) };
 }
 
 export function useStats() {
-  const [stats, setStats] = useState({ totalAgents: 33631, tokenized: 0, volume24h: 0 });
+  const [stats, setStats] = useState({ totalAgents: 0, tokenized: 0, volume24h: 0 });
+
+  const fetchStats = useCallback(async () => {
+    const { data: allAgents } = await supabase
+      .from('agents')
+      .select('karma, volume_24h, token_address');
+      
+    if (allAgents) {
+      setStats({
+        totalAgents: allAgents.length,
+        tokenized: allAgents.filter(a => a.token_address).length,
+        volume24h: allAgents.reduce((sum, a) => sum + (a.volume_24h || 0), 0),
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    async function fetchStats() {
-      const { data: allAgents } = await supabase
-        .from('agents')
-        .select('karma, volume_24h, token_address');
-
-      if (allAgents) {
-        setStats({
-          totalAgents: 33631,
-          tokenized: allAgents.filter(a => a.karma >= 50).length,
-          volume24h: allAgents.reduce((sum, a) => sum + (a.volume_24h || 0), 0),
-        });
-      }
-    }
-
     fetchStats();
-  }, []);
+    
+    // Poll stats every 30 seconds too
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, [fetchStats]);
 
   return stats;
 }

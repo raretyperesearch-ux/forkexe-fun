@@ -5,7 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || ''
 );
 
-export const config = { maxDuration: 60 };
+export const config = { maxDuration: 120 };
 
 export default async function handler(req: any, res: any) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -13,64 +13,86 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // Get all tokens with addresses
+    // Get ALL tokens with addresses
     const { data: agents } = await supabase
       .from('agents')
-      .select('id, token_address')
-      .not('token_address', 'is', null)
-      .limit(200);
+      .select('id, token_address, name')
+      .not('token_address', 'is', null);
 
     if (!agents || agents.length === 0) {
-      return res.status(200).json({ success: true, updated: 0 });
+      return res.status(200).json({ success: true, updated: 0, message: 'No tokens' });
     }
 
     let updated = 0;
+    let errors = 0;
     
-    // Batch into groups of 10
-    const batchSize = 10;
+    // Batch into groups of 5 (DexScreener handles better)
+    const batchSize = 5;
+    
     for (let i = 0; i < agents.length; i += batchSize) {
       const batch = agents.slice(i, i + batchSize);
       const addresses = batch.map(a => a.token_address).join(',');
       
       try {
-        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addresses}`);
-        if (!response.ok) continue;
+        const response = await fetch(
+          `https://api.dexscreener.com/latest/dex/tokens/${addresses}`,
+          { headers: { 'Accept': 'application/json' } }
+        );
+        
+        if (!response.ok) {
+          errors++;
+          continue;
+        }
         
         const data = await response.json();
         const pairs = data.pairs || [];
         
         for (const agent of batch) {
-          // Find all pairs for this token, get the one with highest liquidity
+          // Find ALL pairs for this token on Base chain
           const tokenPairs = pairs.filter((p: any) => 
-            p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase()
+            p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase() &&
+            p.chainId === 'base'
           );
           
           if (tokenPairs.length > 0) {
-            // Sort by liquidity, pick highest
-            const pair = tokenPairs.sort((a: any, b: any) => 
+            // Sort by liquidity DESC, get the best pair
+            const bestPair = tokenPairs.sort((a: any, b: any) => 
               (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
             )[0];
             
-            await supabase.from('agents').update({
-              price: parseFloat(pair.priceUsd) || null,
-              mcap: pair.marketCap || pair.fdv || null,
-              volume_24h: pair.volume?.h24 || null,
-              liquidity: pair.liquidity?.usd || null,
-              change_24h: pair.priceChange?.h24 || null,
+            const updateData = {
+              price: parseFloat(bestPair.priceUsd) || null,
+              mcap: bestPair.marketCap || bestPair.fdv || null,
+              volume_24h: bestPair.volume?.h24 || null,
+              liquidity: bestPair.liquidity?.usd || null,
+              change_24h: bestPair.priceChange?.h24 || null,
               updated_at: new Date().toISOString(),
-            }).eq('id', agent.id);
+            };
+            
+            await supabase
+              .from('agents')
+              .update(updateData)
+              .eq('id', agent.id);
             
             updated++;
           }
         }
       } catch (e) {
+        errors++;
         console.error('Batch error:', e);
       }
       
-      await new Promise(r => setTimeout(r, 200));
+      // Rate limit: 300ms between batches
+      await new Promise(r => setTimeout(r, 300));
     }
 
-    return res.status(200).json({ success: true, updated, total: agents.length });
+    return res.status(200).json({ 
+      success: true, 
+      updated, 
+      total: agents.length,
+      errors,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
     return res.status(500).json({ error: String(error) });
   }
