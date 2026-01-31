@@ -46,23 +46,27 @@ export default async function handler(req: any, res: any) {
   try {
     console.log('Fetching tokenized agents...');
     
-    // Get all agents with real token addresses (0x...)
+    // Get all agents with real token addresses (0x... and length 42)
     const { data: agents, error } = await supabase
       .from('agents')
       .select('*')
-      .like('token_address', '0x%')
-      .gt('karma', 0);
+      .like('token_address', '0x%');
 
     if (error) throw error;
 
-    console.log(`Found ${agents?.length || 0} tokenized agents`);
+    // Filter to only real addresses (42 chars for ETH/Base)
+    const tokenizedAgents = (agents || []).filter(a => 
+      a.token_address && a.token_address.length >= 40
+    );
+
+    console.log(`Found ${tokenizedAgents.length} tokenized agents`);
 
     let updated = 0;
     
-    for (const agent of agents || []) {
+    for (const agent of tokenizedAgents) {
       const priceData = await fetchDexScreenerData(agent.token_address);
       
-      if (priceData) {
+      if (priceData && priceData.price > 0) {
         console.log(`${agent.name}: $${priceData.price}, MCap: $${priceData.mcap}`);
         
         const { error: updateError } = await supabase
@@ -88,7 +92,7 @@ export default async function handler(req: any, res: any) {
 
     return res.status(200).json({ 
       success: true, 
-      agents: agents?.length || 0,
+      agents: tokenizedAgents.length,
       updated 
     });
 
