@@ -881,7 +881,7 @@ function ScreenerPage() {
                 {isDark ? <Sun size={16} /> : <Moon size={16} />}
               </div>
             </>
-          ) : !isMobile ? (
+          ) : (
             /* Desktop: Tabs + Search */
             <>
               <button
@@ -1071,7 +1071,7 @@ function ScreenerPage() {
               </div>
             </div>
           </>
-        ) : !isMobile ? (
+        ) : (
           <>
             {/* Mobile Tab Views */}
             {isMobile && mobileTab === 'search' && (
@@ -1145,7 +1145,7 @@ function ScreenerPage() {
                     <p style={{ color: colors.text, fontSize: "16px", fontWeight: 600, marginBottom: "8px" }}>No tokens saved</p>
                     <p style={{ color: colors.textSecondary, fontSize: "13px" }}>Tap ★ in token details to add</p>
                   </div>
-                ) : !isMobile ? (
+                ) : (
                   <>
                     {/* Stats Bar */}
                     <div style={{ display: 'flex', gap: '8px', padding: '12px 16px' }}>
@@ -1627,7 +1627,7 @@ function ScreenerPage() {
                     </div>
                   ))}
                 </div>
-              ) : !isMobile ? (
+              ) : (
                 /* Desktop Table View */
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
