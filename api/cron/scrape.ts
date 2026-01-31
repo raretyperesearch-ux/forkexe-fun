@@ -12,7 +12,7 @@ export const config = {
 };
 
 async function scrapeMoltbook() {
-  // Get raw markdown content
+  // Get raw markdown content - wait for JS to load
   const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
     method: 'POST',
     headers: {
@@ -22,6 +22,7 @@ async function scrapeMoltbook() {
     body: JSON.stringify({
       url: 'https://www.moltbook.com/',
       formats: ['markdown'],
+      waitFor: 5000, // Wait 5 seconds for JS to load
     }),
   });
 
@@ -31,33 +32,19 @@ async function scrapeMoltbook() {
   console.log('Markdown length:', markdown.length);
   console.log('Full markdown:', markdown);
 
-  // Parse the leaderboard - looking for patterns like "1 Claudy_AI 834 karma"
+  // Parse agents from markdown
   const agents: { name: string; karma: number; rank: number }[] = [];
   
-  // Look for "Top AI Agents" section
-  const topAgentsMatch = markdown.match(/Top AI Agents[\s\S]*?(?=Posts|$)/i);
-  const section = topAgentsMatch ? topAgentsMatch[0] : markdown;
-  
-  console.log('Section to parse:', section);
-
-  // Try to extract agents - multiple patterns
-  // Pattern 1: "1 Claudy_AI 834 karma"
-  const pattern1 = /(\d{1,2})\s+([A-Za-z][A-Za-z0-9_]+)\s+(\d{2,4})\s*karma/gi;
+  // Pattern: agent name followed by karma number
+  const pattern = /([A-Za-z][A-Za-z0-9_]+)\s+(\d{2,4})\s*karma/gi;
   let match;
-  while ((match = pattern1.exec(section)) !== null) {
-    agents.push({ rank: parseInt(match[1]), name: match[2], karma: parseInt(match[3]) });
-  }
-
-  // Pattern 2: Look for name followed by number (karma)
-  if (agents.length < 5) {
-    const pattern2 = /([A-Za-z][A-Za-z0-9_]+)\s+(\d{3,4})/g;
-    let rank = 1;
-    while ((match = pattern2.exec(markdown)) !== null) {
-      const name = match[1];
-      const karma = parseInt(match[2]);
-      if (karma >= 100 && karma < 2000 && !agents.find(a => a.name.toLowerCase() === name.toLowerCase())) {
-        agents.push({ rank: rank++, name, karma });
-      }
+  let rank = 1;
+  
+  while ((match = pattern.exec(markdown)) !== null) {
+    const name = match[1];
+    const karma = parseInt(match[2]);
+    if (karma >= 50 && karma < 5000) {
+      agents.push({ rank: rank++, name, karma });
     }
   }
 
@@ -79,14 +66,13 @@ function getRandomColor() {
 }
 
 export default async function handler(req: any, res: any) {
-  // Verify cron secret
   const authHeader = req.headers.authorization;
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    console.log('Starting Moltbook scrape...');
+    console.log('Starting Moltbook scrape with waitFor...');
     
     const agents = await scrapeMoltbook();
     console.log(`Scraped ${agents.length} agents`);
@@ -118,16 +104,11 @@ export default async function handler(req: any, res: any) {
         });
 
       if (!error) upserted++;
-      else console.error(`Error upserting ${agent.name}:`, error);
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      scraped: agents.length,
-      upserted,
-    });
+    return res.status(200).json({ success: true, scraped: agents.length, upserted });
   } catch (error) {
     console.error('Scrape error:', error);
-    return res.status(500).json({ error: 'Scrape failed', details: String(error) });
+    return res.status(500).json({ error: 'Scrape failed' });
   }
 }
