@@ -30,41 +30,62 @@ async function scrapeMoltbook() {
   
   console.log('Markdown length:', markdown.length);
 
-  // Find the Top AI Agents section
-  const topSection = markdown.match(/🏆 Top AI Agents[\s\S]*?(?=## 🌊|$)/i);
-  const section = topSection ? topSection[0] : markdown;
-  
-  console.log('Section length:', section.length);
-
   const agents: { name: string; karma: number; rank: number; handle: string }[] = [];
   
-  // The format is: [1\n\nE\n\n✓\n\neudaemon_0\n\n@handle\n\n259\n\nkarma](url)
-  // Split by agent links
-  const agentLinks = section.match(/\[\d+[\s\S]*?karma\]\(https:\/\/www\.moltbook\.com\/u\/[^)]+\)/g) || [];
+  // Match pattern: [1\n\nE\n\n✓\n\nname\n\n@handle\n\nnumber\n\nkarma](url)
+  // The \\ in the log output represents actual backslashes in the string
+  const regex = /\[(\d+)\\\n\\\n[A-Z]\\\n\\\n✓\\\n\\\n([^\\\n]+)\\\n\\\n@([^\\\n]+)\\\n\\\n(\d+)\\\n\\\nkarma\]\(https:\/\/www\.moltbook\.com\/u\/[^)]+\)/g;
   
-  console.log('Found agent links:', agentLinks.length);
+  let match;
+  while ((match = regex.exec(markdown)) !== null) {
+    agents.push({
+      rank: parseInt(match[1]),
+      name: match[2].replace(/\\_/g, '_').trim(),
+      handle: '@' + match[3].replace(/\\_/g, '_').trim(),
+      karma: parseInt(match[4]),
+    });
+  }
   
-  for (const link of agentLinks) {
-    // Extract rank (first number)
-    const rankMatch = link.match(/^\[(\d+)/);
-    // Extract name (after ✓ and before @)
-    const nameMatch = link.match(/✓[\s\\]*\n[\s\\]*\n[\s\\]*([A-Za-z0-9_\s⚡]+?)[\s\\]*\n[\s\\]*\n[\s\\]*@/);
-    // Extract karma (number before "karma")
-    const karmaMatch = link.match(/(\d+)[\s\\]*\n[\s\\]*\n[\s\\]*karma/);
-    // Extract handle
-    const handleMatch = link.match(/@([A-Za-z0-9_]+)/);
+  console.log('Regex matches:', agents.length);
+
+  // If regex didn't work, try manual extraction from Top AI Agents section
+  if (agents.length === 0) {
+    const topSection = markdown.split('🏆 Top AI Agents')[1] || '';
+    const submoltSection = topSection.split('🌊 Submolts')[0] || topSection;
     
-    if (rankMatch && nameMatch && karmaMatch) {
-      agents.push({
-        rank: parseInt(rankMatch[1]),
-        name: nameMatch[1].trim().replace(/\\_/g, '_'),
-        handle: handleMatch ? '@' + handleMatch[1] : '@unknown',
-        karma: parseInt(karmaMatch[1]),
-      });
+    console.log('Manual section length:', submoltSection.length);
+    
+    // Find all moltbook user links in this section
+    const userLinks = submoltSection.match(/\(https:\/\/www\.moltbook\.com\/u\/([^)]+)\)/g) || [];
+    console.log('User links found:', userLinks.length);
+    
+    // For each link, extract the username
+    const usernames = userLinks.map(link => {
+      const m = link.match(/\/u\/([^)]+)/);
+      return m ? m[1] : null;
+    }).filter(Boolean);
+    
+    console.log('Usernames:', usernames);
+    
+    // Now find karma for each - look for pattern "number\n\nkarma" before each username link
+    for (let i = 0; i < usernames.length; i++) {
+      const username = usernames[i];
+      // Find karma by looking for number before this user's section
+      const karmaPattern = new RegExp(`(\\d+)\\\\\\n\\\\\\nkarma\\]\\(https:\\/\\/www\\.moltbook\\.com\\/u\\/${username}\\)`);
+      const karmaMatch = submoltSection.match(karmaPattern);
+      
+      if (karmaMatch) {
+        agents.push({
+          rank: i + 1,
+          name: username.replace(/_/g, '_'),
+          handle: '@' + username,
+          karma: parseInt(karmaMatch[1]),
+        });
+      }
     }
   }
 
-  console.log('Parsed agents:', JSON.stringify(agents));
+  console.log('Final agents:', JSON.stringify(agents));
   return agents;
 }
 
@@ -80,7 +101,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    console.log('Starting Moltbook scrape v4...');
+    console.log('Starting Moltbook scrape v5...');
     
     const agents = await scrapeMoltbook();
     console.log(`Scraped ${agents.length} agents`);
