@@ -37,8 +37,8 @@ export function useAgents() {
         const { data, error } = await supabase
           .from('agents')
           .select('*')
-          .order('karma', { ascending: false })
-          .limit(500);
+          .order('volume_24h', { ascending: false, nullsFirst: false })
+          .limit(1000);
 
         if (error) throw error;
         setAgents(data || []);
