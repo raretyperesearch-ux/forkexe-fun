@@ -1068,7 +1068,6 @@ function ScreenerPage() {
                   })}
                 </tbody>
               </table>
-              </div>
             </div>
           </>
         ) : (
