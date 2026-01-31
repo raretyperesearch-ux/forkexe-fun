@@ -1679,7 +1679,9 @@ function ScreenerPage() {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.6)',
+              backgroundColor: 'rgba(0,0,0,0.7)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
               zIndex: 1001,
             }}
           />
@@ -1689,180 +1691,281 @@ function ScreenerPage() {
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: colors.bg,
-            borderTopLeftRadius: '20px',
-            borderTopRightRadius: '20px',
-            padding: '20px',
-            paddingBottom: '40px',
+            background: isDark 
+              ? 'linear-gradient(180deg, rgba(30,30,30,0.95) 0%, rgba(15,15,15,0.98) 100%)'
+              : 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,245,245,0.98) 100%)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderTopLeftRadius: '24px',
+            borderTopRightRadius: '24px',
             zIndex: 1002,
-            maxHeight: '70vh',
+            maxHeight: '85vh',
             overflow: 'auto',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
           }}>
-            {/* Handle bar */}
-            <div style={{ 
-              width: '40px', 
-              height: '4px', 
-              backgroundColor: colors.border, 
-              borderRadius: '2px', 
-              margin: '0 auto 16px' 
-            }} />
-            
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            {/* Banner Area */}
+            <div style={{
+              height: '100px',
+              background: `linear-gradient(135deg, ${
+                selectedAgent.source === 'clawnch' ? '#10B981' :
+                selectedAgent.source === 'bankr' ? '#0052FF' : 
+                selectedAgent.source === 'agent' ? '#8B5CF6' : '#F59E0B'
+              }22, ${
+                selectedAgent.source === 'clawnch' ? '#059669' :
+                selectedAgent.source === 'bankr' ? '#0040CC' : 
+                selectedAgent.source === 'agent' ? '#7C3AED' : '#D97706'
+              }33)`,
+              borderTopLeftRadius: '24px',
+              borderTopRightRadius: '24px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              {/* Handle bar */}
               <div style={{ 
-                width: '48px', 
-                height: '48px', 
-                borderRadius: '50%', 
-                backgroundColor: '#1C1C1D', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                fontSize: '24px',
-              }}>
-                🦞
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontWeight: 700, fontSize: '18px' }}>{selectedAgent.name}</span>
-                  {selectedAgent.source && selectedAgent.source !== 'unknown' && (
-                    <span style={{ 
-                      fontSize: '10px', 
-                      fontWeight: 600, 
-                      padding: '2px 6px', 
-                      borderRadius: '6px',
-                      backgroundColor: selectedAgent.source === 'clawnch' ? '#10B981' :
-                                       selectedAgent.source === 'bankr' ? '#0052FF' : 
-                                       selectedAgent.source === 'agent' ? '#8B5CF6' : '#F59E0B',
-                      color: '#fff',
-                      textTransform: 'uppercase',
-                    }}>
-                      {selectedAgent.source}
-                    </span>
-                  )}
-                </div>
-                <div style={{ color: colors.textSecondary, fontSize: '14px' }}>
-                  {selectedAgent.symbol || selectedAgent.handle}
-                </div>
-              </div>
+                position: 'absolute',
+                top: '12px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '40px', 
+                height: '4px', 
+                backgroundColor: 'rgba(255,255,255,0.3)', 
+                borderRadius: '2px', 
+              }} />
+              {/* Close button */}
               <button 
                 onClick={() => setSelectedAgent(null)}
                 style={{
-                  background: 'none',
+                  position: 'absolute',
+                  top: '12px',
+                  right: '16px',
+                  background: 'rgba(0,0,0,0.3)',
                   border: 'none',
-                  color: colors.textSecondary,
-                  fontSize: '24px',
+                  color: '#fff',
+                  fontSize: '18px',
                   cursor: 'pointer',
-                  padding: '4px',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 ×
               </button>
+              {/* Banner text placeholder */}
+              <span style={{ 
+                color: 'rgba(255,255,255,0.4)', 
+                fontSize: '11px', 
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}>
+                Banner Coming Soon
+              </span>
             </div>
 
-            {/* Price */}
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '28px', fontWeight: 700 }}>
-                {selectedAgent.price ? formatPrice(selectedAgent.price) : '$0.00'}
+            {/* Content */}
+            <div style={{ padding: '20px', paddingBottom: '40px' }}>
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px', marginTop: '-40px' }}>
+                <div style={{ 
+                  width: '64px', 
+                  height: '64px', 
+                  borderRadius: '16px', 
+                  backgroundColor: isDark ? '#1C1C1D' : '#f0f0f0', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: '32px',
+                  border: `3px solid ${colors.bg}`,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                }}>
+                  🦞
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 700, fontSize: '20px' }}>{selectedAgent.name}</span>
+                    {selectedAgent.source && selectedAgent.source !== 'unknown' && (
+                      <span style={{ 
+                        fontSize: '10px', 
+                        fontWeight: 600, 
+                        padding: '3px 8px', 
+                        borderRadius: '6px',
+                        backgroundColor: selectedAgent.source === 'clawnch' ? '#10B981' :
+                                         selectedAgent.source === 'bankr' ? '#0052FF' : 
+                                         selectedAgent.source === 'agent' ? '#8B5CF6' : '#F59E0B',
+                        color: '#fff',
+                        textTransform: 'uppercase',
+                      }}>
+                        {selectedAgent.source}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ color: colors.textSecondary, fontSize: '14px' }}>
+                    ${selectedAgent.symbol || selectedAgent.handle?.replace('@', '')}
+                  </div>
+                </div>
               </div>
-              <div style={{ 
-                fontSize: '14px', 
-                color: selectedAgent.change24h >= 0 ? colors.green : colors.red,
-                fontWeight: 600,
-              }}>
-                {selectedAgent.change24h ? (selectedAgent.change24h >= 0 ? '+' : '') + selectedAgent.change24h.toFixed(2) + '%' : '0%'} (24h)
-              </div>
-            </div>
 
-            {/* Stats Grid */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr', 
-              gap: '12px', 
-              marginBottom: '24px' 
-            }}>
+              {/* Price Card */}
               <div style={{ 
-                backgroundColor: colors.bgSecondary, 
-                padding: '12px', 
-                borderRadius: '12px' 
+                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                borderRadius: '16px',
+                padding: '16px',
+                marginBottom: '16px',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
               }}>
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Market Cap</div>
-                <div style={{ fontWeight: 600 }}>{selectedAgent.mcap ? formatNumber(selectedAgent.mcap) : '—'}</div>
+                <div style={{ fontSize: '32px', fontWeight: 700 }}>
+                  {selectedAgent.price ? formatPrice(selectedAgent.price) : '$0.00'}
+                </div>
+                <div style={{ 
+                  fontSize: '15px', 
+                  color: selectedAgent.change24h >= 0 ? colors.green : colors.red,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: selectedAgent.change24h >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+                  }}>
+                    {selectedAgent.change24h >= 0 ? '↑' : '↓'} {selectedAgent.change24h ? Math.abs(selectedAgent.change24h).toFixed(2) + '%' : '0%'}
+                  </span>
+                  <span style={{ color: colors.textSecondary, fontSize: '13px' }}>24h</span>
+                </div>
               </div>
-              <div style={{ 
-                backgroundColor: colors.bgSecondary, 
-                padding: '12px', 
-                borderRadius: '12px' 
-              }}>
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>24h Volume</div>
-                <div style={{ fontWeight: 600 }}>{selectedAgent.volume ? formatNumber(selectedAgent.volume) : '—'}</div>
-              </div>
-              <div style={{ 
-                backgroundColor: colors.bgSecondary, 
-                padding: '12px', 
-                borderRadius: '12px' 
-              }}>
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Liquidity</div>
-                <div style={{ fontWeight: 600 }}>{selectedAgent.liquidity ? formatNumber(selectedAgent.liquidity) : '—'}</div>
-              </div>
-              <div style={{ 
-                backgroundColor: colors.bgSecondary, 
-                padding: '12px', 
-                borderRadius: '12px' 
-              }}>
-                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Karma</div>
-                <div style={{ fontWeight: 600 }}>{selectedAgent.karma}</div>
-              </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '10px' }}>
+              {/* Stats Grid - Glass Cards */}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr 1fr', 
+                gap: '10px', 
+                marginBottom: '16px' 
+              }}>
+                {[
+                  { label: 'Market Cap', value: selectedAgent.mcap ? formatNumber(selectedAgent.mcap) : '—' },
+                  { label: '24h Volume', value: selectedAgent.volume ? formatNumber(selectedAgent.volume) : '—' },
+                  { label: 'Liquidity', value: selectedAgent.liquidity ? formatNumber(selectedAgent.liquidity) : '—' },
+                  { label: 'Karma', value: selectedAgent.karma },
+                ].map(stat => (
+                  <div key={stat.label} style={{ 
+                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                    padding: '14px', 
+                    borderRadius: '12px',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  }}>
+                    <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stat.label}</div>
+                    <div style={{ fontWeight: 600, fontSize: '16px' }}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Links Section */}
+              <div style={{ 
+                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                borderRadius: '12px',
+                padding: '14px',
+                marginBottom: '20px',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+              }}>
+                <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Links</div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => window.open(`https://dexscreener.com/base/${selectedAgent.tokenAddress}`, '_blank')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: `1px solid ${colors.border}`,
+                      backgroundColor: 'transparent',
+                      color: colors.text,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    📊 DexScreener
+                  </button>
+                  <button
+                    onClick={() => window.open(`https://basescan.org/token/${selectedAgent.tokenAddress}`, '_blank')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: `1px solid ${colors.border}`,
+                      backgroundColor: 'transparent',
+                      color: colors.text,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    🔍 BaseScan
+                  </button>
+                  {selectedAgent.source === 'clawnch' && (
+                    <button
+                      onClick={() => window.open(`https://www.moltbook.com`, '_blank')}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: `1px solid ${colors.border}`,
+                        backgroundColor: 'transparent',
+                        color: colors.text,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      🦞 Moltbook
+                    </button>
+                  )}
+                  <button
+                    onClick={() => window.open(`https://clanker.world/clanker/${selectedAgent.tokenAddress}`, '_blank')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: `1px solid ${colors.border}`,
+                      backgroundColor: 'transparent',
+                      color: colors.text,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    🤖 Clanker
+                  </button>
+                </div>
+              </div>
+
+              {/* Trade Button - Main CTA */}
               <button
                 onClick={() => window.open(`https://wallet.xyz/coin/${selectedAgent.tokenAddress}`, '_blank')}
                 style={{
-                  flex: 1,
-                  padding: '14px',
-                  borderRadius: '12px',
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '14px',
                   border: 'none',
-                  backgroundColor: colors.green,
+                  background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
                   color: '#fff',
-                  fontWeight: 600,
-                  fontSize: '14px',
+                  fontWeight: 700,
+                  fontSize: '16px',
                   cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(34,197,94,0.3)',
                 }}
               >
-                Trade
-              </button>
-              <button
-                onClick={() => window.open(`https://dexscreener.com/base/${selectedAgent.tokenAddress}`, '_blank')}
-                style={{
-                  flex: 1,
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: `1px solid ${colors.border}`,
-                  backgroundColor: 'transparent',
-                  color: colors.text,
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                }}
-              >
-                Chart
-              </button>
-              <button
-                onClick={() => window.open(`https://basescan.org/token/${selectedAgent.tokenAddress}`, '_blank')}
-                style={{
-                  flex: 1,
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: `1px solid ${colors.border}`,
-                  backgroundColor: 'transparent',
-                  color: colors.text,
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                }}
-              >
-                Explorer
+                Trade on wallet.xyz
               </button>
             </div>
           </div>
