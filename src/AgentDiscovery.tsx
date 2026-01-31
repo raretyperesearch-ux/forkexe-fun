@@ -1683,8 +1683,19 @@ function ScreenerPage() {
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               zIndex: 1001,
+              animation: 'fadeIn 0.2s ease-out',
             }}
           />
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideUp {
+              from { transform: translateY(100%); }
+              to { transform: translateY(0); }
+            }
+          `}</style>
           {/* Modal - Half screen */}
           <div style={{
             position: 'fixed',
@@ -1704,6 +1715,7 @@ function ScreenerPage() {
             border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
             padding: '16px',
             paddingBottom: '32px',
+            animation: 'slideUp 0.3s ease-out',
           }}>
             {/* Handle bar */}
             <div style={{ 
