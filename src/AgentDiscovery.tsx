@@ -1018,7 +1018,7 @@ function ScreenerPage() {
             </div>
 
             {/* Tokenized Agents Table */}
-            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            {(mobileTab === "home" || !isMobile) && <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
               <div style={{ overflowX: 'auto', minWidth: isMobile ? '100%' : 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                 <thead>
@@ -1532,7 +1532,7 @@ function ScreenerPage() {
             ) : null}
 
             {/* Moltbook Agents List */}
-            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: isMobile ? '80px' : '0' }}>
+            {(mobileTab === "home" || !isMobile) && <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: isMobile ? '80px' : '0' }}>
               {/* Mobile DexScreener-style View */}
               {isMobile && mobileTab === 'home' ? (
                 <div>
@@ -1771,7 +1771,7 @@ function ScreenerPage() {
                   </tbody>
                 </table>
               )}
-            </div>
+            </div>}
           </>
         )}
       </div>
