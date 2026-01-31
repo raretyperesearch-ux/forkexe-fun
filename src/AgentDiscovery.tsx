@@ -608,6 +608,16 @@ function ScreenerPage() {
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
+
+  // Watchlist - persisted to localStorage
+  const [watchlist, setWatchlist] = useState<number[]>(() => {
+    try { return JSON.parse(localStorage.getItem("watchlist") || "[]"); } catch { return []; }
+  });
+  useEffect(() => { localStorage.setItem("watchlist", JSON.stringify(watchlist)); }, [watchlist]);
+  const toggleWatchlist = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setWatchlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
   
   // Detect mobile screen
   useEffect(() => {
