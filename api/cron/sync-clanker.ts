@@ -25,7 +25,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const response = await fetch('https://www.clanker.world/api/tokens?page=1&limit=50&sort=desc');
+    const response = await fetch('https://www.clanker.world/api/tokens?page=1&limit=20&sort=desc');
     const raw = await response.text();
     
     let data;
