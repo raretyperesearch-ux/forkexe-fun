@@ -535,12 +535,12 @@ const useTheme = () => useContext(ThemeContext);
 
 // Get theme colors
 const getColors = (isDark: boolean) => ({
-  bg: isDark ? '#0d0d0d' : '#fafafa',
-  bgSecondary: isDark ? '#0a0a0a' : '#ffffff',
-  bgHover: isDark ? '#141414' : '#f5f5f5',
-  border: isDark ? '#1a1a1a' : '#e5e5e5',
-  text: isDark ? '#e5e5e5' : '#1a1a1a',
-  textSecondary: isDark ? '#6b6b6b' : '#666666',
+  bg: isDark ? '#0D0D0D' : '#fafafa',
+  bgSecondary: isDark ? '#0E0E0E' : '#ffffff',
+  bgHover: isDark ? '#1C1C1D' : '#f5f5f5',
+  border: isDark ? '#1C1C1D' : '#e5e5e5',
+  text: isDark ? '#ffffff' : '#1C1C1D',
+  textSecondary: isDark ? '#69696B' : '#666666',
   green: '#22c55e',
   red: '#ef4444',
 });
@@ -557,16 +557,16 @@ const DottedBackground = () => (
   }} />
 );
 
-// Bubbles background for dark mode
+// Subtle background for dark mode
 const BubblesBackground = () => (
   <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-    {/* Large gradient bubbles */}
+    {/* Subtle gradient bubbles - grayscale */}
     <div style={{
       position: 'absolute',
       width: '600px',
       height: '600px',
       borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, transparent 70%)',
+      background: 'radial-gradient(circle, rgba(105, 105, 107, 0.04) 0%, transparent 70%)',
       top: '-200px',
       right: '-100px',
     }} />
@@ -575,7 +575,7 @@ const BubblesBackground = () => (
       width: '500px',
       height: '500px',
       borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
+      background: 'radial-gradient(circle, rgba(105, 105, 107, 0.04) 0%, transparent 70%)',
       bottom: '-150px',
       left: '-100px',
     }} />
@@ -584,46 +584,9 @@ const BubblesBackground = () => (
       width: '400px',
       height: '400px',
       borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, transparent 70%)',
+      background: 'radial-gradient(circle, rgba(105, 105, 107, 0.03) 0%, transparent 70%)',
       top: '30%',
       left: '20%',
-    }} />
-    <div style={{
-      position: 'absolute',
-      width: '350px',
-      height: '350px',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(59, 130, 246, 0.07) 0%, transparent 70%)',
-      bottom: '20%',
-      right: '15%',
-    }} />
-    <div style={{
-      position: 'absolute',
-      width: '250px',
-      height: '250px',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(168, 85, 247, 0.06) 0%, transparent 70%)',
-      top: '50%',
-      right: '30%',
-    }} />
-    {/* Smaller accent bubbles */}
-    <div style={{
-      position: 'absolute',
-      width: '150px',
-      height: '150px',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%)',
-      top: '15%',
-      left: '40%',
-    }} />
-    <div style={{
-      position: 'absolute',
-      width: '100px',
-      height: '100px',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%)',
-      bottom: '40%',
-      left: '60%',
     }} />
   </div>
 );
@@ -722,7 +685,7 @@ function ScreenerPage() {
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            backgroundColor: !activeChain ? (isDark ? '#2a2a2a' : '#e5e5e5') : 'transparent',
+            backgroundColor: !activeChain ? (isDark ? '#1C1C1D' : '#e5e5e5') : 'transparent',
             color: colors.text,
             marginBottom: '8px',
           }}
@@ -766,7 +729,7 @@ function ScreenerPage() {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+              backgroundColor: isDark ? '#1C1C1D' : '#e5e5e5',
               color: colors.text,
             }}
           >
@@ -847,7 +810,7 @@ function ScreenerPage() {
                 flex: 1, 
                 display: 'flex', 
                 alignItems: 'center',
-                backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
+                backgroundColor: isDark ? '#1C1C1D' : '#f0f0f0',
                 borderRadius: '6px',
                 padding: '6px 10px',
                 marginLeft: '8px',
@@ -880,7 +843,7 @@ function ScreenerPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+                  backgroundColor: isDark ? '#1C1C1D' : '#e5e5e5',
                   color: colors.text,
                   flexShrink: 0,
                 }}
@@ -944,7 +907,7 @@ function ScreenerPage() {
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center',
-                backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
+                backgroundColor: isDark ? '#1C1C1D' : '#f0f0f0',
                 borderRadius: '6px',
                 padding: '6px 12px',
                 marginLeft: '16px',
@@ -1000,12 +963,12 @@ function ScreenerPage() {
               <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: isDark ? '#1a3a1a' : '#dcfce7', color: colors.green, whiteSpace: 'nowrap' }}>
                 <Clock size={12} /> 24h <ChevronDown size={12} />
               </button>
-              <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+              <div style={{ display: 'flex', backgroundColor: isDark ? '#1C1C1D' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
                 <button style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: colors.green, color: isDark ? '#000' : '#fff', whiteSpace: 'nowrap' }}>
                   <Flame size={12} /> {isMobile ? '' : 'Trending'}
                 </button>
                 {['5M', '1H', '6H', '24H'].map((period) => (
-                  <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#333' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary, whiteSpace: 'nowrap' }}>
+                  <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#1C1C1D' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary, whiteSpace: 'nowrap' }}>
                     {period}
                   </button>
                 ))}
@@ -1018,7 +981,7 @@ function ScreenerPage() {
                   <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Rank By:</span>
                     <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.green, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Trending 6H</button>
-                    <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
+                    <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1C1C1D' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
                   </div>
                 </>
               )}
@@ -1040,7 +1003,7 @@ function ScreenerPage() {
                     const chain = CHAINS.find(c => c.id === agent.chain);
                     return (
                       <tr key={agent.id} onClick={() => window.open(`https://wallet.xyz/coin/${agent.id}`, '_blank')} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}` }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span style={{ color: colors.textSecondary, width: '24px' }}>#{index + 1}</span>
                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: chain?.color || '#666' }} />
@@ -1059,17 +1022,17 @@ function ScreenerPage() {
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatPrice(agent.price)}</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>{agent.age}</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.txns)}</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.volume)}</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.makers)}</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change5m >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change5m >= 0 ? '+' : ''}{agent.change5m.toFixed(2)}%</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change1h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change1h >= 0 ? '+' : ''}{agent.change1h.toFixed(2)}%</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change6h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change6h >= 0 ? '+' : ''}{agent.change6h.toFixed(0)}%</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(0)}%</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.liquidity)}</td>
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.mcap)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatPrice(agent.price)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>{agent.age}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.txns)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.volume)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatCompact(agent.makers)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: agent.change5m >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change5m >= 0 ? '+' : ''}{agent.change5m.toFixed(2)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: agent.change1h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change1h >= 0 ? '+' : ''}{agent.change1h.toFixed(2)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: agent.change6h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change6h >= 0 ? '+' : ''}{agent.change6h.toFixed(0)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>{agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(0)}%</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.liquidity)}</td>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>{formatNumber(agent.mcap)}</td>
                       </tr>
                     );
                   })}
@@ -1180,8 +1143,8 @@ function ScreenerPage() {
 
                 {/* Desktop Filter Bar */}
                 <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
-                  <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
-                    <button style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: isDark ? '#333' : '#ddd', color: colors.text }}>
+                  <div style={{ display: 'flex', backgroundColor: isDark ? '#1C1C1D' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+                    <button style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: isDark ? '#1C1C1D' : '#ddd', color: colors.text }}>
                       All Agents
                       <span style={{ backgroundColor: colors.text + '20', padding: '1px 6px', borderRadius: '8px', fontSize: '10px' }}>{moltbookAgents.length}</span>
                     </button>
@@ -1211,21 +1174,19 @@ function ScreenerPage() {
                     >
                       {/* Main row */}
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                        {/* Avatar */}
+                        {/* Avatar - Lobster */}
                         <div style={{ 
                           width: '40px', 
                           height: '40px', 
                           borderRadius: '50%', 
-                          backgroundColor: agent.color, 
+                          backgroundColor: '#1C1C1D', 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
-                          color: '#fff',
-                          fontWeight: 700,
-                          fontSize: '16px',
+                          fontSize: '20px',
                           flexShrink: 0,
                         }}>
-                          {agent.avatar}
+                          🦞
                         </div>
                         
                         {/* Name & Handle */}
@@ -1325,10 +1286,10 @@ function ScreenerPage() {
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         {/* AGENT */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}` }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span style={{ 
-                              backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1a1a1a' : '#f0f0f0'),
+                              backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1C1C1D' : '#f0f0f0'),
                               color: index < 3 ? '#000' : colors.textSecondary,
                               padding: '4px 8px',
                               borderRadius: '4px',
@@ -1343,26 +1304,24 @@ function ScreenerPage() {
                               width: '32px', 
                               height: '32px', 
                               borderRadius: '50%', 
-                              backgroundColor: agent.color, 
+                              backgroundColor: '#1C1C1D', 
                               display: 'flex', 
                               alignItems: 'center', 
                               justifyContent: 'center',
-                              color: '#fff',
-                              fontWeight: 700,
-                              fontSize: '13px',
+                              fontSize: '16px',
                               flexShrink: 0,
                             }}>
-                              {agent.avatar}
+                              🦞
                             </div>
                             <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}</span>
                           </div>
                         </td>
                         {/* KARMA */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right' }}>
                           <span style={{ color: '#EF4444', fontWeight: 700 }}>{agent.karma}</span>
                         </td>
                         {/* OWNER */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right' }}>
                           <a 
                             href={`https://twitter.com/${agent.handle.replace('@', '')}`}
                             target="_blank"
@@ -1383,27 +1342,27 @@ function ScreenerPage() {
                           </a>
                         </td>
                         {/* PRICE */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
                           {agent.karma >= 50 && agent.price ? formatPrice(agent.price) : '—'}
                         </td>
                         {/* AGE */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
                           {agent.karma >= 50 && agent.age ? agent.age : '—'}
                         </td>
                         {/* VOLUME */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
                           {agent.karma >= 50 && agent.volume ? formatNumber(agent.volume) : '—'}
                         </td>
                         {/* LIQUIDITY */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
                           {agent.karma >= 50 && agent.liquidity ? formatNumber(agent.liquidity) : '—'}
                         </td>
                         {/* MCAP */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
                           {agent.karma >= 50 && agent.mcap ? formatNumber(agent.mcap) : '—'}
                         </td>
                         {/* 24H */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right' }}>
                           {agent.karma >= 50 && agent.change24h !== null ? (
                             <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
                               {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
@@ -1411,7 +1370,7 @@ function ScreenerPage() {
                           ) : '—'}
                         </td>
                         {/* ACTION */}
-                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'center' }}>
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'center' }}>
                           {agent.karma >= 50 ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
                               <a
