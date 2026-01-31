@@ -1066,8 +1066,136 @@ function ScreenerPage() {
           </>
         ) : (
           <>
-            {/* Mobile DexScreener-style header */}
-            {isMobile ? (
+            {/* Mobile Tab Views */}
+            {isMobile && mobileTab === 'search' && (
+              <div style={{ padding: '16px', paddingBottom: '100px' }}>
+                <input
+                  type="text"
+                  placeholder="Search tokens..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '12px',
+                    border: `1px solid ${colors.border}`,
+                    backgroundColor: colors.cardBg,
+                    color: colors.text,
+                    fontSize: '16px',
+                    outline: 'none',
+                    marginBottom: '16px',
+                  }}
+                />
+                {searchQuery && (
+                  <div>
+                    <p style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '12px' }}>
+                      {moltbookAgents.length} results for "{searchQuery}"
+                    </p>
+                    {moltbookAgents.slice(0, 20).map(agent => (
+                      <div
+                        key={agent.id}
+                        onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                        style={{
+                          padding: '12px',
+                          borderBottom: `1px solid ${colors.border}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          cursor: agent.karma >= 50 ? 'pointer' : 'default',
+                        }}
+                      >
+                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#1C1C1D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🦞</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: '14px' }}>{agent.name}</div>
+                          <div style={{ color: colors.textSecondary, fontSize: '12px' }}>{agent.handle}</div>
+                        </div>
+                        {agent.mcap && <div style={{ fontSize: '13px', fontWeight: 500 }}>${(agent.mcap / 1000).toFixed(0)}K</div>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!searchQuery && (
+                  <p style={{ color: colors.textSecondary, textAlign: 'center', marginTop: '40px' }}>
+                    Start typing to search tokens
+                  </p>
+                )}
+              </div>
+            )}
+
+            {isMobile && mobileTab === 'watchlist' && (
+              <div style={{ padding: '16px', paddingBottom: '100px', textAlign: 'center' }}>
+                <Star size={48} style={{ color: colors.textSecondary, marginTop: '60px', marginBottom: '16px' }} />
+                <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Watchlist</h3>
+                <p style={{ color: colors.textSecondary, fontSize: '14px', marginBottom: '24px' }}>
+                  Save your favorite tokens here
+                </p>
+                <p style={{ color: colors.textSecondary, fontSize: '12px' }}>
+                  Coming soon - tap the star on any token to add it
+                </p>
+              </div>
+            )}
+
+            {isMobile && mobileTab === 'settings' && (
+              <div style={{ padding: '16px', paddingBottom: '100px' }}>
+                <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>Settings</h3>
+                
+                <div style={{ 
+                  padding: '16px', 
+                  backgroundColor: colors.cardBg, 
+                  borderRadius: '12px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <div style={{ fontWeight: 500, marginBottom: '4px' }}>Dark Mode</div>
+                    <div style={{ color: colors.textSecondary, fontSize: '12px' }}>Toggle theme</div>
+                  </div>
+                  <button
+                    onClick={toggle}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '20px',
+                      border: 'none',
+                      backgroundColor: colors.text,
+                      color: colors.bg,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                  </button>
+                </div>
+
+                <div style={{ 
+                  padding: '16px', 
+                  backgroundColor: colors.cardBg, 
+                  borderRadius: '12px',
+                  marginBottom: '12px',
+                }}>
+                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>About</div>
+                  <div style={{ color: colors.textSecondary, fontSize: '12px' }}>
+                    agentscreener - Discover AI agent tokens on Base
+                  </div>
+                </div>
+
+                <div style={{ 
+                  padding: '16px', 
+                  backgroundColor: colors.cardBg, 
+                  borderRadius: '12px',
+                }}>
+                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>Data Sources</div>
+                  <div style={{ color: colors.textSecondary, fontSize: '12px' }}>
+                    Clanker API • DexScreener • wallet.xyz
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Home View */}
+            {isMobile && mobileTab === 'home' ? (
               <>
                 {/* Filter Pills - Source filter */}
                 <div style={{ 
@@ -1201,7 +1329,7 @@ function ScreenerPage() {
             {/* Moltbook Agents List */}
             <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: isMobile ? '80px' : '0' }}>
               {/* Mobile DexScreener-style View */}
-              {isMobile ? (
+              {isMobile && mobileTab === 'home' ? (
                 <div>
                   {moltbookAgents.map((agent) => (
                     <div 
@@ -1308,7 +1436,7 @@ function ScreenerPage() {
                     </div>
                   ))}
                 </div>
-              ) : (
+              ) : !isMobile ? (
                 /* Desktop Table View */
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
@@ -1487,7 +1615,7 @@ function ScreenerPage() {
                     ))}
                   </tbody>
                 </table>
-              )}
+              ) : null}
             </div>
           </>
         )}
