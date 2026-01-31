@@ -1253,7 +1253,7 @@ function ScreenerPage() {
                         fontSize: '12px', 
                         fontWeight: 500, 
                         cursor: 'pointer', 
-                        border: sourceFilter === key ? 'none' : `1px solid ${colors.border}`,
+                        border: sourceFilter === key ? 'none' : (key === 'all' ? `1px solid ${colors.border}` : '1px solid #FF6B4A'),
                         backgroundColor: sourceFilter === key ? colors.text : 'transparent',
                         color: sourceFilter === key ? colors.bg : colors.textSecondary,
                         whiteSpace: 'nowrap',
