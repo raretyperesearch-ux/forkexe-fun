@@ -1130,7 +1130,7 @@ function ScreenerPage() {
               {/* Mobile DexScreener-style View */}
               {isMobile ? (
                 <div>
-                  {moltbookAgents.map((agent, index) => (
+                  {moltbookAgents.map((agent) => (
                     <div 
                       key={agent.id}
                       onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
