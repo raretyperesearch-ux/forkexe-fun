@@ -1,103 +1,75 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || 'https://edspwhxvlqwvylrgiygz.supabase.co',
+  process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_KEY || ''
 );
 
-export const config = {
-  maxDuration: 60,
-};
-
-async function fetchDexScreenerData(tokenAddress: string) {
-  try {
-    const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
-    const data = await response.json();
-    
-    if (data.pairs && data.pairs.length > 0) {
-      // Get the pair with highest liquidity
-      const pair = data.pairs.sort((a: any, b: any) => 
-        (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
-      )[0];
-      
-      return {
-        price: parseFloat(pair.priceUsd) || 0,
-        mcap: pair.marketCap || pair.fdv || 0,
-        volume_24h: pair.volume?.h24 || 0,
-        liquidity: pair.liquidity?.usd || 0,
-        change_24h: pair.priceChange?.h24 || 0,
-        chain: pair.chainId,
-        dexId: pair.dexId,
-      };
-    }
-    return null;
-  } catch (error) {
-    console.error(`Error fetching ${tokenAddress}:`, error);
-    return null;
-  }
-}
+export const config = { maxDuration: 60 };
 
 export default async function handler(req: any, res: any) {
-  const authHeader = req.headers.authorization;
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    console.log('Fetching tokenized agents...');
-    
-    // Get all agents with real token addresses (0x... and length 42)
-    const { data: agents, error } = await supabase
+    // Get tokens with addresses - limit to 50 at a time
+    const { data: agents } = await supabase
       .from('agents')
-      .select('*')
-      .like('token_address', '0x%');
+      .select('id, token_address')
+      .not('token_address', 'is', null)
+      .limit(50);
 
-    if (error) throw error;
-
-    // Filter to only real addresses (42 chars for ETH/Base)
-    const tokenizedAgents = (agents || []).filter(a => 
-      a.token_address && a.token_address.length >= 40
-    );
-
-    console.log(`Found ${tokenizedAgents.length} tokenized agents`);
+    if (!agents || agents.length === 0) {
+      return res.status(200).json({ success: true, updated: 0, message: 'No tokens to update' });
+    }
 
     let updated = 0;
     
-    for (const agent of tokenizedAgents) {
-      const priceData = await fetchDexScreenerData(agent.token_address);
+    // Batch into groups of 10 addresses for DexScreener
+    const batchSize = 10;
+    for (let i = 0; i < agents.length; i += batchSize) {
+      const batch = agents.slice(i, i + batchSize);
+      const addresses = batch.map(a => a.token_address).join(',');
       
-      if (priceData && priceData.price > 0) {
-        console.log(`${agent.name}: $${priceData.price}, MCap: $${priceData.mcap}`);
+      try {
+        const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addresses}`, {
+          headers: { 'Accept': 'application/json' }
+        });
         
-        const { error: updateError } = await supabase
-          .from('agents')
-          .update({
-            price: priceData.price,
-            mcap: priceData.mcap,
-            volume_24h: priceData.volume_24h,
-            liquidity: priceData.liquidity,
-            change_24h: priceData.change_24h,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', agent.id);
-
-        if (!updateError) updated++;
-      } else {
-        console.log(`${agent.name}: No data found on DexScreener`);
+        if (!response.ok) continue;
+        
+        const data = await response.json();
+        const pairs = data.pairs || [];
+        
+        for (const agent of batch) {
+          const pair = pairs.find((p: any) => 
+            p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase()
+          );
+          
+          if (pair) {
+            await supabase.from('agents').update({
+              price: parseFloat(pair.priceUsd) || null,
+              mcap: pair.marketCap || pair.fdv || null,
+              volume_24h: pair.volume?.h24 || null,
+              liquidity: pair.liquidity?.usd || null,
+              change_24h: pair.priceChange?.h24 || null,
+              updated_at: new Date().toISOString(),
+            }).eq('id', agent.id);
+            
+            updated++;
+          }
+        }
+      } catch (e) {
+        console.error('Batch error:', e);
       }
       
-      // Rate limit - wait 200ms between requests
+      // Small delay between batches
       await new Promise(r => setTimeout(r, 200));
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      agents: tokenizedAgents.length,
-      updated 
-    });
-
+    return res.status(200).json({ success: true, updated, total: agents.length });
   } catch (error) {
-    console.error('Price update error:', error);
     return res.status(500).json({ error: String(error) });
   }
 }
