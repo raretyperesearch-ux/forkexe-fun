@@ -638,6 +638,7 @@ function ScreenerPage() {
   const [activePeriod, setActivePeriod] = useState('24h');
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Detect mobile screen
   useEffect(() => {
@@ -652,7 +653,7 @@ function ScreenerPage() {
   const stats = useStats();
   
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
-  const moltbookAgents = loading || dbAgents.length === 0 
+  const allAgents = loading || dbAgents.length === 0 
     ? FALLBACK_AGENTS 
     : dbAgents.map(agent => ({
         id: agent.id,
@@ -670,6 +671,14 @@ function ScreenerPage() {
         volume: agent.volume_24h,
         liquidity: agent.liquidity,
       }));
+
+  // Filter by search
+  const moltbookAgents = allAgents.filter(agent => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return agent.name.toLowerCase().includes(query) || 
+           agent.handle.toLowerCase().includes(query);
+  });
 
   const filteredAgents = MOCK_AGENTS.filter(agent => {
     return !activeChain || agent.chain === activeChain;
@@ -824,37 +833,63 @@ function ScreenerPage() {
         {/* View Toggle */}
         <div style={{ 
           backgroundColor: colors.bg, 
-          padding: isMobile ? '8px 12px' : '0 16px', 
+          padding: isMobile ? '6px 12px' : '0 16px', 
           display: 'flex', 
           alignItems: 'center', 
           borderBottom: `1px solid ${colors.border}`,
+          gap: isMobile ? '8px' : '0',
         }}>
           {isMobile ? (
-            /* Mobile: Logo centered with theme toggle */
+            /* Mobile: Logo + Search + theme toggle */
             <>
-              <img src="/logo.png" alt="agentscreener" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
-              <span style={{ fontSize: '15px', fontWeight: 700, color: colors.text, marginLeft: '8px' }}>agentscreener</span>
-              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div
-                  onClick={toggle}
+              <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px', flexShrink: 0 }} />
+              <div style={{ 
+                flex: 1, 
+                display: 'flex', 
+                alignItems: 'center',
+                backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
+                borderRadius: '6px',
+                padding: '6px 10px',
+                marginLeft: '8px',
+              }}>
+                <Search size={14} style={{ color: colors.textSecondary, flexShrink: 0 }} />
+                <input
+                  type="text"
+                  placeholder="Search agents..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+                    flex: 1,
+                    border: 'none',
+                    backgroundColor: 'transparent',
                     color: colors.text,
+                    fontSize: '13px',
+                    outline: 'none',
+                    marginLeft: '8px',
+                    width: '100%',
                   }}
-                >
-                  {isDark ? <Sun size={16} /> : <Moon size={16} />}
-                </div>
+                />
+              </div>
+              <div
+                onClick={toggle}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+                  color: colors.text,
+                  flexShrink: 0,
+                }}
+              >
+                {isDark ? <Sun size={14} /> : <Moon size={14} />}
               </div>
             </>
           ) : (
-            /* Desktop: Tabs */
+            /* Desktop: Tabs + Search */
             <>
               <button
                 onClick={() => setActiveView('moltbook')}
@@ -904,6 +939,35 @@ function ScreenerPage() {
                 <span style={{ fontSize: '16px' }}>📈</span>
                 Tokenized Agents
               </button>
+              
+              {/* Desktop Search */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
+                borderRadius: '6px',
+                padding: '6px 12px',
+                marginLeft: '16px',
+                minWidth: '200px',
+              }}>
+                <Search size={14} style={{ color: colors.textSecondary }} />
+                <input
+                  type="text"
+                  placeholder="Search agents..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    color: colors.text,
+                    fontSize: '13px',
+                    outline: 'none',
+                    marginLeft: '8px',
+                  }}
+                />
+              </div>
+              
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
                 <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
                 <span style={{ fontSize: '13px', fontWeight: 700, color: colors.text }}>agentscreener</span>
@@ -1022,14 +1086,16 @@ function ScreenerPage() {
                 {/* Filter Pills */}
                 <div style={{ 
                   display: 'flex', 
-                  gap: '8px', 
-                  padding: '12px 16px',
+                  gap: '6px', 
+                  padding: '8px 12px',
                   borderBottom: `1px solid ${colors.border}`,
+                  overflowX: 'auto',
+                  WebkitOverflowScrolling: 'touch',
                 }}>
                   <button style={{ 
-                    padding: '8px 16px', 
-                    borderRadius: '20px', 
-                    fontSize: '13px', 
+                    padding: '5px 12px', 
+                    borderRadius: '16px', 
+                    fontSize: '12px', 
                     fontWeight: 600, 
                     cursor: 'pointer', 
                     border: 'none', 
@@ -1038,30 +1104,33 @@ function ScreenerPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px',
+                    whiteSpace: 'nowrap',
                   }}>
-                    🔥 Trending <ChevronDown size={14} />
+                    🔥 Trending <ChevronDown size={12} />
                   </button>
                   <button style={{ 
-                    padding: '8px 16px', 
-                    borderRadius: '20px', 
-                    fontSize: '13px', 
+                    padding: '5px 12px', 
+                    borderRadius: '16px', 
+                    fontSize: '12px', 
                     fontWeight: 500, 
                     cursor: 'pointer', 
                     border: `1px solid ${colors.border}`,
                     backgroundColor: 'transparent',
                     color: colors.text,
+                    whiteSpace: 'nowrap',
                   }}>
                     🆕 New
                   </button>
                   <button style={{ 
-                    padding: '8px 16px', 
-                    borderRadius: '20px', 
-                    fontSize: '13px', 
+                    padding: '5px 12px', 
+                    borderRadius: '16px', 
+                    fontSize: '12px', 
                     fontWeight: 500, 
                     cursor: 'pointer', 
                     border: `1px solid ${colors.border}`,
                     backgroundColor: 'transparent',
                     color: colors.text,
+                    whiteSpace: 'nowrap',
                   }}>
                     📊 Top
                   </button>
@@ -1074,20 +1143,20 @@ function ScreenerPage() {
                 }}>
                   <div style={{ 
                     flex: 1, 
-                    padding: '12px', 
+                    padding: '8px 12px', 
                     textAlign: 'center',
                     borderRight: `1px solid ${colors.border}`,
                   }}>
-                    <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '4px' }}>24H VOLUME</div>
-                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '15px' }}>${formatCompact(stats.volume24h)}</div>
+                    <div style={{ color: colors.textSecondary, fontSize: '10px', marginBottom: '2px' }}>24H VOLUME</div>
+                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '14px' }}>${formatCompact(stats.volume24h)}</div>
                   </div>
                   <div style={{ 
                     flex: 1, 
-                    padding: '12px', 
+                    padding: '8px 12px', 
                     textAlign: 'center',
                   }}>
-                    <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '4px' }}>AGENTS</div>
-                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '15px' }}>{stats.totalAgents.toLocaleString()}</div>
+                    <div style={{ color: colors.textSecondary, fontSize: '10px', marginBottom: '2px' }}>AGENTS</div>
+                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '14px' }}>{stats.totalAgents.toLocaleString()}</div>
                   </div>
                 </div>
               </>
