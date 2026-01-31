@@ -10,7 +10,6 @@ import {
   Sun,
   Moon,
   Twitter,
-  Wallet,
   Home,
   Star,
   Settings,
