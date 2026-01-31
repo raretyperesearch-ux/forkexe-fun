@@ -608,6 +608,7 @@ function ScreenerPage() {
   const [sourceFilter, setSourceFilter] = useState<'all' | 'bankr' | 'clanker' | 'agent' | 'clawnch'>('all');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
   
   // Detect mobile screen
   useEffect(() => {
@@ -1069,7 +1070,7 @@ function ScreenerPage() {
           <>
             {/* Mobile Tab Views */}
             {isMobile && mobileTab === 'search' && (
-              <div style={{ padding: '16px', paddingBottom: '100px', overflow: 'hidden', wordWrap: 'break-word' }}>
+              <div style={{ padding: '16px', paddingBottom: '100px' }}>
                 <input
                   type="text"
                   placeholder="Search tokens..."
@@ -1096,7 +1097,7 @@ function ScreenerPage() {
                     {moltbookAgents.slice(0, 20).map(agent => (
                       <div
                         key={agent.id}
-                        onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                        onClick={() => agent.karma >= 50 && setSelectedAgent(agent)}
                         style={{
                           padding: '12px',
                           borderBottom: `1px solid ${colors.border}`,
@@ -1125,7 +1126,7 @@ function ScreenerPage() {
             )}
 
             {isMobile && mobileTab === 'watchlist' && (
-              <div style={{ padding: '16px', paddingBottom: '100px', textAlign: 'center', overflow: 'hidden', wordWrap: 'break-word' }}>
+              <div style={{ padding: '16px', paddingBottom: '100px', textAlign: 'center' }}>
                 <Star size={48} style={{ color: colors.textSecondary, marginTop: '60px', marginBottom: '16px' }} />
                 <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Watchlist</h3>
                 <p style={{ color: colors.textSecondary, fontSize: '14px', marginBottom: '24px' }}>
@@ -1138,7 +1139,7 @@ function ScreenerPage() {
             )}
 
             {isMobile && mobileTab === 'settings' && (
-              <div style={{ padding: '16px', paddingBottom: '100px', overflow: 'hidden', wordWrap: 'break-word' }}>
+              <div style={{ padding: '16px', paddingBottom: '100px' }}>
                 <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>Settings</h3>
                 
                 <div style={{ 
@@ -1336,7 +1337,7 @@ function ScreenerPage() {
                   {moltbookAgents.map((agent) => (
                     <div 
                       key={agent.id}
-                      onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                      onClick={() => agent.karma >= 50 && setSelectedAgent(agent)}
                       style={{
                         padding: '6px 12px',
                         borderBottom: `1px solid ${colors.border}`,
@@ -1664,6 +1665,208 @@ function ScreenerPage() {
             </button>
           ))}
         </div>
+      )}
+
+      {/* Token Detail Modal */}
+      {selectedAgent && (
+        <>
+          {/* Backdrop */}
+          <div 
+            onClick={() => setSelectedAgent(null)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              zIndex: 1001,
+            }}
+          />
+          {/* Modal */}
+          <div style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: colors.bg,
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px',
+            padding: '20px',
+            paddingBottom: '40px',
+            zIndex: 1002,
+            maxHeight: '70vh',
+            overflow: 'auto',
+          }}>
+            {/* Handle bar */}
+            <div style={{ 
+              width: '40px', 
+              height: '4px', 
+              backgroundColor: colors.border, 
+              borderRadius: '2px', 
+              margin: '0 auto 16px' 
+            }} />
+            
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ 
+                width: '48px', 
+                height: '48px', 
+                borderRadius: '50%', 
+                backgroundColor: '#1C1C1D', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                fontSize: '24px',
+              }}>
+                🦞
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontWeight: 700, fontSize: '18px' }}>{selectedAgent.name}</span>
+                  {selectedAgent.source && selectedAgent.source !== 'unknown' && (
+                    <span style={{ 
+                      fontSize: '10px', 
+                      fontWeight: 600, 
+                      padding: '2px 6px', 
+                      borderRadius: '6px',
+                      backgroundColor: selectedAgent.source === 'clawnch' ? '#10B981' :
+                                       selectedAgent.source === 'bankr' ? '#0052FF' : 
+                                       selectedAgent.source === 'agent' ? '#8B5CF6' : '#F59E0B',
+                      color: '#fff',
+                      textTransform: 'uppercase',
+                    }}>
+                      {selectedAgent.source}
+                    </span>
+                  )}
+                </div>
+                <div style={{ color: colors.textSecondary, fontSize: '14px' }}>
+                  {selectedAgent.symbol || selectedAgent.handle}
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedAgent(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: colors.textSecondary,
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '4px',
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Price */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '28px', fontWeight: 700 }}>
+                {selectedAgent.price ? formatPrice(selectedAgent.price) : '$0.00'}
+              </div>
+              <div style={{ 
+                fontSize: '14px', 
+                color: selectedAgent.change24h >= 0 ? colors.green : colors.red,
+                fontWeight: 600,
+              }}>
+                {selectedAgent.change24h ? (selectedAgent.change24h >= 0 ? '+' : '') + selectedAgent.change24h.toFixed(2) + '%' : '0%'} (24h)
+              </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr', 
+              gap: '12px', 
+              marginBottom: '24px' 
+            }}>
+              <div style={{ 
+                backgroundColor: colors.bgSecondary, 
+                padding: '12px', 
+                borderRadius: '12px' 
+              }}>
+                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Market Cap</div>
+                <div style={{ fontWeight: 600 }}>{selectedAgent.mcap ? formatNumber(selectedAgent.mcap) : '—'}</div>
+              </div>
+              <div style={{ 
+                backgroundColor: colors.bgSecondary, 
+                padding: '12px', 
+                borderRadius: '12px' 
+              }}>
+                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>24h Volume</div>
+                <div style={{ fontWeight: 600 }}>{selectedAgent.volume ? formatNumber(selectedAgent.volume) : '—'}</div>
+              </div>
+              <div style={{ 
+                backgroundColor: colors.bgSecondary, 
+                padding: '12px', 
+                borderRadius: '12px' 
+              }}>
+                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Liquidity</div>
+                <div style={{ fontWeight: 600 }}>{selectedAgent.liquidity ? formatNumber(selectedAgent.liquidity) : '—'}</div>
+              </div>
+              <div style={{ 
+                backgroundColor: colors.bgSecondary, 
+                padding: '12px', 
+                borderRadius: '12px' 
+              }}>
+                <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '4px' }}>Karma</div>
+                <div style={{ fontWeight: 600 }}>{selectedAgent.karma}</div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => window.open(`https://wallet.xyz/coin/${selectedAgent.tokenAddress}`, '_blank')}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: colors.green,
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                Trade
+              </button>
+              <button
+                onClick={() => window.open(`https://dexscreener.com/base/${selectedAgent.tokenAddress}`, '_blank')}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: 'transparent',
+                  color: colors.text,
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                Chart
+              </button>
+              <button
+                onClick={() => window.open(`https://basescan.org/token/${selectedAgent.tokenAddress}`, '_blank')}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: 'transparent',
+                  color: colors.text,
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                Explorer
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
