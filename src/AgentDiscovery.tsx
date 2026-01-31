@@ -1081,7 +1081,7 @@ function ScreenerPage() {
                     padding: '14px 16px',
                     borderRadius: '12px',
                     border: `1px solid ${colors.border}`,
-                    backgroundColor: colors.cardBg,
+                    backgroundColor: colors.bgSecondary,
                     color: colors.text,
                     fontSize: '16px',
                     outline: 'none',
@@ -1143,7 +1143,7 @@ function ScreenerPage() {
                 
                 <div style={{ 
                   padding: '16px', 
-                  backgroundColor: colors.cardBg, 
+                  backgroundColor: colors.bgSecondary, 
                   borderRadius: '12px',
                   marginBottom: '12px',
                   display: 'flex',
@@ -1172,7 +1172,7 @@ function ScreenerPage() {
 
                 <div style={{ 
                   padding: '16px', 
-                  backgroundColor: colors.cardBg, 
+                  backgroundColor: colors.bgSecondary, 
                   borderRadius: '12px',
                   marginBottom: '12px',
                 }}>
@@ -1184,7 +1184,7 @@ function ScreenerPage() {
 
                 <div style={{ 
                   padding: '16px', 
-                  backgroundColor: colors.cardBg, 
+                  backgroundColor: colors.bgSecondary, 
                   borderRadius: '12px',
                 }}>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Data Sources</div>
