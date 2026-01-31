@@ -1067,33 +1067,7 @@ function ScreenerPage() {
                     gap: '4px',
                     whiteSpace: 'nowrap',
                   }}>
-                    🦞 MOLT
-                  </button>
-                  <button style={{ 
-                    padding: '5px 10px', 
-                    borderRadius: '14px', 
-                    fontSize: '11px', 
-                    fontWeight: 500, 
-                    cursor: 'pointer', 
-                    border: `1px solid ${colors.border}`,
-                    backgroundColor: 'transparent',
-                    color: colors.text,
-                    whiteSpace: 'nowrap',
-                  }}>
-                    ✨ New
-                  </button>
-                  <button style={{ 
-                    padding: '5px 10px', 
-                    borderRadius: '14px', 
-                    fontSize: '11px', 
-                    fontWeight: 500, 
-                    cursor: 'pointer', 
-                    border: `1px solid ${colors.border}`,
-                    backgroundColor: 'transparent',
-                    color: colors.text,
-                    whiteSpace: 'nowrap',
-                  }}>
-                    📊 Top
+                    🦞 MOLT agents
                   </button>
                 </div>
                 
