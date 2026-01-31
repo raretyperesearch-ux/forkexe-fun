@@ -1069,7 +1069,7 @@ function ScreenerPage() {
                     gap: '4px',
                     whiteSpace: 'nowrap',
                   }}>
-                    🔥 Trending <ChevronDown size={12} />
+                    🦞 MOLT agents
                   </button>
                   <button style={{ 
                     padding: '5px 12px', 
