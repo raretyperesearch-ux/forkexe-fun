@@ -1772,7 +1772,6 @@ function ScreenerPage() {
         <>
           {/* Backdrop */}
           <div 
-              <button onClick={(e) => toggleWatchlist(selectedAgent.id, e)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}><Star size={20} fill={watchlist.includes(selectedAgent.id) ? "#F59E0B" : "none"} color={watchlist.includes(selectedAgent.id) ? "#F59E0B" : colors.textSecondary} /></button>
             onClick={() => setSelectedAgent(null)}
             style={{
               position: 'fixed',
@@ -1862,8 +1861,8 @@ function ScreenerPage() {
                   ${selectedAgent.symbol || selectedAgent.handle?.replace('@', '')}
                 </div>
               </div>
-              <button 
-                onClick={() => setSelectedAgent(null)}
+              <button onClick={(e) => toggleWatchlist(selectedAgent.id, e)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}><Star size={20} fill={watchlist.includes(selectedAgent.id) ? "#F59E0B" : "none"} color={watchlist.includes(selectedAgent.id) ? "#F59E0B" : colors.textSecondary} /></button>
+              <button onClick={() => setSelectedAgent(null)} 
                 style={{
                   background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                   border: 'none',
