@@ -1531,8 +1531,8 @@ function ScreenerPage() {
               </>
             ) : null}
 
-            {/* Moltbook Agents List */}
-            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: isMobile ? '80px' : '0' }}>
+            {/* Moltbook Agents List - only show on home tab for mobile */}
+            {(mobileTab === 'home' || !isMobile) && <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: isMobile ? '80px' : '0' }}>
               {/* Mobile DexScreener-style View */}
               {isMobile && mobileTab === 'home' ? (
                 <div>
@@ -1770,8 +1770,8 @@ function ScreenerPage() {
                     ))}
                   </tbody>
                 </table>
-              ) : null}
-            </div>
+              )}
+            </div>}
           </>
         )}
       </div>
