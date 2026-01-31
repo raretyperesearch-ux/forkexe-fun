@@ -1077,7 +1077,7 @@ function ScreenerPage() {
                       color: sourceFilter === 'all' ? '#fff' : colors.text,
                       whiteSpace: 'nowrap',
                     }}>
-                    🔥 All
+                    All
                   </button>
                   <button 
                     onClick={() => setSourceFilter('bankr')}
@@ -1092,7 +1092,7 @@ function ScreenerPage() {
                       color: sourceFilter === 'bankr' ? '#fff' : colors.text,
                       whiteSpace: 'nowrap',
                     }}>
-                    🏦 Bankr
+                    Bankr
                   </button>
                   <button 
                     onClick={() => setSourceFilter('agent')}
@@ -1107,7 +1107,7 @@ function ScreenerPage() {
                       color: sourceFilter === 'agent' ? '#fff' : colors.text,
                       whiteSpace: 'nowrap',
                     }}>
-                    🤖 Agents
+                    Agents
                   </button>
                   <button 
                     onClick={() => setSourceFilter('clanker')}
@@ -1122,7 +1122,7 @@ function ScreenerPage() {
                       color: sourceFilter === 'clanker' ? '#fff' : colors.text,
                       whiteSpace: 'nowrap',
                     }}>
-                    🦾 Clanker
+                    Clanker
                   </button>
                 </div>
                 
