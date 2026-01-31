@@ -769,7 +769,8 @@ function ScreenerPage() {
 
       {/* Main Content */}
       <div style={{ marginLeft: isMobile ? 0 : '40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        {/* Trending Banner - Scrolling Marquee */}
+        {/* Trending Banner - Scrolling Marquee (hidden on mobile) */}
+        {!isMobile && (
         <div style={{
           backgroundColor: isDark ? '#000' : '#ffffff',
           borderBottom: `1px solid ${colors.border}`,
@@ -818,100 +819,105 @@ function ScreenerPage() {
             ))}
           </div>
         </div>
+        )}
 
         {/* View Toggle */}
         <div style={{ 
           backgroundColor: colors.bg, 
-          padding: isMobile ? '0 8px' : '0 16px', 
+          padding: isMobile ? '8px 12px' : '0 16px', 
           display: 'flex', 
           alignItems: 'center', 
           borderBottom: `1px solid ${colors.border}`,
-          flexWrap: isMobile ? 'nowrap' : 'nowrap',
         }}>
-          <button
-            onClick={() => setActiveView('moltbook')}
-            style={{
-              padding: isMobile ? '12px 10px' : '14px 20px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderBottom: activeView === 'moltbook' ? `2px solid #EF4444` : '2px solid transparent',
-              color: activeView === 'moltbook' ? colors.text : colors.textSecondary,
-              fontSize: isMobile ? '12px' : '13px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: isMobile ? '4px' : '8px',
-            }}
-          >
-            <span style={{ fontSize: isMobile ? '14px' : '16px' }}>🦞</span>
-            {!isMobile && 'Moltbook Agents'}
-            {isMobile && 'Agents'}
-            <span style={{ 
-              backgroundColor: '#EF4444', 
-              color: '#fff', 
-              padding: '2px 6px', 
-              borderRadius: '10px', 
-              fontSize: '10px',
-              fontWeight: 700,
-            }}>
-              {moltbookAgents.length}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveView('tokenized')}
-            style={{
-              padding: isMobile ? '12px 10px' : '14px 20px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderBottom: activeView === 'tokenized' ? `2px solid ${colors.green}` : '2px solid transparent',
-              color: activeView === 'tokenized' ? colors.text : colors.textSecondary,
-              fontSize: isMobile ? '12px' : '13px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: isMobile ? '4px' : '8px',
-            }}
-          >
-            <span style={{ fontSize: isMobile ? '14px' : '16px' }}>📈</span>
-            {!isMobile && 'Tokenized Agents'}
-            {isMobile && 'Tokens'}
-          </button>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px', padding: '8px 0' }}>
-            <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
-            {!isMobile && (
-              <>
+          {isMobile ? (
+            /* Mobile: Logo centered with theme toggle */
+            <>
+              <img src="/logo.png" alt="agentscreener" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
+              <span style={{ fontSize: '15px', fontWeight: 700, color: colors.text, marginLeft: '8px' }}>agentscreener</span>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div
+                  onClick={toggle}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+                    color: colors.text,
+                  }}
+                >
+                  {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Desktop: Tabs */
+            <>
+              <button
+                onClick={() => setActiveView('moltbook')}
+                style={{
+                  padding: '14px 20px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  borderBottom: activeView === 'moltbook' ? `2px solid #EF4444` : '2px solid transparent',
+                  color: activeView === 'moltbook' ? colors.text : colors.textSecondary,
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <span style={{ fontSize: '16px' }}>🦞</span>
+                Moltbook Agents
+                <span style={{ 
+                  backgroundColor: '#EF4444', 
+                  color: '#fff', 
+                  padding: '2px 6px', 
+                  borderRadius: '10px', 
+                  fontSize: '10px',
+                  fontWeight: 700,
+                }}>
+                  {moltbookAgents.length}
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveView('tokenized')}
+                style={{
+                  padding: '14px 20px',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  borderBottom: activeView === 'tokenized' ? `2px solid ${colors.green}` : '2px solid transparent',
+                  color: activeView === 'tokenized' ? colors.text : colors.textSecondary,
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <span style={{ fontSize: '16px' }}>📈</span>
+                Tokenized Agents
+              </button>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+                <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
                 <span style={{ fontSize: '13px', fontWeight: 700, color: colors.text }}>agentscreener</span>
                 <span style={{ fontSize: '11px', color: colors.textSecondary }}>powered by</span>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: '#EF4444' }}>moltbook</span>
                 <span style={{ fontSize: '11px', color: colors.textSecondary }}>×</span>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: '#8B5CF6' }}>bankr</span>
-              </>
-            )}
-            {isMobile && (
-              <div
-                onClick={toggle}
-                style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
-                  color: colors.text,
-                  marginLeft: '4px',
-                }}
-              >
-                {isDark ? <Sun size={14} /> : <Moon size={14} />}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
 
-        {activeView === 'tokenized' ? (
+        {/* On mobile, always show Moltbook view. On desktop, show based on activeView */}
+        {!isMobile && activeView === 'tokenized' ? (
           <>
             {/* Stats Bar */}
             <div style={{ backgroundColor: colors.bgSecondary, padding: isMobile ? '8px 12px' : '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '16px' : '48px', borderBottom: `1px solid ${colors.border}`, flexWrap: 'wrap' }}>
@@ -1010,73 +1016,136 @@ function ScreenerPage() {
           </>
         ) : (
           <>
-            {/* Moltbook Stats Bar */}
-            <div style={{ backgroundColor: colors.bgSecondary, padding: isMobile ? '8px 12px' : '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '12px' : '48px', borderBottom: `1px solid ${colors.border}`, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ color: colors.textSecondary, fontSize: isMobile ? '10px' : '13px' }}>AGENTS:</span>
-                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: isMobile ? '13px' : '16px' }}>{stats.totalAgents.toLocaleString()}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ color: colors.textSecondary, fontSize: isMobile ? '10px' : '13px' }}>TOKENIZED:</span>
-                <span style={{ color: colors.green, fontWeight: 700, fontSize: isMobile ? '13px' : '16px' }}>{stats.tokenized}</span>
-              </div>
-              {!isMobile && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                  <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
+            {/* Mobile DexScreener-style header */}
+            {isMobile ? (
+              <>
+                {/* Filter Pills */}
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '8px', 
+                  padding: '12px 16px',
+                  borderBottom: `1px solid ${colors.border}`,
+                }}>
+                  <button style={{ 
+                    padding: '8px 16px', 
+                    borderRadius: '20px', 
+                    fontSize: '13px', 
+                    fontWeight: 600, 
+                    cursor: 'pointer', 
+                    border: 'none', 
+                    backgroundColor: colors.green,
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}>
+                    🔥 Trending <ChevronDown size={14} />
+                  </button>
+                  <button style={{ 
+                    padding: '8px 16px', 
+                    borderRadius: '20px', 
+                    fontSize: '13px', 
+                    fontWeight: 500, 
+                    cursor: 'pointer', 
+                    border: `1px solid ${colors.border}`,
+                    backgroundColor: 'transparent',
+                    color: colors.text,
+                  }}>
+                    🆕 New
+                  </button>
+                  <button style={{ 
+                    padding: '8px 16px', 
+                    borderRadius: '20px', 
+                    fontSize: '13px', 
+                    fontWeight: 500, 
+                    cursor: 'pointer', 
+                    border: `1px solid ${colors.border}`,
+                    backgroundColor: 'transparent',
+                    color: colors.text,
+                  }}>
+                    📊 Top
+                  </button>
                 </div>
-              )}
-            </div>
+                
+                {/* Stats Bar */}
+                <div style={{ 
+                  display: 'flex', 
+                  borderBottom: `1px solid ${colors.border}`,
+                }}>
+                  <div style={{ 
+                    flex: 1, 
+                    padding: '12px', 
+                    textAlign: 'center',
+                    borderRight: `1px solid ${colors.border}`,
+                  }}>
+                    <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '4px' }}>24H VOLUME</div>
+                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '15px' }}>${formatCompact(stats.volume24h)}</div>
+                  </div>
+                  <div style={{ 
+                    flex: 1, 
+                    padding: '12px', 
+                    textAlign: 'center',
+                  }}>
+                    <div style={{ color: colors.textSecondary, fontSize: '11px', marginBottom: '4px' }}>AGENTS</div>
+                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '15px' }}>{stats.totalAgents.toLocaleString()}</div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Desktop Stats Bar */}
+                <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: colors.textSecondary }}>MOLTBOOK AGENTS:</span>
+                    <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{stats.totalAgents.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: colors.textSecondary }}>TOKENIZED (50+ KARMA):</span>
+                    <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{stats.tokenized}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
+                    <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
+                  </div>
+                </div>
 
-            {/* Moltbook Filter Bar */}
-            <div style={{ backgroundColor: colors.bg, padding: isMobile ? '8px' : '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
-                <button style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: isDark ? '#333' : '#ddd', color: colors.text }}>
-                  All Agents
-                  <span style={{ backgroundColor: colors.text + '20', padding: '1px 6px', borderRadius: '8px', fontSize: '10px' }}>{moltbookAgents.length}</span>
-                </button>
-              </div>
-              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px' }}>
-                {!isMobile && <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Sorted by:</span>}
-                <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '4px' }}>🏆 Karma</button>
-              </div>
-            </div>
+                {/* Desktop Filter Bar */}
+                <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
+                  <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
+                    <button style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: isDark ? '#333' : '#ddd', color: colors.text }}>
+                      All Agents
+                      <span style={{ backgroundColor: colors.text + '20', padding: '1px 6px', borderRadius: '8px', fontSize: '10px' }}>{moltbookAgents.length}</span>
+                    </button>
+                  </div>
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Sorted by:</span>
+                    <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '4px' }}>🏆 Karma</button>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Moltbook Agents List */}
             <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              {/* Mobile Card View */}
+              {/* Mobile DexScreener-style View */}
               {isMobile ? (
-                <div style={{ padding: '8px' }}>
+                <div>
                   {moltbookAgents.map((agent, index) => (
                     <div 
                       key={agent.id}
                       onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
                       style={{
-                        backgroundColor: isDark ? '#111' : '#fff',
-                        borderRadius: '12px',
-                        padding: '12px',
-                        marginBottom: '8px',
-                        border: `1px solid ${colors.border}`,
+                        padding: '12px 16px',
+                        borderBottom: `1px solid ${colors.border}`,
                         cursor: agent.karma >= 50 ? 'pointer' : 'default',
                       }}
                     >
-                      {/* Top row: rank, avatar, name, karma */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                        <span style={{ 
-                          backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1a1a1a' : '#f0f0f0'),
-                          color: index < 3 ? '#000' : colors.textSecondary,
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          minWidth: '24px',
-                          textAlign: 'center',
-                        }}>
-                          {index + 1}
-                        </span>
+                      {/* Main row */}
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                        {/* Avatar */}
                         <div style={{ 
-                          width: '36px', 
-                          height: '36px', 
+                          width: '40px', 
+                          height: '40px', 
                           borderRadius: '50%', 
                           backgroundColor: agent.color, 
                           display: 'flex', 
@@ -1084,29 +1153,51 @@ function ScreenerPage() {
                           justifyContent: 'center',
                           color: '#fff',
                           fontWeight: 700,
-                          fontSize: '14px',
+                          fontSize: '16px',
                           flexShrink: 0,
                         }}>
                           {agent.avatar}
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 600, color: colors.text, fontSize: '14px' }}>{agent.name}</div>
-                          <a 
-                            href={`https://twitter.com/${agent.handle.replace('@', '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            style={{ color: '#1DA1F2', fontSize: '12px', textDecoration: 'none' }}
-                          >
+                        
+                        {/* Name & Handle */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontWeight: 600, color: colors.text, fontSize: '15px' }}>{agent.name}</span>
+                            <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '13px' }}>{agent.karma}🔥</span>
+                          </div>
+                          <div style={{ color: colors.textSecondary, fontSize: '13px', marginTop: '2px' }}>
                             {agent.handle}
-                          </a>
+                          </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{agent.karma}🔥</div>
-                          {agent.karma >= 50 && agent.change24h !== null && (
-                            <div style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontSize: '12px', fontWeight: 500 }}>
-                              {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
-                            </div>
+                        
+                        {/* Price & Changes */}
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          {agent.karma >= 50 && agent.price ? (
+                            <>
+                              <div style={{ fontWeight: 600, color: colors.text, fontSize: '15px' }}>
+                                {formatPrice(agent.price)}
+                              </div>
+                              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '2px' }}>
+                                <span style={{ 
+                                  color: agent.change24h && agent.change24h >= 0 ? colors.green : colors.red, 
+                                  fontSize: '12px',
+                                  fontWeight: 500,
+                                }}>
+                                  24H {agent.change24h ? (agent.change24h >= 0 ? '+' : '') + agent.change24h.toFixed(0) + '%' : '0%'}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <span style={{ 
+                              color: '#F59E0B', 
+                              fontSize: '12px', 
+                              fontWeight: 600,
+                              backgroundColor: '#F59E0B20',
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                            }}>
+                              {50 - agent.karma} to go
+                            </span>
                           )}
                         </div>
                       </div>
@@ -1115,91 +1206,22 @@ function ScreenerPage() {
                       {agent.karma >= 50 && (
                         <div style={{ 
                           display: 'flex', 
-                          justifyContent: 'space-between', 
-                          fontSize: '11px', 
-                          color: colors.textSecondary,
-                          marginBottom: '10px',
-                          padding: '8px',
-                          backgroundColor: isDark ? '#0a0a0a' : '#f5f5f5',
-                          borderRadius: '8px',
+                          gap: '16px',
+                          marginTop: '8px',
+                          marginLeft: '52px',
+                          fontSize: '12px',
                         }}>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.price ? formatPrice(agent.price) : '—'}</div>
-                            <div>Price</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</div>
-                            <div>MCap</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.volume ? formatNumber(agent.volume) : '—'}</div>
-                            <div>Vol</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</div>
-                            <div>Liq</div>
-                          </div>
+                          <span style={{ color: colors.textSecondary }}>
+                            LIQ <span style={{ color: colors.text }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</span>
+                          </span>
+                          <span style={{ color: colors.textSecondary }}>
+                            VOL <span style={{ color: colors.text }}>{agent.volume ? formatNumber(agent.volume) : '—'}</span>
+                          </span>
+                          <span style={{ color: colors.textSecondary }}>
+                            MCAP <span style={{ color: colors.text }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
+                          </span>
                         </div>
                       )}
-                      
-                      {/* Action buttons */}
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {agent.karma >= 50 ? (
-                          <>
-                            <a
-                              href={`https://wallet.xyz/coin/${agent.tokenAddress}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              style={{
-                                flex: 1,
-                                padding: '10px',
-                                borderRadius: '8px',
-                                fontSize: '13px',
-                                fontWeight: 600,
-                                backgroundColor: '#0052FF',
-                                color: '#fff',
-                                textAlign: 'center',
-                                textDecoration: 'none',
-                              }}
-                            >
-                              Trade
-                            </a>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.location.href = `/api/auth/twitter?agentId=${agent.id}`;
-                              }}
-                              style={{
-                                flex: 1,
-                                padding: '10px',
-                                borderRadius: '8px',
-                                fontSize: '13px',
-                                fontWeight: 600,
-                                border: 'none',
-                                backgroundColor: colors.green,
-                                color: '#fff',
-                                cursor: 'pointer',
-                              }}
-                            >
-                              Claim
-                            </button>
-                          </>
-                        ) : (
-                          <div style={{ 
-                            flex: 1,
-                            textAlign: 'center',
-                            color: '#F59E0B', 
-                            fontSize: '12px', 
-                            fontWeight: 600,
-                            backgroundColor: '#F59E0B' + '20',
-                            padding: '10px',
-                            borderRadius: '8px',
-                          }}>
-                            ⏳ {50 - agent.karma} karma to tokenize
-                          </div>
-                        )}
-                      </div>
                     </div>
                   ))}
                 </div>
