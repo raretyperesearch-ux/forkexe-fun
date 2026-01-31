@@ -1153,7 +1153,7 @@ function ScreenerPage() {
                         <div style={{ color: colors.textSecondary, fontSize: '10px', textTransform: 'uppercase', marginBottom: '4px' }}>24H Volume</div>
                         <div style={{ fontWeight: 700, fontSize: '14px' }}>${formatCompact(moltbookAgents.filter(a => watchlist.includes(a.id)).reduce((sum, a) => sum + (a.volume || 0), 0))}</div>
                       </div>
-                      <div style={{ flex: 1, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', borderRadius: '10px', padding: '10px', textign: 'center' }}>
+                      <div style={{ flex: 1, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
                         <div style={{ color: colors.textSecondary, fontSize: '10px', textTransform: 'uppercase', marginBottom: '4px' }}>Tokens</div>
                         <div style={{ fontWeight: 700, fontSize: '14px' }}>{watchlist.length}</div>
                       </div>
@@ -1176,7 +1176,7 @@ function ScreenerPage() {
                                 <span style={{ fontSize: '11px', color: (agent.change24h || 0) >= 0 ? '#22C55E' : '#EF4444' }}>24H {(agent.change24h || 0) >= 0 ? '+' : ''}{(agent.change24h || 0).toFixed(1)}%</span>
                               </div>
                             </div>
-                            <button onick={(e) => toggleWatchlist(agent.id, e)} style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}><Star size={18} fill="#F59E0B" color="#F59E0B" /></button>
+                            <button onClick={(e) => toggleWatchlist(agent.id, e)} style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}><Star size={18} fill="#F59E0B" color="#F59E0B" /></button>
                           </div>
                           {/* Row 2: Stats Pills */}
                           <div style={{ display: 'flex', gap: '6px', marginLeft: '42px' }}>
