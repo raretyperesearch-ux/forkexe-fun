@@ -790,28 +790,24 @@ function ScreenerPage() {
             {[...moltbookAgents, ...moltbookAgents].map((agent, i) => (
               <div 
                 key={i} 
-                onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                onClick={() => window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '6px', 
                   padding: '8px 16px', 
-                  cursor: agent.karma >= 50 ? 'pointer' : 'default', 
+                  cursor: 'pointer', 
                   whiteSpace: 'nowrap', 
                   fontSize: '12px',
-                  opacity: agent.karma >= 50 ? 1 : 0.5,
+                  opacity: 1,
                 }}
               >
                 <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % moltbookAgents.length) + 1}</span>
                 <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
-                <span style={{ color: '#EF4444', fontWeight: 600 }}>{agent.karma}🔥</span>
-                {agent.karma >= 50 && agent.change24h !== null && (
+                {agent.change24h !== null && (
                   <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
                     {agent.change24h >= 0 ? '↑' : '↓'}{Math.abs(agent.change24h).toFixed(0)}%
                   </span>
-                )}
-                {agent.karma < 50 && (
-                  <span style={{ color: '#F59E0B', fontSize: '10px' }}>⏳</span>
                 )}
               </div>
             ))}
@@ -1097,14 +1093,14 @@ function ScreenerPage() {
                     {moltbookAgents.slice(0, 20).map(agent => (
                       <div
                         key={agent.id}
-                        onClick={() => agent.karma >= 50 && setSelectedAgent(agent)}
+                        onClick={() => setSelectedAgent(agent)}
                         style={{
                           padding: '12px',
                           borderBottom: `1px solid ${colors.border}`,
                           display: 'flex',
                           alignItems: 'center',
                           gap: '12px',
-                          cursor: agent.karma >= 50 ? 'pointer' : 'default',
+                          cursor: 'pointer',
                         }}
                       >
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#1C1C1D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🦞</div>
@@ -1187,10 +1183,44 @@ function ScreenerPage() {
                   padding: '16px', 
                   backgroundColor: colors.bgSecondary, 
                   borderRadius: '12px',
+                  marginBottom: '12px',
                 }}>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Data Sources</div>
                   <div style={{ color: colors.textSecondary, fontSize: '12px' }}>
                     Clanker API • DexScreener • wallet.xyz
+                  </div>
+                </div>
+
+                {/* Submit Token Section */}
+                <div style={{ 
+                  padding: '16px', 
+                  background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                  borderRadius: '12px',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                  marginBottom: '12px',
+                }}>
+                  <div style={{ fontWeight: 600, marginBottom: '4px' }}>🚀 List Your Token</div>
+                  <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '12px' }}>
+                    Update your token's profile picture and info
+                  </div>
+                  <button
+                    onClick={() => window.open('https://forms.gle/YOUR_FORM_ID', '_blank')}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                      color: colors.text,
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Submit Token →
+                  </button>
+                  <div style={{ color: colors.textSecondary, fontSize: '10px', marginTop: '8px', textAlign: 'center' }}>
+                    Rush processing available
                   </div>
                 </div>
               </div>
@@ -1294,6 +1324,110 @@ function ScreenerPage() {
                     <div style={{ color: colors.text, fontWeight: 700, fontSize: '12px' }}>{stats.totalAgents.toLocaleString()}</div>
                   </div>
                 </div>
+
+                {/* Top 10 Section */}
+                <div style={{ padding: '12px 0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', marginBottom: '8px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '13px' }}>🔥 Top 10</span>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button
+                        onClick={() => setSortBy('volume')}
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          fontSize: '10px',
+                          fontWeight: 500,
+                          border: 'none',
+                          background: sortBy === 'volume' ? (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)') : 'transparent',
+                          color: sortBy === 'volume' ? colors.text : colors.textSecondary,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Volume
+                      </button>
+                      <button
+                        onClick={() => setSortBy('mcap')}
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          fontSize: '10px',
+                          fontWeight: 500,
+                          border: 'none',
+                          background: sortBy === 'mcap' ? (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)') : 'transparent',
+                          color: sortBy === 'mcap' ? colors.text : colors.textSecondary,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        MCap
+                      </button>
+                    </div>
+                  </div>
+                  <div style={{ 
+                    display: 'flex', 
+                    gap: '10px', 
+                    overflowX: 'auto', 
+                    padding: '0 12px 8px',
+                    WebkitOverflowScrolling: 'touch',
+                  }}>
+                    {[...moltbookAgents]
+                      .sort((a, b) => sortBy === 'volume' ? (b.volume || 0) - (a.volume || 0) : (b.mcap || 0) - (a.mcap || 0))
+                      .slice(0, 10)
+                      .map((agent, i) => (
+                        <div
+                          key={agent.id}
+                          onClick={() => setSelectedAgent(agent)}
+                          style={{
+                            minWidth: '120px',
+                            padding: '10px',
+                            borderRadius: '12px',
+                            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                            border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                            <span style={{ 
+                              fontSize: '10px', 
+                              fontWeight: 700, 
+                              color: i < 3 ? '#F59E0B' : colors.textSecondary,
+                            }}>
+                              #{i + 1}
+                            </span>
+                            <div style={{ 
+                              width: '20px', 
+                              height: '20px', 
+                              borderRadius: '6px', 
+                              backgroundColor: isDark ? '#1C1C1D' : '#e0e0e0', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              fontSize: '10px',
+                            }}>
+                              🦞
+                            </div>
+                          </div>
+                          <div style={{ fontWeight: 600, fontSize: '11px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {agent.name}
+                          </div>
+                          <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '4px' }}>
+                            ${agent.symbol || '???'}
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 600 }}>
+                              {agent.price ? formatPrice(agent.price) : '$0'}
+                            </span>
+                            <span style={{ 
+                              fontSize: '9px', 
+                              fontWeight: 500,
+                              color: (agent.change24h || 0) >= 0 ? '#22C55E' : '#EF4444',
+                            }}>
+                              {(agent.change24h || 0) >= 0 ? '↑' : '↓'}{Math.abs(agent.change24h || 0).toFixed(1)}%
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
               </>
             ) : (
               <>
@@ -1337,11 +1471,11 @@ function ScreenerPage() {
                   {moltbookAgents.map((agent) => (
                     <div 
                       key={agent.id}
-                      onClick={() => agent.karma >= 50 && setSelectedAgent(agent)}
+                      onClick={() => setSelectedAgent(agent)}
                       style={{
                         padding: '6px 12px',
                         borderBottom: `1px solid ${colors.border}`,
-                        cursor: agent.karma >= 50 ? 'pointer' : 'default',
+                        cursor: 'pointer',
                       }}
                     >
                       {/* Single compact row */}
@@ -1388,54 +1522,40 @@ function ScreenerPage() {
                         
                         {/* Price & Changes */}
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          {agent.karma >= 50 && agent.price ? (
-                            <>
-                              <div style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>
-                                {formatPrice(agent.price)}
-                              </div>
-                              <div style={{ fontSize: '10px' }}>
-                                <span style={{ color: colors.textSecondary }}>24H </span>
-                                <span style={{ 
-                                  color: agent.change24h && agent.change24h >= 0 ? colors.green : colors.red, 
-                                  fontWeight: 600 
-                                }}>
-                                  {agent.change24h ? (agent.change24h >= 0 ? '+' : '') + agent.change24h.toFixed(0) + '%' : '0%'}
-                                </span>
-                              </div>
-                            </>
-                          ) : agent.karma >= 50 ? (
-                            <span style={{ color: colors.green, fontSize: '10px', fontWeight: 600 }}>
-                              Awaiting
+                          <div style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>
+                            {agent.price ? formatPrice(agent.price) : '$0.00'}
+                          </div>
+                          <div style={{ fontSize: '10px' }}>
+                            <span style={{ color: colors.textSecondary }}>24H </span>
+                            <span style={{ 
+                              color: (agent.change24h || 0) >= 0 ? colors.green : colors.red, 
+                              fontWeight: 600 
+                            }}>
+                              {agent.change24h ? (agent.change24h >= 0 ? '+' : '') + agent.change24h.toFixed(0) + '%' : '0%'}
                             </span>
-                          ) : (
-                            <span style={{ color: '#F59E0B', fontSize: '10px', fontWeight: 600 }}>
-                              {50 - agent.karma} to go
-                            </span>
-                          )}
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Stats row - only for tokenized */}
-                      {agent.karma >= 50 && (
-                        <div style={{ 
-                          display: 'flex', 
-                          gap: '4px',
-                          marginTop: '4px',
-                          marginLeft: '36px',
-                          fontSize: '9px',
-                          color: colors.textSecondary,
-                        }}>
-                          <span style={{ border: `1px solid ${colors.border}`, padding: '1px 6px', borderRadius: '8px' }}>
-                            LIQ <span style={{ color: colors.text }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</span>
-                          </span>
-                          <span style={{ border: `1px solid ${colors.border}`, padding: '1px 6px', borderRadius: '8px' }}>
-                            VOL <span style={{ color: colors.text }}>{agent.volume ? formatNumber(agent.volume) : '—'}</span>
-                          </span>
-                          <span style={{ border: `1px solid ${colors.border}`, padding: '1px 6px', borderRadius: '8px' }}>
-                            MCAP <span style={{ color: colors.text }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
-                          </span>
-                        </div>
-                      )}
+                      {/* Stats row */}
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: '4px',
+                        marginTop: '4px',
+                        marginLeft: '36px',
+                        fontSize: '9px',
+                        color: colors.textSecondary,
+                      }}>
+                        <span style={{ border: `1px solid ${colors.border}`, padding: '1px 6px', borderRadius: '8px' }}>
+                          LIQ <span style={{ color: colors.text }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</span>
+                        </span>
+                        <span style={{ border: `1px solid ${colors.border}`, padding: '1px 6px', borderRadius: '8px' }}>
+                          VOL <span style={{ color: colors.text }}>{agent.volume ? formatNumber(agent.volume) : '—'}</span>
+                        </span>
+                        <span style={{ border: `1px solid ${colors.border}`, padding: '1px 6px', borderRadius: '8px' }}>
+                          MCAP <span style={{ color: colors.text }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1464,8 +1584,8 @@ function ScreenerPage() {
                     {moltbookAgents.map((agent, index) => (
                       <tr 
                         key={agent.id} 
-                        style={{ cursor: agent.karma >= 50 ? 'pointer' : 'default' }} 
-                        onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                        style={{ cursor: 'pointer' }} 
+                        onClick={() => window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} 
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
@@ -1527,27 +1647,27 @@ function ScreenerPage() {
                         </td>
                         {/* PRICE */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                          {agent.karma >= 50 && agent.price ? formatPrice(agent.price) : '—'}
+                          {agent.price ? formatPrice(agent.price) : '—'}
                         </td>
                         {/* AGE */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
-                          {agent.karma >= 50 && agent.age ? agent.age : '—'}
+                          {agent.age ? agent.age : '—'}
                         </td>
                         {/* VOLUME */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                          {agent.karma >= 50 && agent.volume ? formatNumber(agent.volume) : '—'}
+                          {agent.volume ? formatNumber(agent.volume) : '—'}
                         </td>
                         {/* LIQUIDITY */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                          {agent.karma >= 50 && agent.liquidity ? formatNumber(agent.liquidity) : '—'}
+                          {agent.liquidity ? formatNumber(agent.liquidity) : '—'}
                         </td>
                         {/* MCAP */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                          {agent.karma >= 50 && agent.mcap ? formatNumber(agent.mcap) : '—'}
+                          {agent.mcap ? formatNumber(agent.mcap) : '—'}
                         </td>
                         {/* 24H */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'right' }}>
-                          {agent.karma >= 50 && agent.change24h !== null ? (
+                          {agent.change24h !== null ? (
                             <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
                               {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
                             </span>
@@ -1555,64 +1675,28 @@ function ScreenerPage() {
                         </td>
                         {/* ACTION */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'center' }}>
-                          {agent.karma >= 50 ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
-                              <a
-                                href={`https://wallet.xyz/coin/${agent.tokenAddress}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: '6px',
-                                  fontSize: '11px',
-                                  fontWeight: 600,
-                                  cursor: 'pointer',
-                                  border: 'none',
-                                  backgroundColor: '#0052FF',
-                                  color: '#fff',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  textDecoration: 'none',
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                Trade
-                              </a>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.location.href = `/api/auth/twitter?agentId=${agent.id}`;
-                                }}
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: '6px',
-                                  fontSize: '11px',
-                                  fontWeight: 600,
-                                  cursor: 'pointer',
-                                  border: 'none',
-                                  backgroundColor: colors.green,
-                                  color: '#fff',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                }}
-                              >
-                                <Wallet size={12} /> Claim
-                              </button>
-                            </div>
-                          ) : (
-                            <span style={{ 
-                              color: '#F59E0B', 
-                              fontSize: '11px', 
+                          <a
+                            href={`https://wallet.xyz/coin/${agent.tokenAddress}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              padding: '6px 16px',
+                              borderRadius: '6px',
+                              fontSize: '11px',
                               fontWeight: 600,
-                              backgroundColor: '#F59E0B' + '20',
-                              padding: '4px 10px',
-                              borderRadius: '12px',
-                            }}>
-                              {50 - agent.karma} karma to go
-                            </span>
-                          )}
+                              cursor: 'pointer',
+                              border: 'none',
+                              backgroundColor: '#0052FF',
+                              color: '#fff',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              textDecoration: 'none',
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Trade
+                          </a>
                         </td>
                       </tr>
                     ))}
