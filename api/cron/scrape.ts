@@ -12,7 +12,6 @@ export const config = {
 };
 
 async function scrapeMoltbook() {
-  // Get raw markdown content - wait for JS to load
   const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
     method: 'POST',
     headers: {
@@ -22,7 +21,7 @@ async function scrapeMoltbook() {
     body: JSON.stringify({
       url: 'https://www.moltbook.com/',
       formats: ['markdown'],
-      waitFor: 5000, // Wait 5 seconds for JS to load
+      waitFor: 5000,
     }),
   });
 
@@ -30,34 +29,43 @@ async function scrapeMoltbook() {
   const markdown = data.data?.markdown || '';
   
   console.log('Markdown length:', markdown.length);
-  console.log('Full markdown:', markdown);
 
-  // Parse agents from markdown
-  const agents: { name: string; karma: number; rank: number }[] = [];
+  // Find the Top AI Agents section
+  const topSection = markdown.match(/🏆 Top AI Agents[\s\S]*?(?=## 🌊|$)/i);
+  const section = topSection ? topSection[0] : markdown;
   
-  // Pattern: agent name followed by karma number
-  const pattern = /([A-Za-z][A-Za-z0-9_]+)\s+(\d{2,4})\s*karma/gi;
-  let match;
-  let rank = 1;
+  console.log('Section length:', section.length);
+
+  const agents: { name: string; karma: number; rank: number; handle: string }[] = [];
   
-  while ((match = pattern.exec(markdown)) !== null) {
-    const name = match[1];
-    const karma = parseInt(match[2]);
-    if (karma >= 50 && karma < 5000) {
-      agents.push({ rank: rank++, name, karma });
+  // The format is: [1\n\nE\n\n✓\n\neudaemon_0\n\n@handle\n\n259\n\nkarma](url)
+  // Split by agent links
+  const agentLinks = section.match(/\[\d+[\s\S]*?karma\]\(https:\/\/www\.moltbook\.com\/u\/[^)]+\)/g) || [];
+  
+  console.log('Found agent links:', agentLinks.length);
+  
+  for (const link of agentLinks) {
+    // Extract rank (first number)
+    const rankMatch = link.match(/^\[(\d+)/);
+    // Extract name (after ✓ and before @)
+    const nameMatch = link.match(/✓[\s\\]*\n[\s\\]*\n[\s\\]*([A-Za-z0-9_\s⚡]+?)[\s\\]*\n[\s\\]*\n[\s\\]*@/);
+    // Extract karma (number before "karma")
+    const karmaMatch = link.match(/(\d+)[\s\\]*\n[\s\\]*\n[\s\\]*karma/);
+    // Extract handle
+    const handleMatch = link.match(/@([A-Za-z0-9_]+)/);
+    
+    if (rankMatch && nameMatch && karmaMatch) {
+      agents.push({
+        rank: parseInt(rankMatch[1]),
+        name: nameMatch[1].trim().replace(/\\_/g, '_'),
+        handle: handleMatch ? '@' + handleMatch[1] : '@unknown',
+        karma: parseInt(karmaMatch[1]),
+      });
     }
   }
 
-  // Dedupe
-  const seen = new Set();
-  const uniqueAgents = agents.filter(a => {
-    if (seen.has(a.name.toLowerCase())) return false;
-    seen.add(a.name.toLowerCase());
-    return true;
-  });
-
-  console.log('Final agents:', uniqueAgents);
-  return uniqueAgents;
+  console.log('Parsed agents:', JSON.stringify(agents));
+  return agents;
 }
 
 function getRandomColor() {
@@ -72,7 +80,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    console.log('Starting Moltbook scrape with waitFor...');
+    console.log('Starting Moltbook scrape v4...');
     
     const agents = await scrapeMoltbook();
     console.log(`Scraped ${agents.length} agents`);
@@ -92,8 +100,8 @@ export default async function handler(req: any, res: any) {
         .upsert({
           moltbook_id: moltbookId,
           name: agent.name,
-          handle: '@' + agent.name.toLowerCase(),
-          karma: agent.karma || 0,
+          handle: agent.handle,
+          karma: agent.karma,
           avatar: agent.name.charAt(0).toUpperCase(),
           color: existing?.color || getRandomColor(),
           last_active: 'recently',
@@ -104,6 +112,7 @@ export default async function handler(req: any, res: any) {
         });
 
       if (!error) upserted++;
+      else console.error(`Error upserting ${agent.name}:`, error);
     }
 
     return res.status(200).json({ success: true, scraped: agents.length, upserted });
