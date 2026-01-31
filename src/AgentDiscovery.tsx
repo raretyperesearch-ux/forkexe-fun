@@ -796,26 +796,25 @@ function ScreenerPage() {
         {/* View Toggle */}
         <div style={{ 
           backgroundColor: colors.bg, 
-          padding: isMobile ? '6px 12px' : '0 16px', 
+          padding: isMobile ? '10px 16px' : '0 16px', 
           display: 'flex', 
           alignItems: 'center', 
           borderBottom: `1px solid ${colors.border}`,
-          gap: isMobile ? '8px' : '0',
+          gap: isMobile ? '10px' : '0',
         }}>
           {isMobile ? (
             /* Mobile: Logo + Search + theme toggle */
             <>
-              <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px', flexShrink: 0 }} />
+              <img src="/logo.png" alt="agentscreener" style={{ width: '28px', height: '28px', borderRadius: '6px', flexShrink: 0 }} />
               <div style={{ 
                 flex: 1, 
                 display: 'flex', 
                 alignItems: 'center',
-                backgroundColor: isDark ? '#1C1C1D' : '#f0f0f0',
-                borderRadius: '6px',
-                padding: '6px 10px',
-                marginLeft: '8px',
+                backgroundColor: '#1C1C1D',
+                borderRadius: '8px',
+                padding: '8px 12px',
               }}>
-                <Search size={14} style={{ color: colors.textSecondary, flexShrink: 0 }} />
+                <Search size={16} style={{ color: colors.textSecondary, flexShrink: 0 }} />
                 <input
                   type="text"
                   placeholder="Search agents..."
@@ -826,9 +825,9 @@ function ScreenerPage() {
                     border: 'none',
                     backgroundColor: 'transparent',
                     color: colors.text,
-                    fontSize: '13px',
+                    fontSize: '14px',
                     outline: 'none',
-                    marginLeft: '8px',
+                    marginLeft: '10px',
                     width: '100%',
                   }}
                 />
@@ -836,9 +835,9 @@ function ScreenerPage() {
               <div
                 onClick={toggle}
                 style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '6px',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '8px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -848,7 +847,7 @@ function ScreenerPage() {
                   flexShrink: 0,
                 }}
               >
-                {isDark ? <Sun size={14} /> : <Moon size={14} />}
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </div>
             </>
           ) : (
@@ -1046,19 +1045,18 @@ function ScreenerPage() {
             {/* Mobile DexScreener-style header */}
             {isMobile ? (
               <>
-                {/* Filter Pills */}
+                {/* Filter Pills - DexScreener style */}
                 <div style={{ 
                   display: 'flex', 
-                  gap: '6px', 
-                  padding: '8px 12px',
-                  borderBottom: `1px solid ${colors.border}`,
+                  gap: '8px', 
+                  padding: '12px 16px',
                   overflowX: 'auto',
                   WebkitOverflowScrolling: 'touch',
                 }}>
                   <button style={{ 
-                    padding: '5px 12px', 
-                    borderRadius: '16px', 
-                    fontSize: '12px', 
+                    padding: '8px 16px', 
+                    borderRadius: '20px', 
+                    fontSize: '13px', 
                     fontWeight: 600, 
                     cursor: 'pointer', 
                     border: 'none', 
@@ -1066,59 +1064,79 @@ function ScreenerPage() {
                     color: '#fff',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '6px',
                     whiteSpace: 'nowrap',
                   }}>
                     🦞 MOLT agents
                   </button>
                   <button style={{ 
-                    padding: '5px 12px', 
-                    borderRadius: '16px', 
-                    fontSize: '12px', 
+                    padding: '8px 16px', 
+                    borderRadius: '20px', 
+                    fontSize: '13px', 
                     fontWeight: 500, 
                     cursor: 'pointer', 
                     border: `1px solid ${colors.border}`,
                     backgroundColor: 'transparent',
                     color: colors.text,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
                     whiteSpace: 'nowrap',
                   }}>
-                    🆕 New
+                    <span style={{ backgroundColor: colors.green, color: '#fff', padding: '1px 4px', borderRadius: '3px', fontSize: '9px', fontWeight: 700 }}>NEW</span> New
                   </button>
                   <button style={{ 
-                    padding: '5px 12px', 
-                    borderRadius: '16px', 
-                    fontSize: '12px', 
+                    padding: '8px 16px', 
+                    borderRadius: '20px', 
+                    fontSize: '13px', 
                     fontWeight: 500, 
                     cursor: 'pointer', 
                     border: `1px solid ${colors.border}`,
                     backgroundColor: 'transparent',
                     color: colors.text,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
                     whiteSpace: 'nowrap',
                   }}>
                     📊 Top
                   </button>
                 </div>
                 
-                {/* Stats Bar */}
+                {/* Stats Bar - DexScreener style rounded boxes */}
                 <div style={{ 
                   display: 'flex', 
-                  borderBottom: `1px solid ${colors.border}`,
+                  gap: '8px',
+                  padding: '4px 16px 12px',
                 }}>
                   <div style={{ 
                     flex: 1, 
-                    padding: '8px 12px', 
+                    padding: '10px 8px', 
                     textAlign: 'center',
-                    borderRight: `1px solid ${colors.border}`,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '12px',
                   }}>
-                    <div style={{ color: colors.textSecondary, fontSize: '10px', marginBottom: '2px' }}>24H VOLUME</div>
+                    <div style={{ color: colors.textSecondary, fontSize: '10px', fontWeight: 500, marginBottom: '4px', textTransform: 'uppercase' }}>24H VOLUME</div>
                     <div style={{ color: colors.text, fontWeight: 700, fontSize: '14px' }}>${formatCompact(stats.volume24h)}</div>
                   </div>
                   <div style={{ 
                     flex: 1, 
-                    padding: '8px 12px', 
+                    padding: '10px 8px', 
                     textAlign: 'center',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '12px',
                   }}>
-                    <div style={{ color: colors.textSecondary, fontSize: '10px', marginBottom: '2px' }}>AGENTS</div>
+                    <div style={{ color: colors.textSecondary, fontSize: '10px', fontWeight: 500, marginBottom: '4px', textTransform: 'uppercase' }}>TOKENIZED</div>
+                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '14px' }}>{stats.tokenized}</div>
+                  </div>
+                  <div style={{ 
+                    flex: 1, 
+                    padding: '10px 8px', 
+                    textAlign: 'center',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '12px',
+                  }}>
+                    <div style={{ color: colors.textSecondary, fontSize: '10px', fontWeight: 500, marginBottom: '4px', textTransform: 'uppercase' }}>AGENTS</div>
                     <div style={{ color: colors.text, fontWeight: 700, fontSize: '14px' }}>{stats.totalAgents.toLocaleString()}</div>
                   </div>
                 </div>
@@ -1173,7 +1191,7 @@ function ScreenerPage() {
                       }}
                     >
                       {/* Main row */}
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         {/* Avatar - Lobster */}
                         <div style={{ 
                           width: '40px', 
@@ -1191,12 +1209,12 @@ function ScreenerPage() {
                         
                         {/* Name & Handle */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontWeight: 600, color: colors.text, fontSize: '15px' }}>{agent.name}</span>
                             <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '13px' }}>{agent.karma}🔥</span>
                           </div>
-                          <div style={{ color: colors.textSecondary, fontSize: '13px', marginTop: '2px' }}>
-                            {agent.handle}
+                          <div style={{ color: colors.textSecondary, fontSize: '13px', marginTop: '1px' }}>
+                            @{agent.handle?.replace('@', '')}
                           </div>
                         </div>
                         
@@ -1204,26 +1222,34 @@ function ScreenerPage() {
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
                           {agent.karma >= 50 && agent.price ? (
                             <>
-                              <div style={{ fontWeight: 600, color: colors.text, fontSize: '15px' }}>
+                              <div style={{ fontWeight: 700, color: colors.text, fontSize: '15px', fontFamily: 'monospace' }}>
                                 {formatPrice(agent.price)}
                               </div>
-                              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '2px' }}>
+                              <div style={{ fontSize: '12px', marginTop: '2px' }}>
+                                <span style={{ color: colors.textSecondary }}>24H </span>
                                 <span style={{ 
                                   color: agent.change24h && agent.change24h >= 0 ? colors.green : colors.red, 
-                                  fontSize: '12px',
-                                  fontWeight: 500,
+                                  fontWeight: 600 
                                 }}>
-                                  24H {agent.change24h ? (agent.change24h >= 0 ? '+' : '') + agent.change24h.toFixed(0) + '%' : '0%'}
+                                  {agent.change24h ? (agent.change24h >= 0 ? '+' : '') + agent.change24h.toFixed(0) + '%' : '0%'}
                                 </span>
                               </div>
                             </>
+                          ) : agent.karma >= 50 ? (
+                            <span style={{ 
+                              color: colors.green, 
+                              fontSize: '12px', 
+                              fontWeight: 600,
+                            }}>
+                              Awaiting token
+                            </span>
                           ) : (
                             <span style={{ 
                               color: '#F59E0B', 
                               fontSize: '12px', 
                               fontWeight: 600,
-                              backgroundColor: '#F59E0B20',
-                              padding: '4px 8px',
+                              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                              padding: '4px 10px',
                               borderRadius: '12px',
                             }}>
                               {50 - agent.karma} to go
@@ -1232,26 +1258,41 @@ function ScreenerPage() {
                         </div>
                       </div>
                       
-                      {/* Stats row for tokenized agents */}
-                      {agent.karma >= 50 && (
-                        <div style={{ 
-                          display: 'flex', 
-                          gap: '16px',
-                          marginTop: '8px',
-                          marginLeft: '52px',
-                          fontSize: '12px',
+                      {/* Stats row - bordered pills like DexScreener */}
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: '8px',
+                        marginTop: '10px',
+                        marginLeft: '52px',
+                      }}>
+                        <span style={{ 
+                          color: colors.textSecondary, 
+                          fontSize: '11px',
+                          border: `1px solid ${colors.border}`,
+                          padding: '4px 10px',
+                          borderRadius: '14px',
                         }}>
-                          <span style={{ color: colors.textSecondary }}>
-                            LIQ <span style={{ color: colors.text }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</span>
-                          </span>
-                          <span style={{ color: colors.textSecondary }}>
-                            VOL <span style={{ color: colors.text }}>{agent.volume ? formatNumber(agent.volume) : '—'}</span>
-                          </span>
-                          <span style={{ color: colors.textSecondary }}>
-                            MCAP <span style={{ color: colors.text }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
-                          </span>
-                        </div>
-                      )}
+                          LIQ <span style={{ color: colors.text, fontWeight: 500 }}>{agent.karma >= 50 && agent.liquidity ? formatNumber(agent.liquidity) : '—'}</span>
+                        </span>
+                        <span style={{ 
+                          color: colors.textSecondary, 
+                          fontSize: '11px',
+                          border: `1px solid ${colors.border}`,
+                          padding: '4px 10px',
+                          borderRadius: '14px',
+                        }}>
+                          VOL <span style={{ color: colors.text, fontWeight: 500 }}>{agent.karma >= 50 && agent.volume ? formatNumber(agent.volume) : '—'}</span>
+                        </span>
+                        <span style={{ 
+                          color: colors.textSecondary, 
+                          fontSize: '11px',
+                          border: `1px solid ${colors.border}`,
+                          padding: '4px 10px',
+                          borderRadius: '14px',
+                        }}>
+                          MCAP <span style={{ color: colors.text, fontWeight: 500 }}>{agent.karma >= 50 && agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
