@@ -1409,7 +1409,7 @@ function ScreenerPage() {
                             {agent.name}
                           </div>
                           <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '4px' }}>
-                            ${agent.symbol || (agent as any).symbol || '???'}
+                            ${(agent as any).symbol || '???'}
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '11px', fontWeight: 600 }}>
