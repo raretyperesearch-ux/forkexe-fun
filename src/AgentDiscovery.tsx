@@ -605,7 +605,7 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'bankr' | 'clanker' | 'agent'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'bankr' | 'clanker' | 'agent' | 'clawnch'>('all');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
   
@@ -650,7 +650,8 @@ function ScreenerPage() {
       const agentSource = (agent as any).source || 'unknown';
       if (sourceFilter === 'bankr' && agentSource !== 'bankr') return false;
       if (sourceFilter === 'clanker' && agentSource !== 'clanker') return false;
-      if (sourceFilter === 'agent' && !['agent', 'bankr', 'moltbook'].includes(agentSource)) return false;
+      if (sourceFilter === 'agent' && !['agent', 'bankr', 'moltbook', 'clawnch'].includes(agentSource)) return false;
+      if (sourceFilter === 'clawnch' && agentSource !== 'clawnch') return false;
     }
     // Search filter
     if (!searchQuery) return true;
@@ -1080,7 +1081,7 @@ function ScreenerPage() {
                     padding: '14px 16px',
                     borderRadius: '12px',
                     border: `1px solid ${colors.border}`,
-                    backgroundColor: colors.bgSecondary,
+                    backgroundColor: colors.cardBg,
                     color: colors.text,
                     fontSize: '16px',
                     outline: 'none',
@@ -1142,7 +1143,7 @@ function ScreenerPage() {
                 
                 <div style={{ 
                   padding: '16px', 
-                  backgroundColor: colors.bgSecondary, 
+                  backgroundColor: colors.cardBg, 
                   borderRadius: '12px',
                   marginBottom: '12px',
                   display: 'flex',
@@ -1171,7 +1172,7 @@ function ScreenerPage() {
 
                 <div style={{ 
                   padding: '16px', 
-                  backgroundColor: colors.bgSecondary, 
+                  backgroundColor: colors.cardBg, 
                   borderRadius: '12px',
                   marginBottom: '12px',
                 }}>
@@ -1183,7 +1184,7 @@ function ScreenerPage() {
 
                 <div style={{ 
                   padding: '16px', 
-                  backgroundColor: colors.bgSecondary, 
+                  backgroundColor: colors.cardBg, 
                   borderRadius: '12px',
                 }}>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Data Sources</div>
@@ -1211,6 +1212,7 @@ function ScreenerPage() {
                     { key: 'bankr', label: 'Bankr' },
                     { key: 'agent', label: 'Agents' },
                     { key: 'clanker', label: 'Clanker' },
+                    { key: 'clawnch', label: 'Clawnch' },
                   ].map(({ key, label }) => (
                     <button 
                       key={key}

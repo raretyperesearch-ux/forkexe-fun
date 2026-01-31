@@ -5,6 +5,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/sync-clawnch",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/update-prices",
       "schedule": "*/2 * * * *"
     }
