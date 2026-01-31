@@ -1069,7 +1069,7 @@ function ScreenerPage() {
           <>
             {/* Mobile Tab Views */}
             {isMobile && mobileTab === 'search' && (
-              <div style={{ padding: '16px', paddingBottom: '100px' }}>
+              <div style={{ padding: '16px', paddingBottom: '100px', overflow: 'hidden', wordWrap: 'break-word' }}>
                 <input
                   type="text"
                   placeholder="Search tokens..."
@@ -1125,7 +1125,7 @@ function ScreenerPage() {
             )}
 
             {isMobile && mobileTab === 'watchlist' && (
-              <div style={{ padding: '16px', paddingBottom: '100px', textAlign: 'center' }}>
+              <div style={{ padding: '16px', paddingBottom: '100px', textAlign: 'center', overflow: 'hidden', wordWrap: 'break-word' }}>
                 <Star size={48} style={{ color: colors.textSecondary, marginTop: '60px', marginBottom: '16px' }} />
                 <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Watchlist</h3>
                 <p style={{ color: colors.textSecondary, fontSize: '14px', marginBottom: '24px' }}>
@@ -1138,7 +1138,7 @@ function ScreenerPage() {
             )}
 
             {isMobile && mobileTab === 'settings' && (
-              <div style={{ padding: '16px', paddingBottom: '100px' }}>
+              <div style={{ padding: '16px', paddingBottom: '100px', overflow: 'hidden', wordWrap: 'break-word' }}>
                 <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>Settings</h3>
                 
                 <div style={{ 
@@ -1210,9 +1210,9 @@ function ScreenerPage() {
                   {[
                     { key: 'all', label: 'All' },
                     { key: 'bankr', label: 'Bankr' },
+                    { key: 'clawnch', label: 'Clawnch' },
                     { key: 'agent', label: 'Agents' },
                     { key: 'clanker', label: 'Clanker' },
-                    { key: 'clawnch', label: 'Clawnch' },
                   ].map(({ key, label }) => (
                     <button 
                       key={key}
