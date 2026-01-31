@@ -10,6 +10,10 @@
     {
       "path": "/api/cron/auto-tokenize",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/update-prices",
+      "schedule": "*/2 * * * *"
     }
   ]
 }
