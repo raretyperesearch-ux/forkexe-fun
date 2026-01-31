@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { 
   Search, 
   ChevronDown,
@@ -637,6 +637,15 @@ function ScreenerPage() {
   const [activeChain, setActiveChain] = useState<string | null>(null);
   const [activePeriod, setActivePeriod] = useState('24h');
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Fetch agents from Supabase
   const { agents: dbAgents, loading } = useAgents();
@@ -678,7 +687,8 @@ function ScreenerPage() {
       {!isDark && <DottedBackground />}
       {isDark && <BubblesBackground />}
       
-      {/* Left Sidebar */}
+      {/* Left Sidebar - Hidden on mobile */}
+      {!isMobile && (
       <div style={{
         position: 'fixed',
         left: 0,
@@ -755,9 +765,10 @@ function ScreenerPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Main Content */}
-      <div style={{ marginLeft: '40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
+      <div style={{ marginLeft: isMobile ? 0 : '40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
         {/* Trending Banner - Scrolling Marquee */}
         <div style={{
           backgroundColor: isDark ? '#000' : '#ffffff',
@@ -811,35 +822,37 @@ function ScreenerPage() {
         {/* View Toggle */}
         <div style={{ 
           backgroundColor: colors.bg, 
-          padding: '0 16px', 
+          padding: isMobile ? '0 8px' : '0 16px', 
           display: 'flex', 
           alignItems: 'center', 
           borderBottom: `1px solid ${colors.border}`,
+          flexWrap: isMobile ? 'nowrap' : 'nowrap',
         }}>
           <button
             onClick={() => setActiveView('moltbook')}
             style={{
-              padding: '14px 20px',
+              padding: isMobile ? '12px 10px' : '14px 20px',
               backgroundColor: 'transparent',
               border: 'none',
               borderBottom: activeView === 'moltbook' ? `2px solid #EF4444` : '2px solid transparent',
               color: activeView === 'moltbook' ? colors.text : colors.textSecondary,
-              fontSize: '13px',
+              fontSize: isMobile ? '12px' : '13px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: isMobile ? '4px' : '8px',
             }}
           >
-            <span style={{ fontSize: '16px' }}>🦞</span>
-            Moltbook Agents
+            <span style={{ fontSize: isMobile ? '14px' : '16px' }}>🦞</span>
+            {!isMobile && 'Moltbook Agents'}
+            {isMobile && 'Agents'}
             <span style={{ 
               backgroundColor: '#EF4444', 
               color: '#fff', 
-              padding: '2px 8px', 
+              padding: '2px 6px', 
               borderRadius: '10px', 
-              fontSize: '11px',
+              fontSize: '10px',
               fontWeight: 700,
             }}>
               {moltbookAgents.length}
@@ -848,74 +861,103 @@ function ScreenerPage() {
           <button
             onClick={() => setActiveView('tokenized')}
             style={{
-              padding: '14px 20px',
+              padding: isMobile ? '12px 10px' : '14px 20px',
               backgroundColor: 'transparent',
               border: 'none',
               borderBottom: activeView === 'tokenized' ? `2px solid ${colors.green}` : '2px solid transparent',
               color: activeView === 'tokenized' ? colors.text : colors.textSecondary,
-              fontSize: '13px',
+              fontSize: isMobile ? '12px' : '13px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: isMobile ? '4px' : '8px',
             }}
           >
-            <span style={{ fontSize: '16px' }}>📈</span>
-            Tokenized Agents
+            <span style={{ fontSize: isMobile ? '14px' : '16px' }}>📈</span>
+            {!isMobile && 'Tokenized Agents'}
+            {isMobile && 'Tokens'}
           </button>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px', padding: '8px 0' }}>
             <img src="/logo.png" alt="agentscreener" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
-            <span style={{ fontSize: '13px', fontWeight: 700, color: colors.text }}>agentscreener</span>
-            <span style={{ fontSize: '11px', color: colors.textSecondary }}>powered by</span>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#EF4444' }}>moltbook</span>
-            <span style={{ fontSize: '11px', color: colors.textSecondary }}>×</span>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#8B5CF6' }}>bankr</span>
+            {!isMobile && (
+              <>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: colors.text }}>agentscreener</span>
+                <span style={{ fontSize: '11px', color: colors.textSecondary }}>powered by</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#EF4444' }}>moltbook</span>
+                <span style={{ fontSize: '11px', color: colors.textSecondary }}>×</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#8B5CF6' }}>bankr</span>
+              </>
+            )}
+            {isMobile && (
+              <div
+                onClick={toggle}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  backgroundColor: isDark ? '#2a2a2a' : '#e5e5e5',
+                  color: colors.text,
+                  marginLeft: '4px',
+                }}
+              >
+                {isDark ? <Sun size={14} /> : <Moon size={14} />}
+              </div>
+            )}
           </div>
         </div>
 
         {activeView === 'tokenized' ? (
           <>
             {/* Stats Bar */}
-            <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>$22,548</span>
+            <div style={{ backgroundColor: colors.bgSecondary, padding: isMobile ? '8px 12px' : '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '16px' : '48px', borderBottom: `1px solid ${colors.border}`, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: colors.textSecondary, fontSize: isMobile ? '11px' : '13px' }}>24H VOL:</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: isMobile ? '13px' : '16px' }}>$22,548</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: colors.textSecondary }}>24H TXNS:</span>
-                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>45,920,402</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: colors.textSecondary, fontSize: isMobile ? '11px' : '13px' }}>TXNS:</span>
+                <span style={{ color: colors.text, fontWeight: 700, fontSize: isMobile ? '13px' : '16px' }}>45.9M</span>
               </div>
             </div>
 
             {/* Filter Bar */}
-            <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
-              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: isDark ? '#1a3a1a' : '#dcfce7', color: colors.green }}>
-                <Clock size={12} /> Last 24 hours <ChevronDown size={12} />
+            <div style={{ backgroundColor: colors.bg, padding: isMobile ? '8px' : '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}`, overflowX: isMobile ? 'auto' : 'visible', WebkitOverflowScrolling: 'touch' }}>
+              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: isDark ? '#1a3a1a' : '#dcfce7', color: colors.green, whiteSpace: 'nowrap' }}>
+                <Clock size={12} /> 24h <ChevronDown size={12} />
               </button>
               <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
-                <button style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: colors.green, color: isDark ? '#000' : '#fff' }}>
-                  <Flame size={12} /> Trending
+                <button style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: colors.green, color: isDark ? '#000' : '#fff', whiteSpace: 'nowrap' }}>
+                  <Flame size={12} /> {isMobile ? '' : 'Trending'}
                 </button>
                 {['5M', '1H', '6H', '24H'].map((period) => (
-                  <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#333' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary }}>
+                  <button key={period} onClick={() => setActivePeriod(period.toLowerCase())} style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', backgroundColor: activePeriod === period.toLowerCase() ? (isDark ? '#333' : '#ddd') : 'transparent', color: activePeriod === period.toLowerCase() ? colors.text : colors.textSecondary, whiteSpace: 'nowrap' }}>
                     {period}
                   </button>
                 ))}
               </div>
-              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Top</button>
-              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Zap size={12} /> Gainers</button>
-              <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> New Pairs</button>
-              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Rank By:</span>
-                <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.green, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Trending 6H</button>
-                <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
-              </div>
+              {!isMobile && (
+                <>
+                  <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Top</button>
+                  <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Zap size={12} /> Gainers</button>
+                  <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> New Pairs</button>
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Rank By:</span>
+                    <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: colors.green, display: 'flex', alignItems: 'center', gap: '4px' }}><TrendingUp size={12} /> Trending 6H</button>
+                    <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: isDark ? '#1a1a1a' : '#e5e5e5', color: colors.textSecondary, display: 'flex', alignItems: 'center', gap: '4px' }}><Filter size={12} /> Filters</button>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Tokenized Agents Table */}
-            <div style={{ flex: 1, overflow: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <div style={{ overflowX: 'auto', minWidth: isMobile ? '100%' : 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                 <thead>
                   <tr>
                     {['TOKEN', 'PRICE', 'AGE', 'TXNS', 'VOLUME', 'MAKERS', '5M', '1H', '6H', '24H', 'LIQUIDITY', 'MCAP'].map((header, i) => (
@@ -963,179 +1005,163 @@ function ScreenerPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           </>
         ) : (
           <>
             {/* Moltbook Stats Bar */}
-            <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: colors.textSecondary }}>MOLTBOOK AGENTS:</span>
-                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{stats.totalAgents.toLocaleString()}</span>
+            <div style={{ backgroundColor: colors.bgSecondary, padding: isMobile ? '8px 12px' : '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '12px' : '48px', borderBottom: `1px solid ${colors.border}`, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: colors.textSecondary, fontSize: isMobile ? '10px' : '13px' }}>AGENTS:</span>
+                <span style={{ color: '#EF4444', fontWeight: 700, fontSize: isMobile ? '13px' : '16px' }}>{stats.totalAgents.toLocaleString()}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: colors.textSecondary }}>TOKENIZED (50+ KARMA):</span>
-                <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{stats.tokenized}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: colors.textSecondary, fontSize: isMobile ? '10px' : '13px' }}>TOKENIZED:</span>
+                <span style={{ color: colors.green, fontWeight: 700, fontSize: isMobile ? '13px' : '16px' }}>{stats.tokenized}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
-              </div>
+              {!isMobile && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
+                  <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
+                </div>
+              )}
             </div>
 
             {/* Moltbook Filter Bar */}
-            <div style={{ backgroundColor: colors.bg, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
+            <div style={{ backgroundColor: colors.bg, padding: isMobile ? '8px' : '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.border}` }}>
               <div style={{ display: 'flex', backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0', borderRadius: '6px', padding: '2px' }}>
                 <button style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: isDark ? '#333' : '#ddd', color: colors.text }}>
                   All Agents
                   <span style={{ backgroundColor: colors.text + '20', padding: '1px 6px', borderRadius: '8px', fontSize: '10px' }}>{moltbookAgents.length}</span>
                 </button>
               </div>
-              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Sorted by:</span>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px' }}>
+                {!isMobile && <span style={{ color: colors.textSecondary, fontSize: '12px' }}>Sorted by:</span>}
                 <button style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', border: 'none', backgroundColor: 'transparent', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '4px' }}>🏆 Karma</button>
               </div>
             </div>
 
             {/* Moltbook Agents List */}
-            <div style={{ flex: 1, overflow: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    {['AGENT', 'KARMA', 'OWNER', 'PRICE', 'AGE', 'VOLUME', 'LIQUIDITY', 'MCAP', '24H', 'ACTION'].map((header, i) => (
-                      <th key={header} style={{ 
-                        padding: '10px 12px', 
-                        textAlign: i === 0 ? 'left' : (i === 9 ? 'center' : 'right'), 
-                        color: colors.textSecondary, 
-                        fontSize: '11px', 
-                        fontWeight: 500, 
-                        textTransform: 'uppercase', 
-                        borderBottom: `1px solid ${colors.border}`, 
-                        position: 'sticky', 
-                        top: 0, 
-                        backgroundColor: colors.bg 
-                      }}>{header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
+            <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              {/* Mobile Card View */}
+              {isMobile ? (
+                <div style={{ padding: '8px' }}>
                   {moltbookAgents.map((agent, index) => (
-                    <tr 
-                      key={agent.id} 
-                      style={{ cursor: agent.karma >= 50 ? 'pointer' : 'default' }} 
+                    <div 
+                      key={agent.id}
                       onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} 
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      style={{
+                        backgroundColor: isDark ? '#111' : '#fff',
+                        borderRadius: '12px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        border: `1px solid ${colors.border}`,
+                        cursor: agent.karma >= 50 ? 'pointer' : 'default',
+                      }}
                     >
-                      {/* AGENT */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <span style={{ 
-                            backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1a1a1a' : '#f0f0f0'),
-                            color: index < 3 ? '#000' : colors.textSecondary,
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            minWidth: '24px',
-                            textAlign: 'center',
-                          }}>
-                            {index + 1}
-                          </span>
-                          <div style={{ 
-                            width: '32px', 
-                            height: '32px', 
-                            borderRadius: '50%', 
-                            backgroundColor: agent.color, 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            color: '#fff',
-                            fontWeight: 700,
-                            fontSize: '13px',
-                            flexShrink: 0,
-                          }}>
-                            {agent.avatar}
-                          </div>
-                          <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}</span>
+                      {/* Top row: rank, avatar, name, karma */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                        <span style={{ 
+                          backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1a1a1a' : '#f0f0f0'),
+                          color: index < 3 ? '#000' : colors.textSecondary,
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          minWidth: '24px',
+                          textAlign: 'center',
+                        }}>
+                          {index + 1}
+                        </span>
+                        <div style={{ 
+                          width: '36px', 
+                          height: '36px', 
+                          borderRadius: '50%', 
+                          backgroundColor: agent.color, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: '14px',
+                          flexShrink: 0,
+                        }}>
+                          {agent.avatar}
                         </div>
-                      </td>
-                      {/* KARMA */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
-                        <span style={{ color: '#EF4444', fontWeight: 700 }}>{agent.karma}</span>
-                      </td>
-                      {/* OWNER */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
-                        <a 
-                          href={`https://twitter.com/${agent.handle.replace('@', '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ 
-                            color: '#1DA1F2', 
-                            textDecoration: 'none',
-                            fontSize: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            justifyContent: 'flex-end',
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Twitter size={12} />
-                          {agent.handle}
-                        </a>
-                      </td>
-                      {/* PRICE */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 && agent.price ? formatPrice(agent.price) : '—'}
-                      </td>
-                      {/* AGE */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
-                        {agent.karma >= 50 && agent.age ? agent.age : '—'}
-                      </td>
-                      {/* VOLUME */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 && agent.volume ? formatNumber(agent.volume) : '—'}
-                      </td>
-                      {/* LIQUIDITY */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 && agent.liquidity ? formatNumber(agent.liquidity) : '—'}
-                      </td>
-                      {/* MCAP */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
-                        {agent.karma >= 50 && agent.mcap ? formatNumber(agent.mcap) : '—'}
-                      </td>
-                      {/* 24H */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
-                        {agent.karma >= 50 && agent.change24h !== null ? (
-                          <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
-                            {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
-                          </span>
-                        ) : '—'}
-                      </td>
-                      {/* ACTION */}
-                      <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'center' }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, color: colors.text, fontSize: '14px' }}>{agent.name}</div>
+                          <a 
+                            href={`https://twitter.com/${agent.handle.replace('@', '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ color: '#1DA1F2', fontSize: '12px', textDecoration: 'none' }}
+                          >
+                            {agent.handle}
+                          </a>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{agent.karma}🔥</div>
+                          {agent.karma >= 50 && agent.change24h !== null && (
+                            <div style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontSize: '12px', fontWeight: 500 }}>
+                              {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Stats row for tokenized agents */}
+                      {agent.karma >= 50 && (
+                        <div style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          fontSize: '11px', 
+                          color: colors.textSecondary,
+                          marginBottom: '10px',
+                          padding: '8px',
+                          backgroundColor: isDark ? '#0a0a0a' : '#f5f5f5',
+                          borderRadius: '8px',
+                        }}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.price ? formatPrice(agent.price) : '—'}</div>
+                            <div>Price</div>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</div>
+                            <div>MCap</div>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.volume ? formatNumber(agent.volume) : '—'}</div>
+                            <div>Vol</div>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ color: colors.text, fontWeight: 600, fontFamily: 'monospace' }}>{agent.liquidity ? formatNumber(agent.liquidity) : '—'}</div>
+                            <div>Liq</div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Action buttons */}
+                      <div style={{ display: 'flex', gap: '8px' }}>
                         {agent.karma >= 50 ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                          <>
                             <a
                               href={`https://wallet.xyz/coin/${agent.tokenAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
                               style={{
-                                padding: '6px 12px',
-                                borderRadius: '6px',
-                                fontSize: '11px',
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '8px',
+                                fontSize: '13px',
                                 fontWeight: 600,
-                                cursor: 'pointer',
-                                border: 'none',
                                 backgroundColor: '#0052FF',
                                 color: '#fff',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
+                                textAlign: 'center',
                                 textDecoration: 'none',
                               }}
-                              onClick={(e) => e.stopPropagation()}
                             >
                               Trade
                             </a>
@@ -1145,39 +1171,220 @@ function ScreenerPage() {
                                 window.location.href = `/api/auth/twitter?agentId=${agent.id}`;
                               }}
                               style={{
-                                padding: '6px 12px',
-                                borderRadius: '6px',
-                                fontSize: '11px',
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '8px',
+                                fontSize: '13px',
                                 fontWeight: 600,
-                                cursor: 'pointer',
                                 border: 'none',
                                 backgroundColor: colors.green,
                                 color: '#fff',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
+                                cursor: 'pointer',
                               }}
                             >
-                              <Wallet size={12} /> Claim
+                              Claim
                             </button>
-                          </div>
+                          </>
                         ) : (
-                          <span style={{ 
+                          <div style={{ 
+                            flex: 1,
+                            textAlign: 'center',
                             color: '#F59E0B', 
-                            fontSize: '11px', 
+                            fontSize: '12px', 
                             fontWeight: 600,
                             backgroundColor: '#F59E0B' + '20',
-                            padding: '4px 10px',
-                            borderRadius: '12px',
+                            padding: '10px',
+                            borderRadius: '8px',
                           }}>
-                            {50 - agent.karma} karma to go
-                          </span>
+                            ⏳ {50 - agent.karma} karma to tokenize
+                          </div>
                         )}
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              ) : (
+                /* Desktop Table View */
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      {['AGENT', 'KARMA', 'OWNER', 'PRICE', 'AGE', 'VOLUME', 'LIQUIDITY', 'MCAP', '24H', 'ACTION'].map((header, i) => (
+                        <th key={header} style={{ 
+                          padding: '10px 12px', 
+                          textAlign: i === 0 ? 'left' : (i === 9 ? 'center' : 'right'), 
+                          color: colors.textSecondary, 
+                          fontSize: '11px', 
+                          fontWeight: 500, 
+                          textTransform: 'uppercase', 
+                          borderBottom: `1px solid ${colors.border}`, 
+                          position: 'sticky', 
+                          top: 0, 
+                          backgroundColor: colors.bg 
+                        }}>{header}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {moltbookAgents.map((agent, index) => (
+                      <tr 
+                        key={agent.id} 
+                        style={{ cursor: agent.karma >= 50 ? 'pointer' : 'default' }} 
+                        onClick={() => agent.karma >= 50 && window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} 
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      >
+                        {/* AGENT */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}` }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ 
+                              backgroundColor: index < 3 ? '#F59E0B' : (isDark ? '#1a1a1a' : '#f0f0f0'),
+                              color: index < 3 ? '#000' : colors.textSecondary,
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              minWidth: '24px',
+                              textAlign: 'center',
+                            }}>
+                              {index + 1}
+                            </span>
+                            <div style={{ 
+                              width: '32px', 
+                              height: '32px', 
+                              borderRadius: '50%', 
+                              backgroundColor: agent.color, 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              color: '#fff',
+                              fontWeight: 700,
+                              fontSize: '13px',
+                              flexShrink: 0,
+                            }}>
+                              {agent.avatar}
+                            </div>
+                            <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}</span>
+                          </div>
+                        </td>
+                        {/* KARMA */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                          <span style={{ color: '#EF4444', fontWeight: 700 }}>{agent.karma}</span>
+                        </td>
+                        {/* OWNER */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                          <a 
+                            href={`https://twitter.com/${agent.handle.replace('@', '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ 
+                              color: '#1DA1F2', 
+                              textDecoration: 'none',
+                              fontSize: '12px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              justifyContent: 'flex-end',
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Twitter size={12} />
+                            {agent.handle}
+                          </a>
+                        </td>
+                        {/* PRICE */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                          {agent.karma >= 50 && agent.price ? formatPrice(agent.price) : '—'}
+                        </td>
+                        {/* AGE */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', color: colors.textSecondary }}>
+                          {agent.karma >= 50 && agent.age ? agent.age : '—'}
+                        </td>
+                        {/* VOLUME */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                          {agent.karma >= 50 && agent.volume ? formatNumber(agent.volume) : '—'}
+                        </td>
+                        {/* LIQUIDITY */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                          {agent.karma >= 50 && agent.liquidity ? formatNumber(agent.liquidity) : '—'}
+                        </td>
+                        {/* MCAP */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right', fontFamily: 'monospace' }}>
+                          {agent.karma >= 50 && agent.mcap ? formatNumber(agent.mcap) : '—'}
+                        </td>
+                        {/* 24H */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'right' }}>
+                          {agent.karma >= 50 && agent.change24h !== null ? (
+                            <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
+                              {agent.change24h >= 0 ? '+' : ''}{agent.change24h.toFixed(1)}%
+                            </span>
+                          ) : '—'}
+                        </td>
+                        {/* ACTION */}
+                        <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#141414' : '#f0f0f0'}`, textAlign: 'center' }}>
+                          {agent.karma >= 50 ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                              <a
+                                href={`https://wallet.xyz/coin/${agent.tokenAddress}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  fontSize: '11px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  border: 'none',
+                                  backgroundColor: '#0052FF',
+                                  color: '#fff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  textDecoration: 'none',
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                Trade
+                              </a>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `/api/auth/twitter?agentId=${agent.id}`;
+                                }}
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '6px',
+                                  fontSize: '11px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  border: 'none',
+                                  backgroundColor: colors.green,
+                                  color: '#fff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                }}
+                              >
+                                <Wallet size={12} /> Claim
+                              </button>
+                            </div>
+                          ) : (
+                            <span style={{ 
+                              color: '#F59E0B', 
+                              fontSize: '11px', 
+                              fontWeight: 600,
+                              backgroundColor: '#F59E0B' + '20',
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                            }}>
+                              {50 - agent.karma} karma to go
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </>
         )}
