@@ -1770,7 +1770,7 @@ function ScreenerPage() {
                     ))}
                   </tbody>
                 </table>
-              ) : null}
+              )}
             </div>
           </>
         )}
