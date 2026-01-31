@@ -641,7 +641,7 @@ function ScreenerPage() {
         volume: agent.volume_24h,
         liquidity: agent.liquidity,
         source: agent.source || 'unknown',
-        symbol: agent.symbol,
+        symbol: agent.symbol || (agent as any).symbol,
       }));
 
   // Filter by search and source
@@ -1410,7 +1410,7 @@ function ScreenerPage() {
                             {agent.name}
                           </div>
                           <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '4px' }}>
-                            ${agent.symbol || '???'}
+                            ${agent.symbol || (agent as any).symbol || '???'}
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '11px', fontWeight: 600 }}>
