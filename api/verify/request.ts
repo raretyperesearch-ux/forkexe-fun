@@ -17,6 +17,31 @@ function generateReferenceCode(): string {
   return code;
 }
 
+async function fetchTokenData(tokenAddress: string) {
+  try {
+    const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
+    const dexData = await dexRes.json();
+    
+    if (dexData.pairs && dexData.pairs.length > 0) {
+      const pair = dexData.pairs[0];
+      return {
+        name: pair.baseToken?.name || null,
+        symbol: pair.baseToken?.symbol || null,
+        image_url: pair.info?.imageUrl || null,
+        price: pair.priceUsd ? parseFloat(pair.priceUsd) : null,
+        mcap: pair.marketCap || null,
+        dexscreener_url: `https://dexscreener.com/base/${tokenAddress}`,
+        found: true
+      };
+    }
+    
+    return { found: false };
+  } catch (err) {
+    console.error('Failed to fetch token data:', err);
+    return { found: false };
+  }
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -25,7 +50,6 @@ export default async function handler(req: any, res: any) {
   try {
     const { token_address, deployer_address } = req.body;
 
-    // Validate
     if (!token_address || !deployer_address) {
       return res.status(400).json({ error: 'token_address and deployer_address required' });
     }
@@ -38,7 +62,6 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: 'Invalid deployer address' });
     }
 
-    // Check if already verified
     const { data: existing } = await supabase
       .from('verifications')
       .select('*')
@@ -49,7 +72,6 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: 'Token already verified' });
     }
 
-    // If pending exists, return existing reference
     if (existing?.status === 'pending') {
       return res.status(200).json({
         success: true,
@@ -58,14 +80,19 @@ export default async function handler(req: any, res: any) {
         amount: AMOUNT,
         chain: 'base',
         expires_at: existing.expires_at,
+        token: {
+          name: existing.token_name,
+          symbol: existing.token_symbol,
+          image_url: existing.image_url
+        },
         message: 'Verification already requested. Send payment to complete.'
       });
     }
 
-    // Generate new reference code
+    // Fetch token data from DexScreener
+    const tokenData = await fetchTokenData(token_address);
     const reference_code = generateReferenceCode();
 
-    // Insert new verification request
     const { data, error } = await supabase
       .from('verifications')
       .insert({
@@ -74,7 +101,11 @@ export default async function handler(req: any, res: any) {
         reference_code,
         payment_address: PAYMENT_ADDRESS,
         amount_required: 0.1,
-        status: 'pending'
+        status: 'pending',
+        token_name: tokenData.name || null,
+        token_symbol: tokenData.symbol || null,
+        image_url: tokenData.image_url || null,
+        dexscreener_url: tokenData.dexscreener_url || null
       })
       .select()
       .single();
@@ -88,10 +119,16 @@ export default async function handler(req: any, res: any) {
       amount: AMOUNT,
       chain: 'base',
       expires_at: data.expires_at,
+      token: {
+        name: tokenData.name || 'Unknown',
+        symbol: tokenData.symbol || '???',
+        image_url: tokenData.image_url,
+        dexscreener_url: tokenData.dexscreener_url
+      },
       instructions: {
         step1: 'Send exactly 0.1 ETH on Base',
         step2: `Send FROM your deployer wallet: ${deployer_address}`,
-        step3: `Include reference "${reference_code}" in tx data (optional but speeds up verification)`
+        step3: `Include reference "${reference_code}" in tx data (optional)`
       }
     });
 

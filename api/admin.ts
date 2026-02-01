@@ -53,24 +53,7 @@ export default async function handler(req: any, res: any) {
 
       if (error) throw error;
 
-      const tokenAddresses = verifications?.map(v => v.token_address) || [];
-      const { data: agents } = await supabase
-        .from('agents')
-        .select('token_address, name, symbol')
-        .in('token_address', tokenAddresses);
-
-      const merged = verifications?.map(v => {
-        const agent = agents?.find(a => 
-          a.token_address?.toLowerCase() === v.token_address?.toLowerCase()
-        );
-        return {
-          ...v,
-          token_name: agent?.name || 'Unknown',
-          token_symbol: agent?.symbol || '???'
-        };
-      });
-
-      return res.status(200).json({ verifications: merged });
+      return res.status(200).json({ verifications });
     } catch (error) {
       return res.status(500).json({ error: 'Failed to fetch verifications' });
     }

@@ -3,8 +3,10 @@ import { useState } from 'react';
 type Verification = {
   id: number;
   token_address: string;
-  token_name: string;
-  token_symbol: string;
+  token_name: string | null;
+  token_symbol: string | null;
+  image_url: string | null;
+  dexscreener_url: string | null;
   deployer_address: string;
   reference_code: string;
   status: string;
@@ -156,9 +158,26 @@ export default function AdminPage() {
             return (
               <div key={v.id} style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 12, padding: 16, marginBottom: 16 }}>
                 {/* Token Info */}
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>
-                  {v.token_name} <span style={{ color: '#888' }}>${v.token_symbol}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                  {v.image_url && (
+                    <img src={v.image_url} alt="" style={{ width: 48, height: 48, borderRadius: 8 }} />
+                  )}
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 18 }}>
+                      {v.token_name || 'Unknown'} <span style={{ color: '#888' }}>${v.token_symbol || '???'}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#888' }}>
+                      <a href={v.dexscreener_url || `https://dexscreener.com/base/${v.token_address}`} target="_blank" rel="noreferrer" style={{ color: '#3B82F6' }}>
+                        DexScreener ↗
+                      </a>
+                      {' • '}
+                      <a href={`https://www.clanker.world/clanker/${v.token_address}`} target="_blank" rel="noreferrer" style={{ color: '#3B82F6' }}>
+                        Clanker ↗
+                      </a>
+                    </div>
+                  </div>
                 </div>
+
                 <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>
                   Token: <code>{v.token_address}</code>
                 </div>
@@ -235,18 +254,23 @@ export default function AdminPage() {
           <p style={{ color: '#666' }}>No verified tokens</p>
         ) : (
           verified.map(v => (
-            <div key={v.id} style={{ background: '#0f1f0f', border: '1px solid #1a3a1a', borderRadius: 12, padding: 16, marginBottom: 10 }}>
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                ✅ {v.token_name} <span style={{ color: '#888' }}>${v.token_symbol}</span>
-              </div>
-              <div style={{ fontSize: 12, color: '#888' }}>
-                {v.token_address}
-              </div>
-              <div style={{ fontSize: 11, color: '#666' }}>
-                {v.verified_at && new Date(v.verified_at).toLocaleString()}
-                {v.payment_tx && v.payment_tx !== 'manual-approval' && (
-                  <> • <a href={`https://basescan.org/tx/${v.payment_tx}`} target="_blank" rel="noreferrer" style={{ color: '#3B82F6' }}>tx</a></>
-                )}
+            <div key={v.id} style={{ background: '#0f1f0f', border: '1px solid #1a3a1a', borderRadius: 12, padding: 16, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+              {v.image_url && (
+                <img src={v.image_url} alt="" style={{ width: 40, height: 40, borderRadius: 8 }} />
+              )}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                  ✅ {v.token_name || 'Unknown'} <span style={{ color: '#888' }}>${v.token_symbol || '???'}</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#888' }}>
+                  {v.token_address.slice(0, 10)}...{v.token_address.slice(-8)}
+                </div>
+                <div style={{ fontSize: 11, color: '#666' }}>
+                  {v.verified_at && new Date(v.verified_at).toLocaleString()}
+                  {v.payment_tx && v.payment_tx !== 'manual-approval' && (
+                    <> • <a href={`https://basescan.org/tx/${v.payment_tx}`} target="_blank" rel="noreferrer" style={{ color: '#3B82F6' }}>tx</a></>
+                  )}
+                </div>
               </div>
             </div>
           ))
