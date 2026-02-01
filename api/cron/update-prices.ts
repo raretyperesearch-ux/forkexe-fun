@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
-
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_KEY || ''
 );
+
+const CODEX_API_KEY = process.env.CODEX_API_KEY || '489e53f79f9a03a279561207c02539a9d06180f5';
 
 export const config = { maxDuration: 120 };
 
@@ -11,9 +12,7 @@ export default async function handler(req: any, res: any) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-
   try {
-    // Get ALL tokens with addresses
     const { data: agents } = await supabase
       .from('agents')
       .select('id, token_address, name')
@@ -26,52 +25,55 @@ export default async function handler(req: any, res: any) {
     let updated = 0;
     let errors = 0;
     
-    // Batch into groups of 5 (DexScreener handles better)
-    const batchSize = 5;
+    // Batch into groups of 20
+    const batchSize = 20;
     
     for (let i = 0; i < agents.length; i += batchSize) {
       const batch = agents.slice(i, i + batchSize);
-      const addresses = batch.map(a => a.token_address).join(',');
+      const inputs = batch.map(a => ({ address: a.token_address.toLowerCase(), networkId: 8453 }));
       
       try {
-        const response = await fetch(
-          `https://api.dexscreener.com/latest/dex/tokens/${addresses}`,
-          { headers: { 'Accept': 'application/json' } }
-        );
-        
-        if (!response.ok) {
-          errors++;
-          continue;
-        }
+        const response = await fetch('https://graph.codex.io/graphql', {
+          method: 'POST',
+          headers: {
+            'Authorization': CODEX_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            query: `{
+              getTokenPrices(inputs: ${JSON.stringify(inputs).replace(/"([^"]+)":/g, '$1:')}) {
+                address
+                priceUsd
+              }
+            }`
+          })
+        });
         
         const data = await response.json();
-        const pairs = data.pairs || [];
+        const prices = data.data?.getTokenPrices || [];
         
-        for (const agent of batch) {
-          // Find ALL pairs for this token on Base chain
-          const tokenPairs = pairs.filter((p: any) => 
-            p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase() &&
-            p.chainId === 'base'
-          );
+        for (let j = 0; j < batch.length; j++) {
+          const agent = batch[j];
+          const priceData = prices[j];
           
-          if (tokenPairs.length > 0) {
-            // Sort by liquidity DESC, get the best pair
-            const bestPair = tokenPairs.sort((a: any, b: any) => 
-              (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
-            )[0];
+          if (priceData && priceData.priceUsd) {
+            const price = parseFloat(priceData.priceUsd);
+            const { data: tokenInfo } = await supabase
+              .from('agents')
+              .select('symbol')
+              .eq('id', agent.id)
+              .single();
             
-            const updateData = {
-              price: parseFloat(bestPair.priceUsd) || null,
-              mcap: bestPair.marketCap || bestPair.fdv || null,
-              volume_24h: bestPair.volume?.h24 || null,
-              liquidity: bestPair.liquidity?.usd || null,
-              change_24h: bestPair.priceChange?.h24 || null,
-              updated_at: new Date().toISOString(),
-            };
+            // Estimate mcap (price * 1B supply typical for memecoins)
+            const mcap = price * 1000000000;
             
             await supabase
               .from('agents')
-              .update(updateData)
+              .update({
+                price: price,
+                mcap: mcap,
+                updated_at: new Date().toISOString(),
+              })
               .eq('id', agent.id);
             
             updated++;
@@ -82,8 +84,7 @@ export default async function handler(req: any, res: any) {
         console.error('Batch error:', e);
       }
       
-      // Rate limit: 300ms between batches
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 200));
     }
 
     return res.status(200).json({ 
