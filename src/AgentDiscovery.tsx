@@ -1115,7 +1115,7 @@ function ScreenerPage() {
                       >
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#1C1C1D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🦞</div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 600, fontSize: '14px' }}>{agent.name}</div>
+                          <div style={{ fontWeight: 600, fontSize: '14px' }}>{agent.name}{isVerified((agent as any).token_address || (agent as any).tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</div>
                           <div style={{ color: colors.textSecondary, fontSize: '12px' }}>{agent.handle}</div>
                         </div>
                         {agent.mcap && <div style={{ fontSize: '13px', fontWeight: 500 }}>${(agent.mcap / 1000).toFixed(0)}K</div>}
@@ -1168,7 +1168,7 @@ function ScreenerPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: isDark ? '#1C1C1D' : '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>🦞</div>
                             <div style={{ flex: 1 }}>
-                              <div style={{ fontWeight: 600, fontSize: '14px' }}>{agent.name}</div>
+                              <div style={{ fontWeight: 600, fontSize: '14px' }}>{agent.name}{isVerified((agent as any).token_address || (agent as any).tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</div>
                               <div style={{ color: colors.textSecondary, fontSize: '11px' }}>{(agent as any).symbol || agent.handle}</div>
                             </div>
                             <div style={{ textAlign: 'right' }}>
@@ -1864,7 +1864,7 @@ function ScreenerPage() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontWeight: 600, fontSize: '15px' }}>{selectedAgent.name}</span>
+                  <span style={{ fontWeight: 600, fontSize: '15px' }}>{selectedAgent.name}{isVerified((selectedAgent as any).token_address || (selectedAgent as any).tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
                   {selectedAgent.source && selectedAgent.source !== 'unknown' && (
                     <span style={{ 
                       fontSize: '8px', 
