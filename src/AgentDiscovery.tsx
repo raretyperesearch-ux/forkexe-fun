@@ -1260,10 +1260,7 @@ function ScreenerPage() {
                   </div>
                 </div>
 
-                {/* Submit Token Section */}
-                <div style={{ 
                 <TokenSubmitForm isDark={isDark} colors={colors} />
-              </div>
               </div>
             )}
 
