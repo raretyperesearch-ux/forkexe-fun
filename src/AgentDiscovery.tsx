@@ -1971,7 +1971,7 @@ function ScreenerPage() {
 
             {/* Trade Button */}
             <button
-              onClick={() => window.open(`https://wallet.xyz/coin/${selectedAgent.tokenAddress}`, '_blank')}
+              onClick={() => window.open(`https://wallet.xyz/@AGENTSCREENER`, '_blank')}
               style={{
                 width: '100%',
                 padding: '12px',
