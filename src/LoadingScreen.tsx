@@ -12,31 +12,120 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     setTimeout(onComplete, 500);
   };
 
+  // Generate dense matrix grid
+  const generateMatrixLines = () => {
+    const words = ['AGENT', 'TOKEN', 'AI', 'BASE', 'CRYPTO', 'LAUNCH', 'TRADE', 'SCAN', 'MINT', 'DEPLOY', 'CHAIN', 'WALLET', 'DEX', '0x', 'ETH', 'HODL', 'GM', 'WAGMI', 'LFG', 'MOON', 'PUMP', 'CLAWNCH', 'BANKR', 'CLANKER', 'BOT', 'APE', 'NFT', 'WEB3', 'DEFI'];
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+*@#$%&';
+    const lines = [];
+    
+    for (let row = 0; row < 20; row++) {
+      let line = '';
+      for (let col = 0; col < 60; col++) {
+        if (Math.random() > 0.85) {
+          line += words[Math.floor(Math.random() * words.length)] + ' ';
+          col += 4;
+        } else {
+          line += chars[Math.floor(Math.random() * chars.length)] + ' ';
+        }
+      }
+      lines.push(line);
+    }
+    return lines;
+  };
+
+  const matrixLines = generateMatrixLines();
+
   return (
     <div style={{
       position: 'fixed',
       inset: 0,
-      backgroundColor: '#f5f5f5',
+      backgroundColor: '#0a0a0c',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 9999,
       opacity: fadeOut ? 0 : 1,
       transition: 'opacity 0.5s ease-out',
-      padding: '20px',
+      overflow: 'hidden',
     }}>
+      {/* Dense matrix text background */}
+      <div style={{
+        position: 'absolute',
+        inset: '-50px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: '8px',
+        transform: 'rotate(-5deg) scale(1.2)',
+      }}>
+        {matrixLines.map((line, i) => (
+          <div
+            key={i}
+            style={{
+              fontFamily: 'monospace',
+              fontSize: '12px',
+              fontWeight: 500,
+              letterSpacing: '2px',
+              whiteSpace: 'nowrap',
+              color: i % 3 === 0 ? '#ff6b35' : i % 3 === 1 ? '#4dabf7' : '#666',
+              opacity: 0.25 + (Math.sin(i * 0.5) * 0.1),
+              animation: `drift ${20 + (i % 5) * 2}s linear infinite`,
+              animationDelay: `${i * -0.5}s`,
+            }}
+          >
+            {line}
+          </div>
+        ))}
+      </div>
+
+      {/* Gradient overlay for depth */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(ellipse at center, transparent 0%, #0a0a0c 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Orange glow - left */}
+      <div style={{
+        position: 'absolute',
+        left: '-5%',
+        top: '35%',
+        width: '350px',
+        height: '350px',
+        background: 'radial-gradient(circle, rgba(255,107,53,0.4) 0%, transparent 60%)',
+        filter: 'blur(80px)',
+      }} />
+      
+      {/* Blue glow - right */}
+      <div style={{
+        position: 'absolute',
+        right: '-5%',
+        top: '40%',
+        width: '350px',
+        height: '350px',
+        background: 'radial-gradient(circle, rgba(77,171,247,0.4) 0%, transparent 60%)',
+        filter: 'blur(80px)',
+      }} />
+
       {/* Welcome Card */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '24px',
-        background: 'rgba(255, 255, 255, 0.6)',
+        gap: '20px',
+        background: 'rgba(15, 15, 18, 0.9)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.8)',
-        borderRadius: '24px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '20px',
         padding: '20px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        boxShadow: `
+          0 0 0 1px rgba(255,107,53,0.1),
+          0 0 60px rgba(255,107,53,0.15),
+          0 0 60px rgba(77,171,247,0.15),
+          inset 0 1px 0 rgba(255,255,255,0.05)
+        `,
+        zIndex: 10,
       }}>
         {/* Video - small */}
         <video
@@ -45,10 +134,10 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           loop
           playsInline
           style={{
-            width: '120px',
-            height: '120px',
+            width: '100px',
+            height: '100px',
             objectFit: 'contain',
-            borderRadius: '16px',
+            borderRadius: '12px',
           }}
         >
           <source src="/splash.mp4" type="video/mp4" />
@@ -62,17 +151,17 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         }}>
           <div>
             <div style={{
-              fontSize: '18px',
-              fontWeight: 700,
-              color: '#1a1a1a',
-              marginBottom: '4px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#888',
+              marginBottom: '2px',
             }}>
               Welcome to
             </div>
             <div style={{
-              fontSize: '22px',
-              fontWeight: 800,
-              color: '#1a1a1a',
+              fontSize: '20px',
+              fontWeight: 700,
+              color: '#fff',
             }}>
               agentscreener
             </div>
@@ -82,18 +171,19 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <button
             onClick={handleEnter}
             style={{
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)',
-              border: 'none',
+              background: 'linear-gradient(135deg, rgba(255,107,53,0.3) 0%, rgba(77,171,247,0.3) 100%)',
+              border: '1px solid rgba(255,255,255,0.15)',
               color: '#fff',
-              padding: '12px 24px',
+              padding: '10px 20px',
               borderRadius: '50px',
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '6px',
+              transition: 'all 0.3s ease',
             }}
           >
             Enter App →
@@ -101,7 +191,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         </div>
       </div>
 
-      {/* Loading dots below */}
+      {/* Loading dots */}
       <div style={{
         position: 'absolute',
         bottom: '40px',
@@ -115,22 +205,22 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              backgroundColor: '#ccc',
+              backgroundColor: '#444',
               animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite`,
             }}
           />
         ))}
       </div>
 
-      {/* CSS Animation */}
+      {/* CSS Animations */}
       <style>{`
         @keyframes bounce {
-          0%, 80%, 100% {
-            transform: translateY(0);
-          }
-          40% {
-            transform: translateY(-6px);
-          }
+          0%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-6px); }
+        }
+        @keyframes drift {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-100px); }
         }
       `}</style>
     </div>
