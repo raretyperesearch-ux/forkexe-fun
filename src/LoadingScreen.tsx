@@ -16,78 +16,110 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
     <div style={{
       position: 'fixed',
       inset: 0,
-      backgroundColor: '#fff',
+      backgroundColor: '#f5f5f5',
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 9999,
       opacity: fadeOut ? 0 : 1,
       transition: 'opacity 0.5s ease-out',
+      padding: '20px',
     }}>
-      {/* Video - fills screen */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        style={{
-          width: '100%',
-          height: '80vh',
-          objectFit: 'contain',
-        }}
-      >
-        <source src="/splash.mp4" type="video/mp4" />
-      </video>
-      
-      {/* Bottom section */}
+      {/* Welcome Card */}
       <div style={{
-        position: 'absolute',
-        bottom: '80px',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        gap: '20px',
+        gap: '24px',
+        background: 'rgba(255, 255, 255, 0.6)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.8)',
+        borderRadius: '24px',
+        padding: '20px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
       }}>
-        {/* Loading dots */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-        }}>
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#999',
-                animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite`,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Glassmorphism welcome button */}
-        <button
-          onClick={handleEnter}
+        {/* Video - small */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           style={{
-            background: 'rgba(255, 255, 255, 0.25)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.4)',
-            color: '#1a1a1a',
-            padding: '16px 40px',
-            borderRadius: '50px',
-            fontSize: '16px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-            transition: 'all 0.3s ease',
+            width: '120px',
+            height: '120px',
+            objectFit: 'contain',
+            borderRadius: '16px',
           }}
         >
-          Welcome to agentscreener
-        </button>
+          <source src="/splash.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Text + Button */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+        }}>
+          <div>
+            <div style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: '#1a1a1a',
+              marginBottom: '4px',
+            }}>
+              Welcome to
+            </div>
+            <div style={{
+              fontSize: '22px',
+              fontWeight: 800,
+              color: '#1a1a1a',
+            }}>
+              agentscreener
+            </div>
+          </div>
+          
+          {/* Enter button */}
+          <button
+            onClick={handleEnter}
+            style={{
+              background: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)',
+              border: 'none',
+              color: '#fff',
+              padding: '12px 24px',
+              borderRadius: '50px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            Enter App →
+          </button>
+        </div>
+      </div>
+
+      {/* Loading dots below */}
+      <div style={{
+        position: 'absolute',
+        bottom: '40px',
+        display: 'flex',
+        gap: '6px',
+      }}>
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: '#ccc',
+              animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite`,
+            }}
+          />
+        ))}
       </div>
 
       {/* CSS Animation */}
@@ -97,7 +129,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             transform: translateY(0);
           }
           40% {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
           }
         }
       `}</style>
