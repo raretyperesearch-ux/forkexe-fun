@@ -1536,7 +1536,7 @@ function ScreenerPage() {
                         {/* Name & Handle */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>{agent.name}{isVerified(agent.token_address) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
+                            <span style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>{agent.name}{isVerified((agent as any).token_address || (agent as any).tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
                             {(agent as any).source && (agent as any).source !== 'unknown' && (
                               <span style={{ 
                                 fontSize: '8px', 
@@ -1655,7 +1655,7 @@ function ScreenerPage() {
                             }}>
                               🦞
                             </div>
-                            <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}{isVerified(agent.token_address) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
+                            <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}{isVerified((agent as any).token_address || (agent as any).tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
                           </div>
                         </td>
                         {/* KARMA */}
