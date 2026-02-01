@@ -22,8 +22,8 @@ async function getClawnchData(tokenAddress: string) {
     const res = await fetch(`https://clawn.ch/api/launches?address=${tokenAddress}`);
     const data = await res.json();
     
-    if (data.success && data.launches && data.launches.length > 0) {
-      const launch = data.launches[0];
+    if (data.success && data.launch) {
+      const launch = data.launch;
       return {
         found: true,
         name: launch.name,
