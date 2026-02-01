@@ -629,7 +629,7 @@ function ScreenerPage() {
   }, []);
   
   // Fetch agents from Supabase
-  const { agents: dbAgents, loading, isVerified } = useAgents();
+  const { agents: dbAgents, loading, isVerified } = useAgents(sourceFilter);
   const stats = useStats();
   
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
