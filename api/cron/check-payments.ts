@@ -1,0 +1,143 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_KEY || ''
+);
+
+const PAYMENT_ADDRESS = '0xa660a38f40a519f2e351cc9a5ca2f5fee1a9be0d';
+const REQUIRED_AMOUNT = 0.1;
+
+export const config = {
+  maxDuration: 60
+};
+
+export default async function handler(req: any, res: any) {
+  try {
+    console.log('Checking for verification payments...');
+
+    // Get recent transactions to payment wallet from Basescan
+    const apiKey = process.env.BASESCAN_API_KEY || '';
+    const url = `https://api.basescan.org/api?module=account&action=txlist&address=${PAYMENT_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=50&sort=desc&apikey=${apiKey}`;
+    
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status !== '1' || !data.result) {
+      console.log('No transactions found or API error');
+      return res.status(200).json({ message: 'No transactions to process' });
+    }
+
+    const transactions = data.result;
+    let verified = 0;
+    let processed = 0;
+
+    for (const tx of transactions) {
+      // Skip outgoing transactions
+      if (tx.to.toLowerCase() !== PAYMENT_ADDRESS.toLowerCase()) continue;
+      
+      // Skip failed transactions
+      if (tx.isError === '1') continue;
+
+      const txHash = tx.hash.toLowerCase();
+      const from = tx.from.toLowerCase();
+      const value = parseInt(tx.value) / 1e18;
+
+      // Check if already processed
+      const { data: existingLog } = await supabase
+        .from('payment_logs')
+        .select('id')
+        .eq('tx_hash', txHash)
+        .single();
+
+      if (existingLog) continue; // Already processed
+
+      processed++;
+
+      // Check amount
+      if (value < REQUIRED_AMOUNT) {
+        console.log(`Skipping tx ${txHash}: insufficient amount ${value} ETH`);
+        
+        // Log it anyway for audit
+        await supabase.from('payment_logs').insert({
+          tx_hash: txHash,
+          from_address: from,
+          to_address: PAYMENT_ADDRESS.toLowerCase(),
+          amount: value,
+          block_number: parseInt(tx.blockNumber)
+        });
+        continue;
+      }
+
+      // Try to match by sender address
+      const { data: verification, error: verifyError } = await supabase
+        .from('verifications')
+        .select('*')
+        .eq('deployer_address', from)
+        .eq('status', 'pending')
+        .single();
+
+      if (verifyError || !verification) {
+        console.log(`No pending verification for sender ${from}`);
+        
+        // Log unmatched payment
+        await supabase.from('payment_logs').insert({
+          tx_hash: txHash,
+          from_address: from,
+          to_address: PAYMENT_ADDRESS.toLowerCase(),
+          amount: value,
+          block_number: parseInt(tx.blockNumber)
+        });
+        continue;
+      }
+
+      // Match found! Update verification
+      const { error: updateError } = await supabase
+        .from('verifications')
+        .update({
+          status: 'verified',
+          payment_tx: txHash,
+          amount_received: value,
+          sender_address: from,
+          verified_at: new Date().toISOString()
+        })
+        .eq('id', verification.id);
+
+      if (updateError) {
+        console.error(`Failed to update verification ${verification.id}:`, updateError);
+        continue;
+      }
+
+      // Log successful payment
+      await supabase.from('payment_logs').insert({
+        tx_hash: txHash,
+        from_address: from,
+        to_address: PAYMENT_ADDRESS.toLowerCase(),
+        amount: value,
+        block_number: parseInt(tx.blockNumber),
+        matched_verification_id: verification.id
+      });
+
+      console.log(`✅ Verified token ${verification.token_address} via tx ${txHash}`);
+      verified++;
+    }
+
+    // Expire old pending verifications
+    await supabase
+      .from('verifications')
+      .update({ status: 'expired' })
+      .eq('status', 'pending')
+      .lt('expires_at', new Date().toISOString());
+
+    return res.status(200).json({
+      success: true,
+      processed,
+      verified,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Check payments error:', error);
+    return res.status(500).json({ error: 'Failed to check payments' });
+  }
+}
