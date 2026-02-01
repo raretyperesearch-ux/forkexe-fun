@@ -28,6 +28,7 @@ export type Agent = {
 
 export function useAgents() {
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [verifiedTokens, setVerifiedTokens] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,22 +51,44 @@ export function useAgents() {
     }
   }, []);
 
+  const fetchVerified = useCallback(async () => {
+    try {
+      const { data } = await supabase
+        .from('verifications')
+        .select('token_address')
+        .eq('status', 'verified');
+      
+      if (data) {
+        setVerifiedTokens(new Set(data.map(v => v.token_address.toLowerCase())));
+      }
+    } catch (err) {
+      console.error('Failed to fetch verified tokens:', err);
+    }
+  }, []);
+
   useEffect(() => {
     // Initial fetch
     fetchAgents(true);
+    fetchVerified();
 
     // Poll every 30 seconds for fresh data
     const pollInterval = setInterval(() => {
       fetchAgents(false);
+      fetchVerified();
     }, 30000);
 
     // Cleanup
     return () => {
       clearInterval(pollInterval);
     };
-  }, [fetchAgents]);
+  }, [fetchAgents, fetchVerified]);
 
-  return { agents, loading, error, refetch: () => fetchAgents(false) };
+  const isVerified = useCallback((tokenAddress: string | null) => {
+    if (!tokenAddress) return false;
+    return verifiedTokens.has(tokenAddress.toLowerCase());
+  }, [verifiedTokens]);
+
+  return { agents, loading, error, refetch: () => fetchAgents(false), isVerified };
 }
 
 export function useStats() {
