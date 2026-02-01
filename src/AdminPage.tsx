@@ -17,10 +17,9 @@ type Verification = {
 
 export default function AdminPage() {
   const [verifications, setVerifications] = useState<Verification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_, setLoading] = useState(true);
   const [secret, setSecret] = useState('');
   const [authed, setAuthed] = useState(false);
-  const [txHash, setTxHash] = useState('');
 
   const fetchVerifications = async () => {
     try {
