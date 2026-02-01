@@ -1283,7 +1283,7 @@ function ScreenerPage() {
                     { key: 'clawnch', label: 'Clawnch' },
                     { key: 'agent', label: 'Agents' },
                     { key: 'clanker', label: 'Clanker' },
-                  ].map(({ key, label, special }: any) => (
+                  ].map(({ key, label }: any) => (
                     <button 
                       key={key}
                       onClick={() => setSourceFilter(key as any)}
