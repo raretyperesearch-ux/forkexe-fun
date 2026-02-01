@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <>
-      {loading && <LoadingScreen onComplete={() => setLoading(false)} duration={2500} />}
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
       <AgentDiscovery />
     </>
   );
