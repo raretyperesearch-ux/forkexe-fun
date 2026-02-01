@@ -1446,7 +1446,7 @@ function ScreenerPage() {
                             </div>
                           </div>
                           <div style={{ fontWeight: 600, fontSize: '11px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {agent.name}
+                            {agent.name}{isVerified((agent as any).token_address || (agent as any).tokenAddress) && <span style={{ marginLeft: "4px", color: "#3B82F6" }}>✓</span>}
                           </div>
                           <div style={{ fontSize: '10px', color: colors.textSecondary, marginBottom: '4px' }}>
                             ${(agent as any).symbol || '???'}
