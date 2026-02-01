@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/react';
 import { useState } from 'react';
 import AgentDiscovery from './AgentDiscovery';
 import ClaimPage from './Claim';
@@ -25,7 +27,7 @@ export default function App() {
   return (
     <>
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
-      <AgentDiscovery />
+      <AgentDiscovery /><Analytics />
     </>
   );
 }
