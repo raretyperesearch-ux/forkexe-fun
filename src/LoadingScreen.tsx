@@ -24,71 +24,71 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       zIndex: 9999,
       opacity: fadeOut ? 0 : 1,
       transition: 'opacity 0.5s ease-out',
-      padding: '20px',
     }}>
-      {/* Video */}
+      {/* Video - fills screen */}
       <video
         autoPlay
         muted
         loop
         playsInline
         style={{
-          maxWidth: '100%',
-          maxHeight: '60vh',
+          width: '100%',
+          height: '80vh',
           objectFit: 'contain',
-          borderRadius: '16px',
         }}
       >
         <source src="/splash.mp4" type="video/mp4" />
       </video>
       
-      {/* Loading dots */}
+      {/* Bottom section */}
       <div style={{
+        position: 'absolute',
+        bottom: '80px',
         display: 'flex',
-        gap: '8px',
-        marginTop: '24px',
-        marginBottom: '24px',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '20px',
       }}>
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: '#333',
-              animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite`,
-            }}
-          />
-        ))}
-      </div>
+        {/* Loading dots */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+        }}>
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: '#999',
+                animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite`,
+              }}
+            />
+          ))}
+        </div>
 
-      {/* Welcome button */}
-      <button
-        onClick={handleEnter}
-        style={{
-          background: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)',
-          border: 'none',
-          color: '#fff',
-          padding: '14px 32px',
-          borderRadius: '50px',
-          fontSize: '15px',
-          fontWeight: 600,
-          cursor: 'pointer',
-          boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
-          transition: 'transform 0.2s, box-shadow 0.2s',
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.transform = 'scale(1.05)';
-          e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.25)';
-        }}
-      >
-        Welcome to agentscreener
-      </button>
+        {/* Glassmorphism welcome button */}
+        <button
+          onClick={handleEnter}
+          style={{
+            background: 'rgba(255, 255, 255, 0.25)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            color: '#1a1a1a',
+            padding: '16px 40px',
+            borderRadius: '50px',
+            fontSize: '16px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          Welcome to agentscreener
+        </button>
+      </div>
 
       {/* CSS Animation */}
       <style>{`
@@ -97,7 +97,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             transform: translateY(0);
           }
           40% {
-            transform: translateY(-12px);
+            transform: translateY(-8px);
           }
         }
       `}</style>
