@@ -800,7 +800,7 @@ function ScreenerPage() {
             {[...moltbookAgents, ...moltbookAgents].map((agent, i) => (
               <div 
                 key={i} 
-                onClick={() => window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                onClick={() => window.open(`https://wallet.xyz/@AGENTSCREENER`, '_blank')}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -1033,7 +1033,7 @@ function ScreenerPage() {
                   {filteredAgents.map((agent, index) => {
                     const chain = CHAINS.find(c => c.id === agent.chain);
                     return (
-                      <tr key={agent.id} onClick={() => window.open(`https://wallet.xyz/coin/${agent.id}`, '_blank')} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                      <tr key={agent.id} onClick={() => window.open(`https://wallet.xyz/@AGENTSCREENER`, '_blank')} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}` }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span style={{ color: colors.textSecondary, width: '24px' }}>#{index + 1}</span>
@@ -1624,7 +1624,7 @@ function ScreenerPage() {
                       <tr 
                         key={agent.id} 
                         style={{ cursor: 'pointer' }} 
-                        onClick={() => window.open(`https://wallet.xyz/coin/${agent.tokenAddress}`, '_blank')}
+                        onClick={() => window.open(`https://wallet.xyz/@AGENTSCREENER`, '_blank')}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgHover} 
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
@@ -1715,7 +1715,7 @@ function ScreenerPage() {
                         {/* ACTION */}
                         <td style={{ padding: '12px', borderBottom: `1px solid ${isDark ? '#1C1C1D' : '#f0f0f0'}`, textAlign: 'center' }}>
                           <a
-                            href={`https://wallet.xyz/coin/${agent.tokenAddress}`}
+                            href={`https://wallet.xyz/@AGENTSCREENER`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
