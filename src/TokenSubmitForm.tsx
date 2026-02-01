@@ -94,7 +94,7 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
         padding: '16px',
       }}>
         <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>
-          🚀 List Your Token
+          🚀 List Your Token (Coming Soon)
         </div>
         <div style={{ fontSize: '12px', color: colors.textSecondary, marginBottom: '12px' }}>
           Submit your token to be listed on agentscreener
@@ -165,7 +165,7 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <div>
-          <div style={{ fontSize: '16px', fontWeight: 600 }}>🚀 List Your Token</div>
+          <div style={{ fontSize: '16px', fontWeight: 600 }}>🚀 List Your Token (Coming Soon)</div>
           <div style={{ fontSize: '12px', color: colors.textSecondary }}>
             Submit your token to be listed
           </div>

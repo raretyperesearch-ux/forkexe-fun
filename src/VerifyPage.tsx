@@ -49,7 +49,7 @@ export default function VerifyPage() {
         <div style={{ textAlign: 'center', marginBottom: 50 }}>
           <h1 style={{ fontSize: 36, marginBottom: 10 }}>Get Verified ✅</h1>
           <p style={{ color: '#888', fontSize: 18 }}>
-            For Clawnch agents. Prove your token is legit.
+            For Clawnch agents. Prove your agent's authenticity.
           </p>
         </div>
 
