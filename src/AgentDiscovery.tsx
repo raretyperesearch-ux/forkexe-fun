@@ -1278,11 +1278,12 @@ function ScreenerPage() {
                 }}>
                   {[
                     { key: 'all', label: 'All' },
+                    { key: 'verified', label: 'Verified', special: true },
                     { key: 'bankr', label: 'Bankr' },
                     { key: 'clawnch', label: 'Clawnch' },
                     { key: 'agent', label: 'Agents' },
                     { key: 'clanker', label: 'Clanker' },
-                  ].map(({ key, label }) => (
+                  ].map(({ key, label, special }: any) => (
                     <button 
                       key={key}
                       onClick={() => setSourceFilter(key as any)}
