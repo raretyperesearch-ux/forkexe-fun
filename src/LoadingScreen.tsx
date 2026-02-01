@@ -187,7 +187,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             }}
           >
             Enter App →
-          </button>
+          </button><button onClick={() => window.open("/skill.md", "_blank")} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)", padding: "8px 20px", borderRadius: "50px", fontSize: "12px", fontWeight: 500, cursor: "pointer", marginTop: "10px" }}>📄 Docs</button>
         </div>
       </div>
 
