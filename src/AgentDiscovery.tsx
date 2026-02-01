@@ -1260,7 +1260,7 @@ function ScreenerPage() {
                   </div>
                 </div>
 
-                <TokenSubmitForm isDark={isDark} colors={colors} />
+                <div style={{ padding: "16px", backgroundColor: colors.bgSecondary, borderRadius: "12px", marginBottom: "12px" }}><div style={{ fontWeight: 500, marginBottom: "4px" }}>Agent Verification</div><div style={{ color: colors.textSecondary, fontSize: "12px", marginBottom: "12px" }}>Get a ✅ verified badge for your Clawnch agent</div><button onClick={() => window.location.href = "/verify"} style={{ width: "100%", padding: "10px 16px", borderRadius: "8px", border: "none", backgroundColor: "#3B82F6", color: "#fff", fontWeight: 500, cursor: "pointer" }}>Get Verified →</button></div><TokenSubmitForm isDark={isDark} colors={colors} />
               </div>
             )}
 
