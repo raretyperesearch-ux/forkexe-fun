@@ -1967,6 +1967,7 @@ function ScreenerPage() {
                 </button>
               ))}
             </div>
+            {/* Copy CA Button */}<button onClick={() => { navigator.clipboard.writeText(selectedAgent.tokenAddress || selectedAgent.token_address || ""); alert("Copied!"); }} style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: colors.text, fontWeight: 600, fontSize: "13px", cursor: "pointer", marginBottom: "8px" }}>📋 Copy Contract Address</button>
 
             {/* Trade Button */}
             <button
