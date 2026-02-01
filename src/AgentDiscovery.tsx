@@ -1293,7 +1293,7 @@ function ScreenerPage() {
                         fontSize: '12px', 
                         fontWeight: 500, 
                         cursor: 'pointer', 
-                        border: sourceFilter === key ? 'none' : (`1px solid ${colors.border}`),
+                        border: sourceFilter === key ? 'none' : key === 'verified' ? '2px solid transparent' : `1px solid ${colors.border}`, borderImage: key === 'verified' && sourceFilter !== key ? 'linear-gradient(90deg, #F97316, #3B82F6) 1' : 'none',
                         backgroundColor: sourceFilter === key ? colors.text : 'transparent',
                         color: sourceFilter === key ? colors.bg : colors.textSecondary,
                         whiteSpace: 'nowrap',
