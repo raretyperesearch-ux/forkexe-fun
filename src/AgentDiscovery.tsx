@@ -813,7 +813,7 @@ function ScreenerPage() {
                 }}
               >
                 <span style={{ color: colors.textSecondary, fontWeight: 600 }}>#{(i % moltbookAgents.length) + 1}</span>
-                <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}{isVerified(agent.token_address || agent.tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
+                <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
                 {agent.change24h !== null && (
                   <span style={{ color: agent.change24h >= 0 ? colors.green : colors.red, fontWeight: 500 }}>
                     {agent.change24h >= 0 ? '↑' : '↓'}{Math.abs(agent.change24h).toFixed(0)}%
@@ -1041,7 +1041,7 @@ function ScreenerPage() {
                             <span style={{ fontSize: '20px' }}>{agent.avatar}</span>
                             <div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}{isVerified(agent.token_address || agent.tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
+                                <span style={{ color: colors.text, fontWeight: 600 }}>{agent.name}</span>
                                 <span style={{ color: colors.textSecondary }}>{agent.ticker}</span>
                                 {agent.framework && FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS] && (
                                   <span style={{ backgroundColor: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color + '20', color: FRAMEWORKS[agent.framework as keyof typeof FRAMEWORKS].color, padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '2px' }}>
@@ -1536,7 +1536,7 @@ function ScreenerPage() {
                         {/* Name & Handle */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>{agent.name}{isVerified(agent.token_address || agent.tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
+                            <span style={{ fontWeight: 600, color: colors.text, fontSize: '13px' }}>{agent.name}</span>
                             {(agent as any).source && (agent as any).source !== 'unknown' && (
                               <span style={{ 
                                 fontSize: '8px', 
@@ -1655,7 +1655,7 @@ function ScreenerPage() {
                             }}>
                               🦞
                             </div>
-                            <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}{isVerified(agent.token_address || agent.tokenAddress) && <span style={{ marginLeft: 4, color: "#3B82F6" }}>✓</span>}</span>
+                            <span style={{ fontWeight: 600, color: colors.text }}>{agent.name}</span>
                           </div>
                         </td>
                         {/* KARMA */}
