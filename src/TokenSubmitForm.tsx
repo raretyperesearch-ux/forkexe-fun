@@ -6,6 +6,7 @@ interface TokenSubmitFormProps {
 }
 
 export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     token_address: '',
     token_name: '',
@@ -83,6 +84,42 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
     display: 'block',
   };
 
+  // Collapsed state - just show button
+  if (!isOpen) {
+    return (
+      <div style={{
+        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+        border: `1px solid ${colors.border}`,
+        borderRadius: '12px',
+        padding: '16px',
+      }}>
+        <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>
+          🚀 List Your Token
+        </div>
+        <div style={{ fontSize: '12px', color: colors.textSecondary, marginBottom: '12px' }}>
+          Submit your token to be listed on agentscreener
+        </div>
+        <button
+          onClick={() => setIsOpen(true)}
+          style={{
+            width: '100%',
+            padding: '12px',
+            borderRadius: '50px',
+            border: 'none',
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #333 100%)',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Submit Your Token →
+        </button>
+      </div>
+    );
+  }
+
+  // Success state
   if (success) {
     return (
       <div style={{
@@ -100,7 +137,7 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
           We'll review your submission and add it soon.
         </div>
         <button
-          onClick={() => setSuccess(false)}
+          onClick={() => { setSuccess(false); setIsOpen(false); }}
           style={{
             marginTop: '16px',
             padding: '10px 20px',
@@ -112,12 +149,13 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
             cursor: 'pointer',
           }}
         >
-          Submit Another
+          Done
         </button>
       </div>
     );
   }
 
+  // Open form state
   return (
     <div style={{
       background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
@@ -125,11 +163,26 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
       borderRadius: '12px',
       padding: '16px',
     }}>
-      <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>
-        🚀 List Your Token
-      </div>
-      <div style={{ fontSize: '12px', color: colors.textSecondary, marginBottom: '16px' }}>
-        Submit your token to be listed on agentscreener
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div>
+          <div style={{ fontSize: '16px', fontWeight: 600 }}>🚀 List Your Token</div>
+          <div style={{ fontSize: '12px', color: colors.textSecondary }}>
+            Submit your token to be listed
+          </div>
+        </div>
+        <button
+          onClick={() => setIsOpen(false)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: colors.textSecondary,
+            fontSize: '20px',
+            cursor: 'pointer',
+            padding: '4px',
+          }}
+        >
+          ×
+        </button>
       </div>
 
       {error && (
@@ -183,7 +236,7 @@ export default function TokenSubmitForm({ isDark, colors }: TokenSubmitFormProps
         placeholder="What does your token do?"
         value={formData.description}
         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-        style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }}
+        style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' } as any}
       />
 
       <label style={labelStyle}>Logo URL</label>
