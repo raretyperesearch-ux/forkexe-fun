@@ -662,7 +662,7 @@ function ScreenerPage() {
       if (sourceFilter === 'bankr' && agentSource !== 'bankr') return false;
       if (sourceFilter === 'clanker' && agentSource !== 'clanker') return false;
       if (sourceFilter === 'agent' && !['agent', 'bankr', 'moltbook', 'clawnch'].includes(agentSource)) return false;
-      if (sourceFilter === 'clawnch' && agentSource !== 'clawnch') return false;
+      if (sourceFilter === 'clawnch' && agentSource !== 'clawnch') return false; if (sourceFilter === 'verified') { const addr = (agent as any).token_address || (agent as any).tokenAddress; if (!isVerified(addr)) return false; }
     }
     // Search filter
     if (!searchQuery) return true;
