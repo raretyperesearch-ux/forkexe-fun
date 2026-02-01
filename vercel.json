@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/admin", "destination": "/index.html" },
+    { "source": "/verify", "destination": "/index.html" },
     { "source": "/claim", "destination": "/index.html" }
   ],
   "crons": [

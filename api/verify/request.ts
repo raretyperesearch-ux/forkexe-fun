@@ -17,28 +17,49 @@ function generateReferenceCode(): string {
   return code;
 }
 
-async function fetchTokenData(tokenAddress: string) {
+async function getClawnchData(tokenAddress: string) {
   try {
-    const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
-    const dexData = await dexRes.json();
+    const res = await fetch(`https://clawn.ch/api/launches?address=${tokenAddress}`);
+    const data = await res.json();
     
-    if (dexData.pairs && dexData.pairs.length > 0) {
-      const pair = dexData.pairs[0];
+    if (data.success && data.launches && data.launches.length > 0) {
+      const launch = data.launches[0];
       return {
-        name: pair.baseToken?.name || null,
-        symbol: pair.baseToken?.symbol || null,
-        image_url: pair.info?.imageUrl || null,
-        price: pair.priceUsd ? parseFloat(pair.priceUsd) : null,
-        mcap: pair.marketCap || null,
-        dexscreener_url: `https://dexscreener.com/base/${tokenAddress}`,
-        found: true
+        found: true,
+        name: launch.name,
+        symbol: launch.symbol,
+        image: launch.image,
+        agentName: launch.agentName,
+        agentWallet: launch.agentWallet?.toLowerCase(),
+        source: launch.source,
+        clankerUrl: launch.clankerUrl,
+        launchedAt: launch.launchedAt
       };
     }
-    
     return { found: false };
   } catch (err) {
-    console.error('Failed to fetch token data:', err);
+    console.error('Clawnch API error:', err);
     return { found: false };
+  }
+}
+
+async function getDexScreenerData(tokenAddress: string) {
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
+    const data = await res.json();
+    
+    if (data.pairs && data.pairs.length > 0) {
+      const pair = data.pairs[0];
+      return {
+        name: pair.baseToken?.name,
+        symbol: pair.baseToken?.symbol,
+        image: pair.info?.imageUrl,
+        dexscreenerUrl: `https://dexscreener.com/base/${tokenAddress}`
+      };
+    }
+    return null;
+  } catch (err) {
+    return null;
   }
 }
 
@@ -48,30 +69,30 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { token_address, deployer_address } = req.body;
+    const { token_address } = req.body;
 
-    if (!token_address || !deployer_address) {
-      return res.status(400).json({ error: 'token_address and deployer_address required' });
+    if (!token_address) {
+      return res.status(400).json({ error: 'token_address required' });
     }
 
     if (!token_address.match(/^0x[a-fA-F0-9]{40}$/)) {
       return res.status(400).json({ error: 'Invalid token address' });
     }
 
-    if (!deployer_address.match(/^0x[a-fA-F0-9]{40}$/)) {
-      return res.status(400).json({ error: 'Invalid deployer address' });
-    }
+    const tokenAddr = token_address.toLowerCase();
 
+    // Check if already verified
     const { data: existing } = await supabase
       .from('verifications')
       .select('*')
-      .eq('token_address', token_address.toLowerCase())
+      .eq('token_address', tokenAddr)
       .single();
 
     if (existing?.status === 'verified') {
       return res.status(400).json({ error: 'Token already verified' });
     }
 
+    // If pending exists, return existing
     if (existing?.status === 'pending') {
       return res.status(200).json({
         success: true,
@@ -83,29 +104,46 @@ export default async function handler(req: any, res: any) {
         token: {
           name: existing.token_name,
           symbol: existing.token_symbol,
-          image_url: existing.image_url
+          image_url: existing.image_url,
+          agent_name: existing.agent_name
         },
+        deployer_address: existing.deployer_address,
+        source: existing.source,
         message: 'Verification already requested. Send payment to complete.'
       });
     }
 
-    // Fetch token data from DexScreener
-    const tokenData = await fetchTokenData(token_address);
+    // Check Clawnch API first
+    const clawnchData = await getClawnchData(tokenAddr);
+
+    if (!clawnchData.found) {
+      return res.status(400).json({ 
+        error: 'Token not found on Clawnch',
+        message: 'Only Clawnch-launched tokens can be verified at this time.'
+      });
+    }
+
+    // Get additional data from DexScreener
+    const dexData = await getDexScreenerData(tokenAddr);
+
     const reference_code = generateReferenceCode();
 
+    // Insert verification with Clawnch data
     const { data, error } = await supabase
       .from('verifications')
       .insert({
-        token_address: token_address.toLowerCase(),
-        deployer_address: deployer_address.toLowerCase(),
+        token_address: tokenAddr,
+        deployer_address: clawnchData.agentWallet,
         reference_code,
         payment_address: PAYMENT_ADDRESS,
         amount_required: 0.1,
         status: 'pending',
-        token_name: tokenData.name || null,
-        token_symbol: tokenData.symbol || null,
-        image_url: tokenData.image_url || null,
-        dexscreener_url: tokenData.dexscreener_url || null
+        token_name: clawnchData.name || dexData?.name,
+        token_symbol: clawnchData.symbol || dexData?.symbol,
+        image_url: clawnchData.image || dexData?.image,
+        dexscreener_url: dexData?.dexscreenerUrl || `https://dexscreener.com/base/${tokenAddr}`,
+        agent_name: clawnchData.agentName,
+        source: 'clawnch'
       })
       .select()
       .single();
@@ -120,15 +158,17 @@ export default async function handler(req: any, res: any) {
       chain: 'base',
       expires_at: data.expires_at,
       token: {
-        name: tokenData.name || 'Unknown',
-        symbol: tokenData.symbol || '???',
-        image_url: tokenData.image_url,
-        dexscreener_url: tokenData.dexscreener_url
+        name: clawnchData.name,
+        symbol: clawnchData.symbol,
+        image_url: clawnchData.image,
+        agent_name: clawnchData.agentName
       },
+      deployer_address: clawnchData.agentWallet,
+      source: 'clawnch',
       instructions: {
         step1: 'Send exactly 0.1 ETH on Base',
-        step2: `Send FROM your deployer wallet: ${deployer_address}`,
-        step3: `Include reference "${reference_code}" in tx data (optional)`
+        step2: `Send FROM the agent wallet: ${clawnchData.agentWallet}`,
+        step3: 'We verify against Clawnch launch data'
       }
     });
 

@@ -3,11 +3,11 @@ import AgentDiscovery from './AgentDiscovery';
 import ClaimPage from './Claim';
 import LoadingScreen from './LoadingScreen';
 import AdminPage from './AdminPage';
+import VerifyPage from './VerifyPage';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   
-  // Simple routing based on pathname
   const path = window.location.pathname;
 
   if (path === '/claim') {
@@ -16,6 +16,10 @@ export default function App() {
 
   if (path === '/admin') {
     return <AdminPage />;
+  }
+
+  if (path === '/verify') {
+    return <VerifyPage />;
   }
 
   return (
