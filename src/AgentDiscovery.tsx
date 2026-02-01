@@ -605,7 +605,7 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'bankr' | 'clanker' | 'agent' | 'clawnch'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'bankr' | 'clanker' | 'agent' | 'clawnch'>('all');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
