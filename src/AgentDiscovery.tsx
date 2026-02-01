@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
+import TokenSubmitForm from './TokenSubmitForm';
 import { 
   Search, 
   ChevronDown,
@@ -1261,36 +1262,8 @@ function ScreenerPage() {
 
                 {/* Submit Token Section */}
                 <div style={{ 
-                  padding: '16px', 
-                  background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                  borderRadius: '12px',
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
-                  marginBottom: '12px',
-                }}>
-                  <div style={{ fontWeight: 600, marginBottom: '4px' }}>🚀 List Your Token</div>
-                  <div style={{ color: colors.textSecondary, fontSize: '12px', marginBottom: '12px' }}>
-                    Update your token's profile picture and info
-                  </div>
-                  <button
-                    onClick={() => window.open('https://forms.gle/YOUR_FORM_ID', '_blank')}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      borderRadius: '10px',
-                      border: 'none',
-                      background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-                      color: colors.text,
-                      fontWeight: 600,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Submit Token →
-                  </button>
-                  <div style={{ color: colors.textSecondary, fontSize: '10px', marginTop: '8px', textAlign: 'center' }}>
-                    Rush processing available
-                  </div>
-                </div>
+                <TokenSubmitForm isDark={isDark} colors={colors} />
+              </div>
               </div>
             )}
 
