@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-
-const ADMIN_SECRET = 'agentscreener-admin-2026'; // Change this!
+import { useState } from 'react';
 
 type Verification = {
   id: number;
@@ -17,21 +15,26 @@ type Verification = {
 
 export default function AdminPage() {
   const [verifications, setVerifications] = useState<Verification[]>([]);
-  const [_, setLoading] = useState(true);
   const [secret, setSecret] = useState('');
   const [authed, setAuthed] = useState(false);
+  const [error, setError] = useState('');
 
-  const fetchVerifications = async () => {
+  const fetchVerifications = async (adminSecret: string) => {
     try {
-      const res = await fetch(`/api/admin?secret=${ADMIN_SECRET}`);
+      const res = await fetch(`/api/admin?secret=${adminSecret}`);
       const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        setAuthed(false);
+        return;
+      }
       if (data.verifications) {
         setVerifications(data.verifications);
+        setAuthed(true);
+        setError('');
       }
     } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      setError('Failed to connect');
     }
   };
 
@@ -43,14 +46,14 @@ export default function AdminPage() {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-secret': ADMIN_SECRET
+          'x-admin-secret': secret
         },
         body: JSON.stringify({ id, payment_tx: tx })
       });
       const data = await res.json();
       if (data.success) {
-        alert('✅ Verified!');
-        fetchVerifications();
+        alert('Verified!');
+        fetchVerifications(secret);
       } else {
         alert('Error: ' + data.error);
       }
@@ -67,26 +70,19 @@ export default function AdminPage() {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-secret': ADMIN_SECRET
+          'x-admin-secret': secret
         },
         body: JSON.stringify({ id })
       });
       const data = await res.json();
       if (data.success) {
-        fetchVerifications();
+        fetchVerifications(secret);
       }
     } catch (err) {
       alert('Failed to reject');
     }
   };
 
-  useEffect(() => {
-    if (authed) {
-      fetchVerifications();
-    }
-  }, [authed]);
-
-  // Simple auth gate
   if (!authed) {
     return (
       <div style={{ 
@@ -98,16 +94,15 @@ export default function AdminPage() {
         fontFamily: 'system-ui, sans-serif'
       }}>
         <div style={{ textAlign: 'center' }}>
-          <h1 style={{ color: '#fff', marginBottom: '20px' }}>🔐 Admin</h1>
+          <h1 style={{ color: '#fff', marginBottom: '20px' }}>Admin</h1>
+          {error && <p style={{ color: '#EF4444', marginBottom: '10px' }}>{error}</p>}
           <input
             type="password"
             placeholder="Enter secret"
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && secret === ADMIN_SECRET) {
-                setAuthed(true);
-              }
+              if (e.key === 'Enter') fetchVerifications(secret);
             }}
             style={{
               padding: '12px 20px',
@@ -120,10 +115,7 @@ export default function AdminPage() {
             }}
           />
           <button
-            onClick={() => {
-              if (secret === ADMIN_SECRET) setAuthed(true);
-              else alert('Wrong secret');
-            }}
+            onClick={() => fetchVerifications(secret)}
             style={{
               marginLeft: '10px',
               padding: '12px 24px',
@@ -154,14 +146,13 @@ export default function AdminPage() {
       color: '#fff'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <h1 style={{ marginBottom: '10px' }}>🛡️ Verification Admin</h1>
+        <h1 style={{ marginBottom: '10px' }}>Verification Admin</h1>
         <p style={{ color: '#888', marginBottom: '30px' }}>
           Payment wallet: <code style={{ color: '#3B82F6' }}>0xa660a38f40a519f2e351cc9a5ca2f5fee1a9be0d</code>
         </p>
 
-        {/* Pending */}
         <h2 style={{ color: '#F59E0B', marginBottom: '15px' }}>
-          ⏳ Pending ({pending.length})
+          Pending ({pending.length})
         </h2>
         
         {pending.length === 0 ? (
@@ -194,7 +185,7 @@ export default function AdminPage() {
                     Deployer: <code>{v.deployer_address}</code>
                   </div>
                   <div style={{ fontSize: '12px', color: '#666' }}>
-                    Ref: {v.reference_code} • {new Date(v.created_at).toLocaleString()}
+                    Ref: {v.reference_code} - {new Date(v.created_at).toLocaleString()}
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -210,7 +201,7 @@ export default function AdminPage() {
                       cursor: 'pointer'
                     }}
                   >
-                    ✓ Verify
+                    Verify
                   </button>
                   <button
                     onClick={() => rejectVerification(v.id)}
@@ -223,7 +214,7 @@ export default function AdminPage() {
                       cursor: 'pointer'
                     }}
                   >
-                    ✗ Reject
+                    Reject
                   </button>
                 </div>
               </div>
@@ -231,9 +222,8 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Verified */}
         <h2 style={{ color: '#22C55E', marginBottom: '15px' }}>
-          ✅ Verified ({verified.length})
+          Verified ({verified.length})
         </h2>
         
         {verified.length === 0 ? (
@@ -251,25 +241,22 @@ export default function AdminPage() {
                 }}
               >
                 <div style={{ fontWeight: 600, marginBottom: '4px' }}>
-                  ✅ {v.token_name} <span style={{ color: '#888' }}>${v.token_symbol}</span>
+                  {v.token_name} <span style={{ color: '#888' }}>${v.token_symbol}</span>
                 </div>
                 <div style={{ fontSize: '12px', color: '#888' }}>
                   Token: <code>{v.token_address}</code>
                 </div>
                 <div style={{ fontSize: '12px', color: '#666' }}>
                   Verified: {v.verified_at ? new Date(v.verified_at).toLocaleString() : 'N/A'}
-                  {v.payment_tx && v.payment_tx !== 'manual-approval' && (
-                    <> • <a href={`https://basescan.org/tx/${v.payment_tx}`} target="_blank" style={{ color: '#3B82F6' }}>View tx</a></>
-                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        <div style={{ marginTop: '40px', textAlign: 'center', color: '#444' }}>
+        <div style={{ marginTop: '40px', textAlign: 'center' }}>
           <button 
-            onClick={fetchVerifications}
+            onClick={() => fetchVerifications(secret)}
             style={{
               padding: '10px 20px',
               borderRadius: '8px',
@@ -279,7 +266,7 @@ export default function AdminPage() {
               cursor: 'pointer'
             }}
           >
-            🔄 Refresh
+            Refresh
           </button>
         </div>
       </div>
