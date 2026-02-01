@@ -3,11 +3,7 @@ const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_KEY || ''
 );
-
-const CODEX_API_KEY = process.env.CODEX_API_KEY || '489e53f79f9a03a279561207c02539a9d06180f5';
-
 export const config = { maxDuration: 120 };
-
 export default async function handler(req: any, res: any) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -17,63 +13,55 @@ export default async function handler(req: any, res: any) {
       .from('agents')
       .select('id, token_address, name')
       .not('token_address', 'is', null);
-
     if (!agents || agents.length === 0) {
       return res.status(200).json({ success: true, updated: 0, message: 'No tokens' });
     }
-
     let updated = 0;
     let errors = 0;
     
-    // Batch into groups of 20
-    const batchSize = 20;
+    const batchSize = 5;
     
     for (let i = 0; i < agents.length; i += batchSize) {
       const batch = agents.slice(i, i + batchSize);
-      const inputs = batch.map(a => ({ address: a.token_address.toLowerCase(), networkId: 8453 }));
+      const addresses = batch.map(a => a.token_address).join(',');
       
       try {
-        const response = await fetch('https://graph.codex.io/graphql', {
-          method: 'POST',
-          headers: {
-            'Authorization': CODEX_API_KEY,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            query: `{
-              getTokenPrices(inputs: ${JSON.stringify(inputs).replace(/"([^"]+)":/g, '$1:')}) {
-                address
-                priceUsd
-              }
-            }`
-          })
-        });
+        const response = await fetch(
+          `https://api.dexscreener.com/latest/dex/tokens/${addresses}`,
+          { headers: { 'Accept': 'application/json' } }
+        );
+        
+        if (!response.ok) {
+          errors++;
+          continue;
+        }
         
         const data = await response.json();
-        const prices = data.data?.getTokenPrices || [];
+        const pairs = data.pairs || [];
         
-        for (let j = 0; j < batch.length; j++) {
-          const agent = batch[j];
-          const priceData = prices[j];
+        for (const agent of batch) {
+          const tokenPairs = pairs.filter((p: any) => 
+            p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase() &&
+            p.chainId === 'base'
+          );
           
-          if (priceData && priceData.priceUsd) {
-            const price = parseFloat(priceData.priceUsd);
-            const { data: tokenInfo } = await supabase
-              .from('agents')
-              .select('symbol')
-              .eq('id', agent.id)
-              .single();
+          if (tokenPairs.length > 0) {
+            const bestPair = tokenPairs.sort((a: any, b: any) => 
+              (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
+            )[0];
             
-            // Estimate mcap (price * 1B supply typical for memecoins)
-            const mcap = price * 1000000000;
+            const updateData = {
+              price: parseFloat(bestPair.priceUsd) || null,
+              mcap: bestPair.marketCap || bestPair.fdv || null,
+              volume_24h: bestPair.volume?.h24 || null,
+              liquidity: bestPair.liquidity?.usd || null,
+              change_24h: bestPair.priceChange?.h24 || null,
+              updated_at: new Date().toISOString(),
+            };
             
             await supabase
               .from('agents')
-              .update({
-                price: price,
-                mcap: mcap,
-                updated_at: new Date().toISOString(),
-              })
+              .update(updateData)
               .eq('id', agent.id);
             
             updated++;
@@ -84,9 +72,8 @@ export default async function handler(req: any, res: any) {
         console.error('Batch error:', e);
       }
       
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(r => setTimeout(r, 300));
     }
-
     return res.status(200).json({ 
       success: true, 
       updated, 
