@@ -700,9 +700,10 @@ function ScreenerPage() {
       case 'volume': return (b.volume || 0) - (a.volume || 0);
       case 'change': return (b.change24h || 0) - (a.change24h || 0);
       case 'mcap': return (b.mcap || 0) - (a.mcap || 0);
-      case 'top10': break; case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0); case 'top10': return (b.change24h || 0) - (a.change24h || 0);
-      case 'newest': return b.id - a.id; default: 
-      return 0;
+      case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0);
+      case 'top10': return (b.change24h || 0) - (a.change24h || 0);
+      case 'newest':
+      default: return b.id - a.id;
     }
   });
 
