@@ -607,7 +607,7 @@ function ScreenerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'hot' | 'new' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('all');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
-  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
+  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('mcap');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
