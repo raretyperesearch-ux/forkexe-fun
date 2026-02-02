@@ -5,9 +5,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || ''
 );
 
-const CODEX_API_KEY = process.env.CODEX_API_KEY || '489e53f79f9a03a279561207c02539a9d06180f5';
-const TOKEN_SUPPLY = 100000000000;
-
 export const config = { maxDuration: 120 };
 
 export default async function handler(req: any, res: any) {
@@ -26,35 +23,43 @@ export default async function handler(req: any, res: any) {
     }
     
     let updated = 0;
-    const batchSize = 25;
+    const batchSize = 5;
     
     for (let i = 0; i < agents.length; i += batchSize) {
       const batch = agents.slice(i, i + batchSize);
-      const inputs = batch.map(a => `{address: "${a.token_address.toLowerCase()}", networkId: 8453}`).join(', ');
+      const addresses = batch.map(a => a.token_address).join(',');
       
       try {
-        const codexRes = await fetch('https://graph.codex.io/graphql', {
-          method: 'POST',
-          headers: { 'Authorization': CODEX_API_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: `{ getTokenPrices(inputs: [${inputs}]) { address priceUsd } }` })
-        });
+        const response = await fetch(
+          `https://api.dexscreener.com/latest/dex/tokens/${addresses}`,
+          { headers: { 'Accept': 'application/json' } }
+        );
         
-        const codexData = await codexRes.json();
-        const prices = codexData.data?.getTokenPrices || [];
+        if (!response.ok) continue;
         
-        const priceMap = new Map();
-        for (const p of prices) {
-          if (p?.address && p?.priceUsd) priceMap.set(p.address.toLowerCase(), p.priceUsd);
-        }
+        const data = await response.json();
+        const pairs = data.pairs || [];
         
         for (const agent of batch) {
-          const price = priceMap.get(agent.token_address.toLowerCase());
-          if (price) {
+          const tokenPairs = pairs.filter((p: any) => 
+            p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase() &&
+            p.chainId === 'base'
+          );
+          
+          if (tokenPairs.length > 0) {
+            const bestPair = tokenPairs.sort((a: any, b: any) => 
+              (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
+            )[0];
+            
             await supabase.from('agents').update({
-              price: price,
-              mcap: price * TOKEN_SUPPLY,
+              price: parseFloat(bestPair.priceUsd) || null,
+              mcap: bestPair.marketCap || bestPair.fdv || null,
+              volume_24h: bestPair.volume?.h24 || null,
+              liquidity: bestPair.liquidity?.usd || null,
+              change_24h: bestPair.priceChange?.h24 || null,
               updated_at: new Date().toISOString(),
             }).eq('id', agent.id);
+            
             updated++;
           }
         }
