@@ -609,6 +609,7 @@ function ScreenerPage() {
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Watchlist - persisted to localStorage
   const [watchlist, setWatchlist] = useState<number[]>(() => {
@@ -629,8 +630,9 @@ function ScreenerPage() {
   }, []);
   
   // Fetch agents from Supabase
-  const { agents: dbAgents, loading, isVerified } = useAgents(sourceFilter);
+  const { agents: dbAgents, loading, isVerified, refetch } = useAgents(sourceFilter);
   const stats = useStats();
+  const onPullRefresh = async () => { setIsRefreshing(true); await refetch(); setIsRefreshing(false); };
   
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
   const allAgents = loading || dbAgents.length === 0 
@@ -684,7 +686,7 @@ function ScreenerPage() {
   });
 
   return (
-    <div style={{
+    <div onTouchStart={(e) => { if (window.scrollY === 0) (window as any)._pullStart = e.touches[0].clientY; }} onTouchMove={(e) => { const start = (window as any)._pullStart; if (start && window.scrollY === 0 && e.touches[0].clientY - start > 80) { onPullRefresh(); (window as any)._pullStart = 0; } }} onTouchEnd={() => { (window as any)._pullStart = 0; }} style={{
       minHeight: '100vh',
       backgroundColor: colors.bg,
       color: colors.text,
@@ -694,6 +696,7 @@ function ScreenerPage() {
     }}>
       {!isDark && <DottedBackground />}
       {isDark && <BubblesBackground />}
+      {isRefreshing && <div style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", background: "#3B82F6", color: "#fff", padding: "8px 16px", borderRadius: "20px", fontSize: "12px", fontWeight: 500, zIndex: 9999 }}>Refreshing...</div>}
       
       {/* Left Sidebar - Hidden on mobile */}
       {!isMobile && (
