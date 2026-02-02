@@ -13,17 +13,20 @@ export default async function handler(req: any, res: any) {
   }
   
   try {
+    // Get agents ordered by volume (prioritize active tokens)
     const { data: agents } = await supabase
       .from('agents')
       .select('id, token_address')
-      .not('token_address', 'is', null);
+      .not('token_address', 'is', null)
+      .order('volume_24h', { ascending: false, nullsFirst: false })
+      .limit(200); // Focus on top 200 by volume
     
     if (!agents || agents.length === 0) {
       return res.status(200).json({ success: true, updated: 0 });
     }
     
     let updated = 0;
-    const batchSize = 5;
+    const batchSize = 10;
     
     for (let i = 0; i < agents.length; i += batchSize) {
       const batch = agents.slice(i, i + batchSize);
@@ -31,8 +34,7 @@ export default async function handler(req: any, res: any) {
       
       try {
         const response = await fetch(
-          `https://api.dexscreener.com/latest/dex/tokens/${addresses}`,
-          { headers: { 'Accept': 'application/json' } }
+          `https://api.dexscreener.com/latest/dex/tokens/${addresses}`
         );
         
         if (!response.ok) continue;
@@ -41,6 +43,7 @@ export default async function handler(req: any, res: any) {
         const pairs = data.pairs || [];
         
         for (const agent of batch) {
+          // Find best pair by liquidity (case insensitive)
           const tokenPairs = pairs.filter((p: any) => 
             p.baseToken?.address?.toLowerCase() === agent.token_address?.toLowerCase() &&
             p.chainId === 'base'
@@ -51,7 +54,7 @@ export default async function handler(req: any, res: any) {
               (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
             )[0];
             
-            await supabase.from('agents').update({
+            const { error } = await supabase.from('agents').update({
               price: parseFloat(bestPair.priceUsd) || null,
               mcap: bestPair.marketCap || bestPair.fdv || null,
               volume_24h: bestPair.volume?.h24 || null,
@@ -60,12 +63,14 @@ export default async function handler(req: any, res: any) {
               updated_at: new Date().toISOString(),
             }).eq('id', agent.id);
             
-            updated++;
+            if (!error) updated++;
           }
         }
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error('Batch error:', e); 
+      }
       
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 200));
     }
     
     return res.status(200).json({ success: true, total: agents.length, updated });
