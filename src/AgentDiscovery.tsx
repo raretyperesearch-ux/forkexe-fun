@@ -607,7 +607,7 @@ function ScreenerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'trending' | 'top10' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('trending');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
-  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap' | 'trending'>('trending');
+  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap' | 'trending' | 'top10'>('trending');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -662,9 +662,6 @@ function ScreenerPage() {
   const moltbookAgents = allAgents.filter(agent => {
     const agentSource = (agent as any).source || 'unknown';
     const tokenAddr = (agent as any).token_address || (agent as any).tokenAddress;
-    const volume = (agent as any).volume_24h || (agent as any).volume || 0;
-    const createdAt = new Date((agent as any).created_at || 0);
-    const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     
     // Source filter logic
     if (sourceFilter !== 'all') {
@@ -703,7 +700,7 @@ function ScreenerPage() {
       case 'volume': return (b.volume || 0) - (a.volume || 0);
       case 'change': return (b.change24h || 0) - (a.change24h || 0);
       case 'mcap': return (b.mcap || 0) - (a.mcap || 0);
-      case 'top10': break; case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0);
+      case 'top10': break; case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0); case 'top10': return (b.change24h || 0) - (a.change24h || 0);
       case 'newest': 
       default: return b.id - a.id;
     }
