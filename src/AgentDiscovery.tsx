@@ -686,7 +686,7 @@ function ScreenerPage() {
   });
 
   return (
-    <div onTouchStart={(e) => { if (window.scrollY === 0) (window as any)._pullStart = e.touches[0].clientY; }} onTouchMove={(e) => { const start = (window as any)._pullStart; if (start && window.scrollY === 0 && e.touches[0].clientY - start > 80) { onPullRefresh(); (window as any)._pullStart = 0; } }} onTouchEnd={() => { (window as any)._pullStart = 0; }} style={{
+    <div onTouchStart={(e) => { if (window.scrollY === 0) (window as any)._pullStart = e.touches[0].clientY; }} onTouchMove={(e) => { const start = (window as any)._pullStart; if (start && window.scrollY === 0 && e.touches[0].clientY - start > 50) { onPullRefresh(); (window as any)._pullStart = 0; } }} onTouchEnd={() => { (window as any)._pullStart = 0; }} style={{
       minHeight: '100vh',
       backgroundColor: colors.bg,
       color: colors.text,
