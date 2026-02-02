@@ -684,15 +684,8 @@ function ScreenerPage() {
         case 'moltlaunch':
           if (agentSource !== 'moltlaunch') return false;
           break;
-        case 'hot':
-          // Hot = $50k+ volume (filtered at DB level too)
-          if (volume < 50000) return false;
-          break;
-        case 'trending':
+        case 'top10': break; case 'trending':
           // Trending uses score - just show all (DB already filtered for quality)
-          break;
-        case 'new':
-          if (createdAt < dayAgo) return false;
           break;
         case 'verified':
           if (!isVerified(tokenAddr)) return false;
@@ -710,7 +703,7 @@ function ScreenerPage() {
       case 'volume': return (b.volume || 0) - (a.volume || 0);
       case 'change': return (b.change24h || 0) - (a.change24h || 0);
       case 'mcap': return (b.mcap || 0) - (a.mcap || 0);
-      case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0);
+      case 'top10': break; case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0);
       case 'newest': 
       default: return b.id - a.id;
     }
