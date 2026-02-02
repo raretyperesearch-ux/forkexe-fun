@@ -6,6 +6,10 @@ const supabase = createClient(
 export const config = { maxDuration: 180 };
 const ETH_PRICE_USD = 2300;
 
+// Quality thresholds - don't store tokens below these
+const MIN_LIQUIDITY_TO_STORE = 500;  // $500 minimum
+const MIN_MCAP_TO_STORE = 1000;      // $1k minimum
+
 export default async function handler(req: any, res: any) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -31,6 +35,7 @@ export default async function handler(req: any, res: any) {
     
     let upserted = 0;
     let pricesUpdated = 0;
+    let skippedLowQuality = 0;
     
     for (const token of allTokens) {
       if (!token.tokenAddress) continue;
@@ -63,6 +68,12 @@ export default async function handler(req: any, res: any) {
         }
       } catch (e) {}
       
+      // QUALITY FILTER: Skip tokens below thresholds
+      if ((liquidity || 0) < MIN_LIQUIDITY_TO_STORE && (realMcap || 0) < MIN_MCAP_TO_STORE) {
+        skippedLowQuality++;
+        continue;
+      }
+      
       const { error } = await supabase.from('agents').upsert({
         token_address: address,
         name: token.name || token.symbol || 'Unknown',
@@ -90,7 +101,8 @@ export default async function handler(req: any, res: any) {
       success: true, 
       fetched: allTokens.length, 
       upserted,
-      pricesUpdated
+      pricesUpdated,
+      skippedLowQuality
     });
   } catch (error) {
     return res.status(500).json({ error: String(error) });

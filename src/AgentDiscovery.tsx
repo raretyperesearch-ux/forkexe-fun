@@ -605,9 +605,9 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'hot' | 'new' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'hot' | 'trending' | 'new' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('trending');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
-  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('mcap');
+  const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap' | 'trending'>('trending');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -654,18 +654,52 @@ function ScreenerPage() {
         liquidity: agent.liquidity,
         source: agent.source || 'unknown',
         symbol: agent.symbol || (agent as any).symbol,
+        created_at: (agent as any).created_at,
+        trending_score: (agent as any).trending_score || 0,
       }));
 
   // Filter by search and source
   const moltbookAgents = allAgents.filter(agent => {
-    // Source filter
+    const agentSource = (agent as any).source || 'unknown';
+    const tokenAddr = (agent as any).token_address || (agent as any).tokenAddress;
+    const volume = (agent as any).volume_24h || (agent as any).volume || 0;
+    const createdAt = new Date((agent as any).created_at || 0);
+    const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    
+    // Source filter logic
     if (sourceFilter !== 'all') {
-      const agentSource = (agent as any).source || 'unknown';
-      if (sourceFilter === 'bankr' && agentSource !== 'bankr') return false;
-      if (sourceFilter === 'clanker' && agentSource !== 'clanker') return false;
-      if (sourceFilter === 'agent' && !['agent', 'bankr', 'moltbook', 'clawnch'].includes(agentSource)) return false;
-      if (sourceFilter === 'clawnch' && agentSource !== 'clawnch') return false; if (sourceFilter === 'moltlaunch' && agentSource !== 'moltlaunch') return false; if (sourceFilter === 'hot' && ((agent as any).volume_24h || (agent as any).volume || 0) < 10000) return false; if (sourceFilter === 'new') { const created = new Date((agent as any).created_at || 0); const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); if (created < dayAgo) return false; } if (sourceFilter === 'verified') { const addr = (agent as any).token_address || (agent as any).tokenAddress; if (!isVerified(addr)) return false; }
+      switch (sourceFilter) {
+        case 'bankr':
+          if (agentSource !== 'bankr') return false;
+          break;
+        case 'clanker':
+          if (agentSource !== 'clanker') return false;
+          break;
+        case 'agent':
+          if (!['agent', 'bankr', 'moltbook', 'clawnch'].includes(agentSource)) return false;
+          break;
+        case 'clawnch':
+          if (agentSource !== 'clawnch') return false;
+          break;
+        case 'moltlaunch':
+          if (agentSource !== 'moltlaunch') return false;
+          break;
+        case 'hot':
+          // Hot = $50k+ volume (filtered at DB level too)
+          if (volume < 50000) return false;
+          break;
+        case 'trending':
+          // Trending uses score - just show all (DB already filtered for quality)
+          break;
+        case 'new':
+          if (createdAt < dayAgo) return false;
+          break;
+        case 'verified':
+          if (!isVerified(tokenAddr)) return false;
+          break;
+      }
     }
+    
     // Search filter
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
@@ -676,6 +710,7 @@ function ScreenerPage() {
       case 'volume': return (b.volume || 0) - (a.volume || 0);
       case 'change': return (b.change24h || 0) - (a.change24h || 0);
       case 'mcap': return (b.mcap || 0) - (a.mcap || 0);
+      case 'trending': return ((b as any).trending_score || 0) - ((a as any).trending_score || 0);
       case 'newest': 
       default: return b.id - a.id;
     }
@@ -1281,6 +1316,7 @@ function ScreenerPage() {
                 }}>
                   {[
                     { key: 'all', label: 'All' },
+                    { key: 'trending', label: '📈 Trending' },
                     { key: 'verified', label: 'Verified', special: true }, { key: 'hot', label: '🔥 Hot' }, { key: 'new', label: '🆕 New' },
                     { key: 'bankr', label: 'Bankr' },
                     { key: 'clawnch', label: 'Clawnch' }, { key: 'moltlaunch', label: 'Moltlaunch' },
@@ -1322,6 +1358,7 @@ function ScreenerPage() {
                       outline: 'none',
                     }}
                   >
+                    <option value="trending">Trending</option>
                     <option value="newest">Newest</option>
                     <option value="volume">Volume</option>
                     <option value="change">24h Change</option>
