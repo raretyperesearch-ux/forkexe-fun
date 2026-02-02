@@ -7,7 +7,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Minimum thresholds for "quality" tokens
 const MIN_LIQUIDITY = 1000;  // $1k minimum liquidity
 const MIN_VOLUME_HOT = 50000; // $50k for "hot" tokens
-const MIN_MCAP = 5000; // $5k minimum mcap
+
 
 export type Agent = {
   id: number;
