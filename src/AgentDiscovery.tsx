@@ -605,7 +605,7 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'hot' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'hot' | 'new' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('all');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap'>('newest');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
@@ -664,7 +664,7 @@ function ScreenerPage() {
       if (sourceFilter === 'bankr' && agentSource !== 'bankr') return false;
       if (sourceFilter === 'clanker' && agentSource !== 'clanker') return false;
       if (sourceFilter === 'agent' && !['agent', 'bankr', 'moltbook', 'clawnch'].includes(agentSource)) return false;
-      if (sourceFilter === 'clawnch' && agentSource !== 'clawnch') return false; if (sourceFilter === 'moltlaunch' && agentSource !== 'moltlaunch') return false; if (sourceFilter === 'hot' && ((agent as any).volume_24h || (agent as any).volume || 0) < 10000) return false; if (sourceFilter === 'verified') { const addr = (agent as any).token_address || (agent as any).tokenAddress; if (!isVerified(addr)) return false; }
+      if (sourceFilter === 'clawnch' && agentSource !== 'clawnch') return false; if (sourceFilter === 'moltlaunch' && agentSource !== 'moltlaunch') return false; if (sourceFilter === 'hot' && ((agent as any).volume_24h || (agent as any).volume || 0) < 10000) return false; if (sourceFilter === 'new') { const created = new Date((agent as any).created_at || 0); const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); if (created < dayAgo) return false; } if (sourceFilter === 'verified') { const addr = (agent as any).token_address || (agent as any).tokenAddress; if (!isVerified(addr)) return false; }
     }
     // Search filter
     if (!searchQuery) return true;
@@ -1281,7 +1281,7 @@ function ScreenerPage() {
                 }}>
                   {[
                     { key: 'all', label: 'All' },
-                    { key: 'verified', label: 'Verified', special: true },
+                    { key: 'verified', label: 'Verified', special: true }, { key: 'hot', label: '🔥 Hot' }, { key: 'new', label: '🆕 New' },
                     { key: 'bankr', label: 'Bankr' },
                     { key: 'clawnch', label: 'Clawnch' }, { key: 'moltlaunch', label: 'Moltlaunch' },
                     { key: 'agent', label: 'Agents' },
