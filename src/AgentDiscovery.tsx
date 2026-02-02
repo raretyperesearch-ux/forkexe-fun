@@ -635,7 +635,7 @@ function ScreenerPage() {
   const onPullRefresh = async () => { setIsRefreshing(true); await refetch(); setIsRefreshing(false); };
   
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
-  const allAgents = loading || dbAgents.length === 0 
+  const allAgents = (loading && !isRefreshing) || dbAgents.length === 0 
     ? FALLBACK_AGENTS 
     : dbAgents.map(agent => ({
         id: agent.id,
