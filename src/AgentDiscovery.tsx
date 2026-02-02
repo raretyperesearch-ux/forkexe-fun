@@ -605,7 +605,7 @@ function ScreenerPage() {
   const [activeView, setActiveView] = useState<'tokenized' | 'moltbook'>('moltbook');
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'hot' | 'trending' | 'new' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('trending');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'verified' | 'trending' | 'top10' | 'bankr' | 'clanker' | 'agent' | 'clawnch' | 'moltlaunch'>('trending');
   const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'watchlist' | 'settings'>('home');
   const [sortBy, setSortBy] = useState<'newest' | 'volume' | 'change' | 'mcap' | 'trending'>('trending');
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
@@ -1316,8 +1316,8 @@ function ScreenerPage() {
                 }}>
                   {[
                     { key: 'all', label: 'All' },
-                    { key: 'trending', label: '📈 Trending' },
-                    { key: 'verified', label: 'Verified', special: true }, { key: 'hot', label: '🔥 Hot' }, { key: 'new', label: '🆕 New' },
+                    { key: 'trending', label: 'Trending' }, { key: 'top10', label: 'Top 10' },
+                    { key: 'verified', label: 'Verified', special: true }, 
                     { key: 'bankr', label: 'Bankr' },
                     { key: 'clawnch', label: 'Clawnch' }, { key: 'moltlaunch', label: 'Moltlaunch' },
                     { key: 'agent', label: 'Agents' },

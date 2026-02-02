@@ -73,7 +73,7 @@ export function useAgents(sourceFilter: string = 'all') {
       }
       
       // For "hot" and "trending" filters, add quality thresholds at DB level
-      if (sourceFilter === 'hot' || sourceFilter === 'trending') {
+      if (sourceFilter === 'trending' || sourceFilter === 'top10') {
         query = query.gte('volume_24h', MIN_VOLUME_HOT);
         query = query.gte('liquidity', MIN_LIQUIDITY);
       }
