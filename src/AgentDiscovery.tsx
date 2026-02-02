@@ -1331,30 +1331,6 @@ function ScreenerPage() {
                       {label}
                     </button>
                   ))}
-                  
-                  {/* Sort dropdown */}
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
-                    style={{
-                      marginLeft: 'auto',
-                      padding: '6px 10px',
-                      borderRadius: '20px',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      border: `1px solid ${colors.border}`,
-                      backgroundColor: 'transparent',
-                      color: colors.text,
-                      cursor: 'pointer',
-                      outline: 'none',
-                    }}
-                  >
-                    <option value="trending">Trending</option>
-                    <option value="newest">Newest</option>
-                    <option value="volume">Volume</option>
-                    <option value="change">24h Change</option>
-                    <option value="mcap">Market Cap</option>
-                  </select>
                 </div>
                 
                 {/* Stats Bar - inline compact */}
@@ -1399,38 +1375,27 @@ function ScreenerPage() {
                 <div style={{ padding: '12px 0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px', marginBottom: '8px' }}>
                     <span style={{ fontWeight: 600, fontSize: '13px' }}>🔥 Top 10</span>
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      <button
-                        onClick={() => setSortBy('volume')}
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as any)}
                         style={{
                           padding: '4px 8px',
                           borderRadius: '6px',
                           fontSize: '10px',
                           fontWeight: 500,
-                          border: 'none',
-                          background: sortBy === 'volume' ? (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)') : 'transparent',
-                          color: sortBy === 'volume' ? colors.text : colors.textSecondary,
+                          border: `1px solid ${colors.border}`,
+                          backgroundColor: 'transparent',
+                          color: colors.text,
                           cursor: 'pointer',
+                          outline: 'none',
                         }}
                       >
-                        Volume
-                      </button>
-                      <button
-                        onClick={() => setSortBy('mcap')}
-                        style={{
-                          padding: '4px 8px',
-                          borderRadius: '6px',
-                          fontSize: '10px',
-                          fontWeight: 500,
-                          border: 'none',
-                          background: sortBy === 'mcap' ? (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)') : 'transparent',
-                          color: sortBy === 'mcap' ? colors.text : colors.textSecondary,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        MCap
-                      </button>
-                    </div>
+                        <option value="trending">Trending</option>
+                        <option value="newest">Newest</option>
+                        <option value="volume">Volume</option>
+                        <option value="change">24h Change</option>
+                        <option value="mcap">Market Cap</option>
+                      </select>
                   </div>
                   <div style={{ 
                     display: 'flex', 
