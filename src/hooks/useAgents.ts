@@ -79,7 +79,7 @@ export function useAgents(sourceFilter: string = 'all') {
       }
       
       // For most filters, require minimum liquidity to filter out dead tokens
-      if (['all', 'moltlaunch', 'clawnch', 'clanker'].includes(sourceFilter)) {
+      if (['all', 'clawnch', 'clanker'].includes(sourceFilter)) {
         query = query.gte('liquidity', MIN_LIQUIDITY);
       }
       
