@@ -1307,7 +1307,7 @@ function ScreenerPage() {
                 }}>
                   {[
                     { key: 'all', label: 'All' },
-                    { key: 'trending', label: 'Trending' }, { key: 'top10', label: 'Top 10' },
+                    { key: 'trending', label: 'Trending' },
                     { key: 'verified', label: 'Verified', special: true }, 
                     { key: 'bankr', label: 'Bankr' },
                     { key: 'clawnch', label: 'Clawnch' }, { key: 'moltlaunch', label: 'Moltlaunch' },
