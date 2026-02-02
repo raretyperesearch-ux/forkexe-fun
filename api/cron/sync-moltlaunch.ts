@@ -3,8 +3,7 @@ const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_KEY || ''
 );
-export const config = { maxDuration: 60 };
-
+export const config = { maxDuration: 120 };
 const ETH_PRICE_USD = 2300;
 
 export default async function handler(req: any, res: any) {
@@ -12,17 +11,29 @@ export default async function handler(req: any, res: any) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
-    const response = await fetch('https://api.flayerlabs.xyz/v1/base/tokens?managerAddress=0x3Bc08524d9DaaDEC9d1Af87818d809611F0fD669&orderBy=datecreated&orderDirection=desc&limit=100');
-    const data = await response.json();
+    let allTokens: any[] = [];
+    let offset = 0;
+    const limit = 50;
     
-    if (!data.data) {
-      return res.status(200).json({ error: 'Invalid response', data });
+    // Paginate through all tokens
+    while (true) {
+      const response = await fetch(`https://api.flayerlabs.xyz/v1/base/tokens?managerAddress=0x3Bc08524d9DaaDEC9d1Af87818d809611F0fD669&orderBy=datecreated&orderDirection=desc&limit=${limit}&offset=${offset}`);
+      const data = await response.json();
+      
+      if (!data.data || data.data.length === 0) break;
+      
+      allTokens = allTokens.concat(data.data);
+      offset += limit;
+      
+      // Safety limit
+      if (offset > 500) break;
+      
+      await new Promise(r => setTimeout(r, 200));
     }
     
-    const tokens = data.data;
     let upserted = 0;
     
-    for (const token of tokens) {
+    for (const token of allTokens) {
       if (!token.tokenAddress) continue;
       
       // Convert marketCapETH from wei to USD
@@ -45,9 +56,10 @@ export default async function handler(req: any, res: any) {
       
       if (!error) upserted++;
     }
+    
     return res.status(200).json({ 
       success: true, 
-      fetched: tokens.length, 
+      fetched: allTokens.length, 
       upserted 
     });
   } catch (error) {
