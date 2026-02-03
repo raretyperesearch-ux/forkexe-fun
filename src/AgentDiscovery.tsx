@@ -631,7 +631,7 @@ function ScreenerPage() {
   
   // Fetch agents from Supabase
   const { agents: dbAgents, loading, isVerified, refetch } = useAgents(sourceFilter);
-  const stats = useStats();
+  const _stats = useStats(); // unused for now
   const onPullRefresh = async () => { setIsRefreshing(true); await refetch(); setIsRefreshing(false); };
   
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
