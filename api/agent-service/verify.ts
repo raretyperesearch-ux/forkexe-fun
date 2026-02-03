@@ -31,21 +31,6 @@ async function getTransaction(txHash: string) {
   return data.result;
 }
 
-// Get deployer of a token contract
-async function getContractDeployer(tokenAddress: string) {
-  // Get creation tx by finding first tx to the contract
-  // Using Base block explorer API
-  const response = await fetch(
-    `https://api.basescan.org/api?module=contract&action=getcontractcreation&contractaddresses=${tokenAddress}&apikey=${process.env.BASESCAN_API_KEY || ''}`
-  );
-  const data = await response.json();
-  
-  if (data.result && data.result[0]) {
-    return data.result[0].contractCreator?.toLowerCase();
-  }
-  return null;
-}
-
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -72,6 +57,23 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: 'Agent already verified', api_key: existing.api_key });
     }
 
+    // Get agent info from agents table (includes deployer_wallet from API)
+    const { data: agentInfo } = await supabase
+      .from('agents')
+      .select('name, symbol, avatar, deployer_wallet')
+      .eq('token_address', tokenAddr)
+      .single();
+
+    if (!agentInfo) {
+      return res.status(400).json({ error: 'Token not found in AgentScreener. Is it listed?' });
+    }
+
+    if (!agentInfo.deployer_wallet) {
+      return res.status(400).json({ error: 'No deployer wallet found for this token' });
+    }
+
+    const deployer = agentInfo.deployer_wallet.toLowerCase();
+
     // Fetch the transaction
     const tx = await getTransaction(txHash);
     
@@ -90,17 +92,10 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: 'Transaction value too low. Send at least 0.000001 ETH' });
     }
 
-    // Get the deployer of the token
-    const deployer = await getContractDeployer(tokenAddr);
-    
-    if (!deployer) {
-      return res.status(400).json({ error: 'Could not find token deployer' });
-    }
-
-    // Check tx sender is the deployer
+    // Check tx sender is the deployer from our DB
     if (tx.from?.toLowerCase() !== deployer) {
       return res.status(400).json({ 
-        error: 'Transaction must be sent from deployer wallet',
+        error: 'Transaction must be sent from creator wallet',
         expected: deployer,
         got: tx.from?.toLowerCase()
       });
@@ -120,13 +115,6 @@ export default async function handler(req: any, res: any) {
 
     // Generate API key
     const apiKey = generateApiKey();
-
-    // Get agent info from agents table
-    const { data: agentInfo } = await supabase
-      .from('agents')
-      .select('name, symbol, avatar')
-      .eq('token_address', tokenAddr)
-      .single();
 
     // Assign bot and create agent_service record
     const { error: insertError } = await supabase
