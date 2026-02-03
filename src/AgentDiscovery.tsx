@@ -704,10 +704,6 @@ function ScreenerPage() {
       case 'top10': return (b.change24h || 0) - (a.change24h || 0);
       case 'newest':
       default: return b.id - a.id;
-  });
-
-  // Calculate total volume of displayed agents
-  const pageVolume = moltbookAgents.reduce((sum, a) => sum + ((a as any).volume || 0), 0);
     }
   });
 
@@ -1339,39 +1335,18 @@ function ScreenerPage() {
                 
                 {/* Stats Bar - inline compact */}
                 <div style={{ 
-                  display: 'flex', 
-                  gap: '6px',
-                  padding: '0 12px 6px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  padding: '8px 12px',
                 }}>
                   <div style={{ 
-                    flex: 1, 
-                    padding: '6px 4px', 
+                    padding: '6px 16px', 
                     textAlign: 'center',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
                   }}>
                     <div style={{ color: colors.textSecondary, fontSize: '8px', fontWeight: 500, textTransform: 'uppercase' }}>24H VOL</div>
-                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '12px' }}>${formatCompact(pageVolume)}</div>
-                  </div>
-                  <div style={{ 
-                    flex: 1, 
-                    padding: '6px 4px', 
-                    textAlign: 'center',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                  }}>
-                    <div style={{ color: colors.textSecondary, fontSize: '8px', fontWeight: 500, textTransform: 'uppercase' }}>TOKENIZED</div>
-                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '12px' }}>{stats.tokenized}</div>}
-                  </div>
-                  <div style={{ 
-                    flex: 1, 
-                    padding: '6px 4px', 
-                    textAlign: 'center',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                  }}>
-                    <div style={{ color: colors.textSecondary, fontSize: '8px', fontWeight: 500, textTransform: 'uppercase' }}>AGENTS</div>{false && 
-                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '12px' }}>{stats.totalAgents.toLocaleString()}</div>}
+                    <div style={{ color: colors.text, fontWeight: 700, fontSize: '12px' }}>${formatCompact(moltbookAgents.reduce((sum, a) => sum + ((a as any).volume || 0), 0))}</div>
                   </div>
                 </div>
 
@@ -1473,16 +1448,16 @@ function ScreenerPage() {
                 {/* Desktop Stats Bar */}
                 <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-
-
-
+                    <span style={{ color: colors.textSecondary }}>MOLTBOOK AGENTS:</span>
+                    <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{stats.totalAgents.toLocaleString()}</span>
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-
-
-
+                    <span style={{ color: colors.textSecondary }}>TOKENIZED (50+ KARMA):</span>
+                    <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{stats.tokenized}</span>
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                    <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(pageVolume)}</span>
+                    <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
                   </div>
                 </div>
 
