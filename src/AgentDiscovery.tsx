@@ -1446,18 +1446,10 @@ function ScreenerPage() {
             ) : !isMobile ? (
               <>
                 {/* Desktop Stats Bar */}
-                <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '48px', borderBottom: `1px solid ${colors.border}` }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: colors.textSecondary }}>MOLTBOOK AGENTS:</span>
-                    <span style={{ color: '#EF4444', fontWeight: 700, fontSize: '16px' }}>{stats.totalAgents.toLocaleString()}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: colors.textSecondary }}>TOKENIZED (50+ KARMA):</span>
-                    <span style={{ color: colors.green, fontWeight: 700, fontSize: '16px' }}>{stats.tokenized}</span>
-                  </div>
+                <div style={{ backgroundColor: colors.bgSecondary, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: `1px solid ${colors.border}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: colors.textSecondary }}>24H VOLUME:</span>
-                    <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(stats.volume24h)}</span>
+                    <span style={{ color: colors.text, fontWeight: 700, fontSize: '16px' }}>${formatCompact(moltbookAgents.reduce((sum, a) => sum + ((a as any).volume || 0), 0))}</span>
                   </div>
                 </div>
 
