@@ -1591,6 +1591,41 @@ function ScreenerPage() {
                           MCAP <span style={{ color: colors.text }}>{agent.mcap ? formatNumber(agent.mcap) : '—'}</span>
                         </span>
                       </div>
+                      
+                      {/* TG row - shows if agent has TG linked */}
+                  {(agent as any).tg_group_link && (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center',
+                          gap: '8px',
+                          marginTop: '6px',
+                          marginLeft: '36px',
+                          fontSize: '10px',
+                        }}>
+                          <span style={{ color: colors.textSecondary }}>💬</span>
+                          <span style={{ color: colors.textSecondary }}>
+                            {(agent as any).tg_member_count || 0} members
+                          </span>
+                          {(agent as any).tg_last_active && (
+                            <span style={{ color: colors.textSecondary }}>
+                              • Active {(agent as any).tg_last_active}
+                            </span>
+                          )}
+                          <a 
+                            href={(agent as any).tg_group_link} 
+                        target="_blank" 
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ 
+                              color: '#3B82F6', 
+                              textDecoration: 'none',
+                              marginLeft: 'auto',
+                            }}
+                          >
+                            Join →
+                          </a>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

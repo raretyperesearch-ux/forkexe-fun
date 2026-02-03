@@ -89,10 +89,30 @@ export function useAgents(sourceFilter: string = 'all') {
         
       if (error) throw error;
       
-      // Post-process: add trending scores
+      // Fetch TG data for agents
+      const tokenAddresses = (data || []).map(a => a.token_address).filter(Boolean);
+      let tgData: Record<string, any> = {};
+      
+      if (tokenAddresses.length > 0) {
+        const { data: tgRecords } = await supabase
+          .from('agent_service')
+          .select('token_address, tg_group_link, bot_username')
+          .in('token_address', tokenAddresses)
+          .eq('is_active', true);
+        
+        if (tgRecords) {
+          tgRecords.forEach(tg => {
+            tgData[tg.token_address] = tg;
+          });
+        }
+      }
+      
+      // Post-process: add trending scores and TG data
       const processed = (data || []).map(agent => ({
         ...agent,
         trending_score: calculateTrendingScore(agent),
+        tg_group_link: tgData[agent.token_address]?.tg_group_link || null,
+        tg_bot_username: tgData[agent.token_address]?.bot_username || null,
       }));
       
       setAgents(processed);
