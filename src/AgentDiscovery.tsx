@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, useCallback } from 'react';
+mport { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import TokenSubmitForm from './TokenSubmitForm';
 import { 
   Search, 
@@ -374,8 +374,41 @@ function ScreenerPage() {
   useStats(); // hook called but stats displayed inline
   const onPullRefresh = async () => { setIsRefreshing(true); await refetch(); setIsRefreshing(false); };
   
+  // Search by contract address
+  const [searchedAgent, setSearchedAgent] = useState<any>(null);
+  useEffect(() => {
+    const searchByCA = async () => {
+      if (searchQuery.startsWith('0x') && searchQuery.length >= 40) {
+        try {
+          const { createClient } = await import('@supabase/supabase-js');
+          const supabase = createClient(
+            'https://edspwhxvlqwvylrgiygz.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkc3B3aHh2bHF3dnlscmdpeWd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MDk0NTQsImV4cCI6MjA4NTM4NTQ1NH0.f6AuOz7HfkMFGf-RuoRP3BJofxzPd1DXKsQd1MFfmUA'
+          );
+          const { data } = await supabase
+            .from('agents')
+            .select('*')
+            .ilike('token_address', searchQuery)
+            .limit(1);
+          if (data && data.length > 0) {
+            setSearchedAgent(data[0]);
+          } else {
+            setSearchedAgent(null);
+          }
+        } catch (err) {
+          console.error('CA search error:', err);
+          setSearchedAgent(null);
+        }
+      } else {
+        setSearchedAgent(null);
+      }
+    };
+    const debounce = setTimeout(searchByCA, 300);
+    return () => clearTimeout(debounce);
+  }, [searchQuery]);
+  
   // Map Supabase data to UI format (fallback to hardcoded data while loading)
-  const allAgents = (loading && !isRefreshing) || dbAgents.length === 0 
+  let allAgents = (loading && !isRefreshing) || dbAgents.length === 0 
     ? FALLBACK_AGENTS 
     : dbAgents.map(agent => ({
         id: agent.id,
@@ -398,10 +431,42 @@ function ScreenerPage() {
         trending_score: (agent as any).trending_score || 0,
       }));
 
+  // Include searched agent from CA search
+  if (searchedAgent && searchQuery.startsWith('0x')) {
+    const alreadyIncluded = allAgents.some(a => a.id === searchedAgent.id);
+    if (!alreadyIncluded) {
+      allAgents = [{
+        id: searchedAgent.id,
+        name: searchedAgent.name,
+        karma: searchedAgent.karma,
+        handle: searchedAgent.handle,
+        avatar: searchedAgent.avatar,
+        color: searchedAgent.color,
+        lastActive: searchedAgent.last_active,
+        age: searchedAgent.tokenized_at ? '3d' : null,
+        tokenAddress: searchedAgent.token_address,
+        mcap: searchedAgent.mcap,
+        price: searchedAgent.price,
+        change24h: searchedAgent.change_24h,
+        volume: searchedAgent.volume_24h,
+        liquidity: searchedAgent.liquidity,
+        source: searchedAgent.source || 'unknown',
+        symbol: searchedAgent.symbol,
+        created_at: searchedAgent.created_at,
+        trending_score: searchedAgent.trending_score || 0,
+      }, ...allAgents];
+    }
+  }
+
   // Filter by search and source
   const moltbookAgents = allAgents.filter(agent => {
     const agentSource = (agent as any).source || 'unknown';
     const tokenAddr = (agent as any).token_address || (agent as any).tokenAddress;
+    
+    // Bypass filters for CA search - show the matched agent
+    if (searchQuery.startsWith('0x') && searchQuery.length >= 40) {
+      return tokenAddr?.toLowerCase().includes(searchQuery.toLowerCase());
+    }
     
     // Source filter logic
     if (sourceFilter !== 'all') {
@@ -433,8 +498,10 @@ function ScreenerPage() {
     // Search filter
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
+    const tokenAddr = (agent as any).token_address || (agent as any).tokenAddress || '';
     return agent.name.toLowerCase().includes(query) || 
-           agent.handle.toLowerCase().includes(query);
+           agent.handle.toLowerCase().includes(query) ||
+           tokenAddr.toLowerCase().includes(query);
   }).sort((a, b) => {
     switch (sortBy) {
       case 'volume': return (b.volume || 0) - (a.volume || 0);
