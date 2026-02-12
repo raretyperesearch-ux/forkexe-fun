@@ -30,7 +30,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const transactions = data.result;
-    let verified = 0;
+    let pendingReview = 0;
     let processed = 0;
 
     for (const tx of transactions) {
@@ -53,52 +53,43 @@ export default async function handler(req: any, res: any) {
 
       processed++;
 
-      // Check amount
+      // Log all payments
+      await supabase.from('payment_logs').insert({
+        tx_hash: txHash,
+        from_address: from,
+        to_address: PAYMENT_ADDRESS.toLowerCase(),
+        amount: value,
+        block_number: parseInt(tx.blockNumber)
+      });
+
+      // Check amount meets minimum
       if (value < REQUIRED_AMOUNT) {
-        console.log(`Skipping tx ${txHash}: insufficient amount ${value} $AGS (need ${REQUIRED_AMOUNT})`);
-        
-        // Log it anyway for audit
-        await supabase.from('payment_logs').insert({
-          tx_hash: txHash,
-          from_address: from,
-          to_address: PAYMENT_ADDRESS.toLowerCase(),
-          amount: value,
-          block_number: parseInt(tx.blockNumber)
-        });
+        console.log(`Logged tx ${txHash}: insufficient amount ${value} $AGS (need ${REQUIRED_AMOUNT})`);
         continue;
       }
 
-      // Try to match by sender address
-      const { data: verification, error: verifyError } = await supabase
+      // Find oldest pending verification to mark for review
+      const { data: verification } = await supabase
         .from('verifications')
         .select('*')
-        .eq('deployer_address', from)
         .eq('status', 'pending')
+        .order('created_at', { ascending: true })
+        .limit(1)
         .single();
 
-      if (verifyError || !verification) {
-        console.log(`No pending verification for sender ${from}`);
-        
-        // Log unmatched payment
-        await supabase.from('payment_logs').insert({
-          tx_hash: txHash,
-          from_address: from,
-          to_address: PAYMENT_ADDRESS.toLowerCase(),
-          amount: value,
-          block_number: parseInt(tx.blockNumber)
-        });
+      if (!verification) {
+        console.log(`Payment received (${value} $AGS from ${from}) but no pending verifications`);
         continue;
       }
 
-      // Match found! Update verification
+      // Mark as pending_review for admin approval
       const { error: updateError } = await supabase
         .from('verifications')
         .update({
-          status: 'verified',
+          status: 'pending_review',
           payment_tx: txHash,
           amount_received: value,
-          sender_address: from,
-          verified_at: new Date().toISOString()
+          sender_address: from
         })
         .eq('id', verification.id);
 
@@ -107,21 +98,17 @@ export default async function handler(req: any, res: any) {
         continue;
       }
 
-      // Log successful payment
-      await supabase.from('payment_logs').insert({
-        tx_hash: txHash,
-        from_address: from,
-        to_address: PAYMENT_ADDRESS.toLowerCase(),
-        amount: value,
-        block_number: parseInt(tx.blockNumber),
-        matched_verification_id: verification.id
-      });
+      // Update payment log with matched verification
+      await supabase
+        .from('payment_logs')
+        .update({ matched_verification_id: verification.id })
+        .eq('tx_hash', txHash);
 
-      console.log(`✅ Verified token ${verification.token_address} via tx ${txHash} (${value} $AGS)`);
-      verified++;
+      console.log(`📋 Sent to review: ${verification.token_name || verification.token_address} via tx ${txHash} (${value} $AGS)`);
+      pendingReview++;
     }
 
-    // Expire old pending verifications
+    // Expire old pending verifications (keep pending_review ones)
     await supabase
       .from('verifications')
       .update({ status: 'expired' })
@@ -131,7 +118,7 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json({
       success: true,
       processed,
-      verified,
+      pending_review: pendingReview,
       timestamp: new Date().toISOString()
     });
 
