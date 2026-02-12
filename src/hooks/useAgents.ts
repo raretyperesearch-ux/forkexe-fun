@@ -83,9 +83,22 @@ export function useAgents(sourceFilter: string = 'all') {
         query = query.gte('liquidity', MIN_LIQUIDITY);
       }
       
+      // For verified filter, fetch verified tokens directly
+      if (sourceFilter === 'verified') {
+        const { data: verifiedData } = await supabase
+          .from('verifications')
+          .select('token_address')
+          .eq('status', 'verified');
+        
+        if (verifiedData && verifiedData.length > 0) {
+          const verifiedAddresses = verifiedData.map(v => v.token_address.toLowerCase());
+          query = query.in('token_address', verifiedAddresses);
+        }
+      }
+      
       const { data, error } = await query
         .order('volume_24h', { ascending: false, nullsFirst: false })
-        .limit(200);
+        .limit(sourceFilter === 'verified' ? 500 : 200);
         
       if (error) throw error;
       
@@ -174,3 +187,5 @@ export function useStats() {
   return stats;
 }
 export { supabase };
+
+
