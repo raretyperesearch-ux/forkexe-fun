@@ -204,5 +204,3 @@ export function useStats() {
   return stats;
 }
 export { supabase };
-
-
