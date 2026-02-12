@@ -18,32 +18,6 @@ function generateReferenceCode(): string {
   return code;
 }
 
-async function getClawnchData(tokenAddress: string) {
-  try {
-    const res = await fetch(`https://clawn.ch/api/launches?address=${tokenAddress}`);
-    const data = await res.json();
-    
-    if (data.success && data.launch) {
-      const launch = data.launch;
-      return {
-        found: true,
-        name: launch.name,
-        symbol: launch.symbol,
-        image: launch.image,
-        agentName: launch.agentName,
-        agentWallet: launch.agentWallet?.toLowerCase(),
-        source: launch.source,
-        clankerUrl: launch.clankerUrl,
-        launchedAt: launch.launchedAt
-      };
-    }
-    return { found: false };
-  } catch (err) {
-    console.error('Clawnch API error:', err);
-    return { found: false };
-  }
-}
-
 async function getDexScreenerData(tokenAddress: string) {
   try {
     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
@@ -52,15 +26,40 @@ async function getDexScreenerData(tokenAddress: string) {
     if (data.pairs && data.pairs.length > 0) {
       const pair = data.pairs[0];
       return {
+        found: true,
         name: pair.baseToken?.name,
         symbol: pair.baseToken?.symbol,
         image: pair.info?.imageUrl,
-        dexscreenerUrl: `https://dexscreener.com/base/${tokenAddress}`
+        dexscreenerUrl: `https://dexscreener.com/base/${pair.pairAddress}`
       };
     }
-    return null;
+    return { found: false };
   } catch (err) {
-    return null;
+    return { found: false };
+  }
+}
+
+async function getAgentFromDB(tokenAddress: string) {
+  try {
+    const { data } = await supabase
+      .from('agents')
+      .select('name, symbol, avatar, source')
+      .ilike('token_address', tokenAddress)
+      .limit(1)
+      .single();
+    
+    if (data) {
+      return {
+        found: true,
+        name: data.name,
+        symbol: data.symbol,
+        image: data.avatar,
+        source: data.source
+      };
+    }
+    return { found: false };
+  } catch (err) {
+    return { found: false };
   }
 }
 
@@ -94,57 +93,54 @@ export default async function handler(req: any, res: any) {
     }
 
     // If pending exists, return existing
-    if (existing?.status === 'pending') {
+    if (existing?.status === 'pending' || existing?.status === 'pending_review') {
       return res.status(200).json({
         success: true,
         reference_code: existing.reference_code,
         payment_address: PAYMENT_ADDRESS,
         amount: AMOUNT,
+        token_contract: AGS_TOKEN,
         chain: 'base',
         expires_at: existing.expires_at,
+        status: existing.status,
         token: {
           name: existing.token_name,
           symbol: existing.token_symbol,
-          image_url: existing.image_url,
-          agent_name: existing.agent_name
+          image_url: existing.image_url
         },
-        deployer_address: existing.deployer_address,
-        source: existing.source,
-        message: 'Verification already requested. Send payment to complete.'
+        message: existing.status === 'pending_review' 
+          ? 'Payment received! Awaiting admin review.'
+          : 'Verification requested. Send payment to complete.'
       });
     }
 
-    // Check Clawnch API first
-    const clawnchData = await getClawnchData(tokenAddr);
-
-    if (!clawnchData.found) {
-      return res.status(400).json({ 
-        error: 'Token not found on Clawnch',
-        message: 'Only Clawnch-launched tokens can be verified at this time.'
-      });
-    }
-
-    // Get additional data from DexScreener
+    // Try to get token info from our DB first, then DexScreener
+    const dbData = await getAgentFromDB(tokenAddr);
     const dexData = await getDexScreenerData(tokenAddr);
+
+    if (!dbData.found && !dexData.found) {
+      return res.status(400).json({ 
+        error: 'Token not found',
+        message: 'Could not find this token. Make sure it exists on Base.'
+      });
+    }
 
     const reference_code = generateReferenceCode();
 
-    // Insert verification with Clawnch data
+    // Insert verification request
     const { data, error } = await supabase
       .from('verifications')
       .insert({
         token_address: tokenAddr,
-        deployer_address: clawnchData.agentWallet,
         reference_code,
         payment_address: PAYMENT_ADDRESS,
         amount_required: 100000,
         status: 'pending',
-        token_name: clawnchData.name || dexData?.name,
-        token_symbol: clawnchData.symbol || dexData?.symbol,
-        image_url: clawnchData.image || dexData?.image,
-        dexscreener_url: dexData?.dexscreenerUrl || `https://dexscreener.com/base/${tokenAddr}`,
-        agent_name: clawnchData.agentName,
-        source: 'clawnch'
+        token_name: dbData.found ? dbData.name : dexData.name,
+        token_symbol: dbData.found ? dbData.symbol : dexData.symbol,
+        image_url: dbData.found ? dbData.image : dexData.image,
+        dexscreener_url: dexData.dexscreenerUrl || `https://dexscreener.com/base/${tokenAddr}`,
+        source: dbData.found ? dbData.source : 'external'
       })
       .select()
       .single();
@@ -160,18 +156,15 @@ export default async function handler(req: any, res: any) {
       chain: 'base',
       expires_at: data.expires_at,
       token: {
-        name: clawnchData.name,
-        symbol: clawnchData.symbol,
-        image_url: clawnchData.image,
-        agent_name: clawnchData.agentName
+        name: dbData.found ? dbData.name : dexData.name,
+        symbol: dbData.found ? dbData.symbol : dexData.symbol,
+        image_url: dbData.found ? dbData.image : dexData.image
       },
-      deployer_address: clawnchData.agentWallet,
-      source: 'clawnch',
       instructions: {
         step1: 'Send exactly 100,000 $AGS on Base',
-        step2: `Send FROM the agent wallet: ${clawnchData.agentWallet}`,
+        step2: `To: ${PAYMENT_ADDRESS}`,
         step3: `$AGS Token: ${AGS_TOKEN}`,
-        step4: 'We verify against Clawnch launch data'
+        step4: 'After payment, your request goes to admin review'
       }
     });
 
@@ -180,3 +173,5 @@ export default async function handler(req: any, res: any) {
     return res.status(500).json({ error: 'Failed to create verification request' });
   }
 }
+
+
