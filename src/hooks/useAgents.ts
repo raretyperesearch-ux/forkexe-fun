@@ -8,6 +8,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const MIN_LIQUIDITY = 1000;  // $1k minimum liquidity
 const MIN_VOLUME_HOT = 50000; // $50k for "hot" tokens
 
+// Platform token - always show
+const AGS_TOKEN_ADDRESS = '0x1086fd60859Ff1Ae9B713a709350435286597b07'.toLowerCase();
+
 
 export type Agent = {
   id: number;
@@ -102,8 +105,22 @@ export function useAgents(sourceFilter: string = 'all') {
         
       if (error) throw error;
       
+      // Always include AGS (platform token) if not already in results
+      let allData = data || [];
+      const hasAGS = allData.some(a => a.token_address?.toLowerCase() === AGS_TOKEN_ADDRESS);
+      if (!hasAGS) {
+        const { data: agsData } = await supabase
+          .from('agents')
+          .select('*')
+          .ilike('token_address', AGS_TOKEN_ADDRESS)
+          .limit(1);
+        if (agsData && agsData.length > 0) {
+          allData = [agsData[0], ...allData];
+        }
+      }
+      
       // Fetch TG data for agents
-      const tokenAddresses = (data || []).map(a => a.token_address).filter(Boolean);
+      const tokenAddresses = allData.map(a => a.token_address).filter(Boolean);
       let tgData: Record<string, any> = {};
       
       if (tokenAddresses.length > 0) {
@@ -121,7 +138,7 @@ export function useAgents(sourceFilter: string = 'all') {
       }
       
       // Post-process: add trending scores and TG data
-      const processed = (data || []).map(agent => ({
+      const processed = allData.map(agent => ({
         ...agent,
         trending_score: calculateTrendingScore(agent),
         tg_group_link: tgData[agent.token_address]?.tg_group_link || null,
