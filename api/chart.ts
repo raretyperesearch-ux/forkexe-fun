@@ -60,22 +60,30 @@ export default async function handler(req: any, res: any) {
 
     // If we have a token address, fetch pools first
     if (token && typeof token === 'string') {
-      const poolsRes = await fetch(
-        `https://api.geckoterminal.com/api/v2/networks/base/tokens/${token}/pools?page=1`,
-        {
-          headers: {
-            'Accept': 'application/json',
-          },
-        }
-      );
+      const url = `https://api.geckoterminal.com/api/v2/networks/base/tokens/${token}/pools?page=1`;
+      console.log('Fetching pools for token:', token, 'URL:', url);
+      
+      const poolsRes = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!poolsRes.ok) {
+        console.error('GeckoTerminal API error:', poolsRes.status, poolsRes.statusText);
+        return res.status(200).json({ data: [], error: `API returned ${poolsRes.status}` });
+      }
 
       const data = await poolsRes.json();
+      console.log('Pools response:', JSON.stringify(data).slice(0, 200));
       return res.status(200).json(data);
     }
 
     return res.status(400).json({ error: 'Missing token or pool parameter' });
   } catch (error) {
     console.error('GeckoTerminal proxy error:', error);
-    return res.status(500).json({ error: 'Failed to fetch data' });
+    return res.status(500).json({ error: 'Failed to fetch data', details: String(error) });
   }
 }
+
+
