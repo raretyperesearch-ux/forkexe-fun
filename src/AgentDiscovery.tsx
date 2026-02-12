@@ -1819,7 +1819,7 @@ function ScreenerPage() {
             {/* Mini Links Row */}
             <div style={{ display: 'flex', gap: '6px', marginBottom: '14px', flexWrap: 'wrap' }}>
               {[
-                { label: 'Chart', url: `https://dexscreener.com/base/${selectedAgent.tokenAddress}` },
+                { label: 'Chart', url: `https://wallet.xyz/@AGENTSCREENER` },
                 { label: 'Scan', url: `https://basescan.org/token/${selectedAgent.tokenAddress}` },
                 { label: 'Clanker', url: `https://clanker.world/clanker/${selectedAgent.tokenAddress}` },
               ].map(link => (
