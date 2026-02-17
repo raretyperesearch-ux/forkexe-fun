@@ -70,6 +70,8 @@ export function useAgents(sourceFilter: string = 'all') {
         query = query.eq('source', 'bankr');
       } else if (sourceFilter === 'creatorbid') {
         query = query.eq('source', 'creatorbid');
+      } else if (sourceFilter === 'trenches') {
+        query = query.eq('source', 'trenches');
       } else if (sourceFilter === 'agent') {
         query = query.in('source', ['agent', 'bankr', 'moltbook', 'clawnch']);
       }
@@ -81,7 +83,7 @@ export function useAgents(sourceFilter: string = 'all') {
       }
       
       // For most filters, require minimum liquidity to filter out dead tokens
-      if (['all', 'clawnch', 'clanker', 'creatorbid'].includes(sourceFilter)) {
+      if (['all', 'clawnch', 'clanker'].includes(sourceFilter)) {
         query = query.gte('liquidity', MIN_LIQUIDITY);
       }
       
